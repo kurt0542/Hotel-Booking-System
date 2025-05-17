@@ -1,5 +1,7 @@
-package GUI.customElements.drawer;
+package customElements.drawer;
 
+import GUI.FrontDesk.FrontDeskMainFrame;
+import GUI.LoginPage;
 import raven.drawer.component.SimpleDrawerBuilder;
 import raven.drawer.component.footer.SimpleFooterData;
 import raven.drawer.component.header.SimpleHeaderData;
@@ -14,6 +16,13 @@ import raven.drawer.component.menu.SimpleMenuOption;
  */
 public class DrawerLayout extends SimpleDrawerBuilder {
 
+    private FrontDeskMainFrame mainFrame;
+
+    public DrawerLayout(FrontDeskMainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+    }
+
+    
     @Override
     public SimpleHeaderData getSimpleHeaderData() {
         return new SimpleHeaderData()
@@ -28,17 +37,17 @@ public class DrawerLayout extends SimpleDrawerBuilder {
         String menus[][] = {
             {"~MAIN~"},
             {"Dashboard"},
-            {"~WEB APP~"},
-            {"Email", "Inbox", "Read", "Compost"},
-            {"Chat"},
-            {"Calendar"},
-            {"~COMPONENT~"},
-            {"Advanced UI", "Cropper", "Owl Carousel", "Sweet Alert"},
-            {"Forms", "Basic Elements", "Advanced Elements", "SEditors", "Wizard"},
-            {"~OTHER~"},
-            {"Charts", "Apex", "Flot", "Sparkline"},
-            {"Icons", "Feather Icons", "Flag Icons", "Mdi Icons"},
-            {"Special Pages", "Blank page", "Faq", "Invoice", "Profile", "Pricing", "Timeline"},
+            {"Notifications"},
+            {"~MANAGEMENT~"},
+            {"Guest Management", "Check-In / Check-Out", "Guest Records"},
+            {"Room Management"},
+            {"Reservations"},
+            {"~BILLING~"},
+            {"Generate Invoice"},
+            {"Payments"},
+            {"Refunds"},
+            {"~SETTINGS~"},
+            {"Change Password"},
             {"Logout"}};
 
         String icons[] = {
@@ -62,9 +71,12 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                     @Override
                     public void selected(MenuAction action, int index, int subIndex) {
                         if (index == 0) {
+                            
+                        } else if (index == 1) {
 
-                        } else if (index == 9) {
-
+                        }else if (index == 9 && subIndex == 0) {
+                          mainFrame.dispose();
+                          new LoginPage().setVisible(true);
                         }
                         System.out.println("Menu selected " + index + " " + subIndex);
                     }
