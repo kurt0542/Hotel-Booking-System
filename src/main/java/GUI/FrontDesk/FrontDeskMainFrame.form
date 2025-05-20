@@ -24,8 +24,8 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="header" max="32767" attributes="0"/>
-          <Component id="contentPanel" alignment="0" max="32767" attributes="0"/>
           <Component id="divider" alignment="0" max="32767" attributes="0"/>
+          <Component id="contentPanel" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -35,7 +35,7 @@
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               <Component id="divider" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-              <Component id="contentPanel" max="32767" attributes="0"/>
+              <Component id="contentPanel" min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -58,7 +58,7 @@
                   <Component id="CompanyLogo" min="-2" pref="70" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="LogoLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="964" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -119,12 +119,12 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="1292" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="639" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="633" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
