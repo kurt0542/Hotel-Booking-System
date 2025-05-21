@@ -24,7 +24,9 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
     public FrontDeskMainFrame() {
         initComponents();
         initDrawer();
-       // cardLayout = (CardLayout) ();
+        initLayout();
+        cardLayout = (CardLayout) contentPanel.getLayout();
+        cardLayout.show(contentPanel, "checkOut");
     }
 
     private void initDrawer(){
@@ -32,9 +34,15 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         DrawerLayout drawer = new DrawerLayout(this);
         Drawer.getInstance().setDrawerBuilder(drawer);
     }
-    
-    
-    
+    public void showPanel(String name) {
+    cardLayout.show(contentPanel, name);
+    }
+
+    public void initLayout(){
+        contentPanel.add(checkIn1, "checkIn");
+        contentPanel.add(checkOut1, "checkOut");
+        contentPanel.add(guestRecords1, "guestRecords");
+    }
     
 
     @SuppressWarnings("unchecked")
@@ -46,6 +54,9 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         LogoLabel = new javax.swing.JLabel();
         MenuButton = new javax.swing.JLabel();
         contentPanel = new javax.swing.JPanel();
+        checkIn1 = new GUI.FrontDesk.Management.GuestManagement.CheckIn();
+        checkOut1 = new GUI.FrontDesk.Management.GuestManagement.CheckOut();
+        guestRecords1 = new GUI.FrontDesk.Management.GuestManagement.GuestRecords();
         divider = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -76,7 +87,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
                 .addComponent(CompanyLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(LogoLabel)
-                .addContainerGap(964, Short.MAX_VALUE))
+                .addContainerGap(1001, Short.MAX_VALUE))
         );
         headerLayout.setVerticalGroup(
             headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -92,17 +103,10 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         );
 
         contentPanel.setBackground(new java.awt.Color(19, 19, 19));
-
-        javax.swing.GroupLayout contentPanelLayout = new javax.swing.GroupLayout(contentPanel);
-        contentPanel.setLayout(contentPanelLayout);
-        contentPanelLayout.setHorizontalGroup(
-            contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        contentPanelLayout.setVerticalGroup(
-            contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 633, Short.MAX_VALUE)
-        );
+        contentPanel.setLayout(new java.awt.CardLayout());
+        contentPanel.add(checkIn1, "card2");
+        contentPanel.add(checkOut1, "card3");
+        contentPanel.add(guestRecords1, "card4");
 
         divider.setBackground(new java.awt.Color(212, 171, 97));
 
@@ -132,7 +136,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
                 .addGap(0, 0, 0)
                 .addComponent(divider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(contentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(contentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -184,8 +188,11 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel CompanyLogo;
     private javax.swing.JLabel LogoLabel;
     private javax.swing.JLabel MenuButton;
+    private GUI.FrontDesk.Management.GuestManagement.CheckIn checkIn1;
+    private GUI.FrontDesk.Management.GuestManagement.CheckOut checkOut1;
     private javax.swing.JPanel contentPanel;
     private javax.swing.JPanel divider;
+    private GUI.FrontDesk.Management.GuestManagement.GuestRecords guestRecords1;
     private javax.swing.JPanel header;
     // End of variables declaration//GEN-END:variables
 }

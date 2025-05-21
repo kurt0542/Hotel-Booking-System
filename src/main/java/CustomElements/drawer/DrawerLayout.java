@@ -39,7 +39,7 @@ public class DrawerLayout extends SimpleDrawerBuilder {
             {"Dashboard"},
             {"Notifications"},
             {"~MANAGEMENT~"},
-            {"Guest Management", "Check-In / Check-Out", "Guest Records"},
+            {"Guest Management", "Check-In","Check-Out", "Guest Records"},
             {"Room Management"},
             {"Reservations"},
             {"~BILLING~"},
@@ -72,12 +72,22 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                     public void selected(MenuAction action, int index, int subIndex) {
                         if (index == 0) {
                             
-                        } else if (index == 1) {
-
+                        }else if (index == 2 && subIndex == 1) {
+                            mainFrame.showPanel("checkIn");
+                            raven.drawer.Drawer.getInstance().closeDrawer();
+                        }
+                        else if (index == 2 && subIndex == 2) {
+                            mainFrame.showPanel("checkOut");
+                            raven.drawer.Drawer.getInstance().closeDrawer();
+                        }
+                        else if (index == 2 && subIndex == 3) {
+                            mainFrame.showPanel("guestRecords");
+                            raven.drawer.Drawer.getInstance().closeDrawer();
                         }else if (index == 9 && subIndex == 0) {
                           mainFrame.dispose();
                           new LoginPage().setVisible(true);
                         }
+                        
                         System.out.println("Menu selected " + index + " " + subIndex);
                     }
                 })
