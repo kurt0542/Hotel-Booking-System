@@ -74,20 +74,23 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                             
                         }else if (index == 2 && subIndex == 1) {
                             mainFrame.showPanel("checkIn");
-                            raven.drawer.Drawer.getInstance().closeDrawer();
                         }
                         else if (index == 2 && subIndex == 2) {
                             mainFrame.showPanel("checkOut");
-                            raven.drawer.Drawer.getInstance().closeDrawer();
                         }
                         else if (index == 2 && subIndex == 3) {
                             mainFrame.showPanel("guestRecords");
-                            raven.drawer.Drawer.getInstance().closeDrawer();
+                            
                         }else if (index == 9 && subIndex == 0) {
                           mainFrame.dispose();
                           new LoginPage().setVisible(true);
                         }
-                        
+                        if(index == 2 && subIndex == 0){
+                            
+                        }
+                        else{
+                            raven.drawer.Drawer.getInstance().closeDrawer();
+                        }
                         System.out.println("Menu selected " + index + " " + subIndex);
                     }
                 })
