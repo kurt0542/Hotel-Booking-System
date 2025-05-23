@@ -168,10 +168,13 @@ public class CheckIn extends javax.swing.JPanel {
         jLabel17.setForeground(new java.awt.Color(212, 171, 97));
         jLabel17.setText("Number of Guests:");
 
+        jButton1.setForeground(new java.awt.Color(212, 171, 97));
         jButton1.setText("Update");
 
+        jButton2.setForeground(new java.awt.Color(212, 171, 97));
         jButton2.setText("Save");
 
+        jButton4.setForeground(new java.awt.Color(212, 171, 97));
         jButton4.setText("Print Receipt");
 
         jLabel19.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -197,18 +200,25 @@ public class CheckIn extends javax.swing.JPanel {
         jLabel20.setForeground(new java.awt.Color(212, 171, 97));
         jLabel20.setText("Add-Ons / Extra Services:");
 
+        jCheckBox6.setForeground(new java.awt.Color(212, 171, 97));
         jCheckBox6.setText("Extra Bed");
 
+        jCheckBox7.setForeground(new java.awt.Color(212, 171, 97));
         jCheckBox7.setText("Extra Linen");
 
+        jCheckBox8.setForeground(new java.awt.Color(212, 171, 97));
         jCheckBox8.setText("Late Checkout");
 
+        jCheckBox9.setForeground(new java.awt.Color(212, 171, 97));
         jCheckBox9.setText("Early Check In");
 
+        jCheckBox10.setForeground(new java.awt.Color(212, 171, 97));
         jCheckBox10.setText("Laundry Service");
 
+        jCheckBox11.setForeground(new java.awt.Color(212, 171, 97));
         jCheckBox11.setText("Parking");
 
+        jCheckBox12.setForeground(new java.awt.Color(212, 171, 97));
         jCheckBox12.setText("Mini Bar Access");
 
         jLabel21.setFont(new java.awt.Font("Cambria", 1, 18)); // NOI18N
@@ -236,6 +246,7 @@ public class CheckIn extends javax.swing.JPanel {
         jComboBox6.setForeground(new java.awt.Color(212, 171, 97));
         jComboBox6.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        jButton6.setForeground(new java.awt.Color(212, 171, 97));
         jButton6.setText("Clear All");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

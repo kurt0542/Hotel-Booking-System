@@ -598,16 +598,25 @@
         </Component>
         <Component class="javax.swing.JButton" name="jButton1">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Update"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="jButton2">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Save"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="jButton4">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Print Receipt"/>
           </Properties>
         </Component>
@@ -674,31 +683,49 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox6">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Extra Bed"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox7">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Extra Linen"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox8">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Late Checkout"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox9">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Early Check In"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox10">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Laundry Service"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox11">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Parking"/>
           </Properties>
         </Component>
@@ -708,6 +735,9 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBox12">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Mini Bar Access"/>
           </Properties>
         </Component>
@@ -810,6 +840,9 @@
         </Component>
         <Component class="javax.swing.JButton" name="jButton6">
           <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Clear All"/>
           </Properties>
         </Component>
