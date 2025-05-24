@@ -76,6 +76,17 @@ public class Reservations extends javax.swing.JPanel {
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextArea2 = new javax.swing.JTextArea();
+        jLabel22 = new javax.swing.JLabel();
 
         jCheckBox1.setText("jCheckBox1");
 
@@ -126,8 +137,8 @@ public class Reservations extends javax.swing.JPanel {
         jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(344, 605, 126, -1));
 
         jLabel1.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel1.setText("Reservation ID:");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(488, 339, 171, -1));
+        jLabel1.setText("Email:");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 370, 171, -1));
 
         jLabel2.setForeground(new java.awt.Color(212, 171, 97));
         jLabel2.setText("Guest Name:");
@@ -189,7 +200,7 @@ public class Reservations extends javax.swing.JPanel {
         jPanel1.add(singleCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 200, -1, -1));
 
         TwinCheck.setText("Twin");
-        jPanel1.add(TwinCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 270, -1, -1));
+        jPanel1.add(TwinCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 260, -1, -1));
 
         ExecuteiveCheck.setText("Executive");
         jPanel1.add(ExecuteiveCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 200, -1, -1));
@@ -198,14 +209,14 @@ public class Reservations extends javax.swing.JPanel {
         jPanel1.add(DeluxeCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 230, -1, -1));
 
         SuiteCheck.setText("Suite");
-        jPanel1.add(SuiteCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 270, -1, -1));
+        jPanel1.add(SuiteCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 260, -1, -1));
 
         PresedentialCheck.setText("Presidential");
         jPanel1.add(PresedentialCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 200, -1, -1));
 
         jLabel20.setForeground(new java.awt.Color(212, 171, 97));
         jLabel20.setText("Add-Ons / Extra Services:");
-        jPanel1.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(682, 110, -1, -1));
+        jPanel1.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 430, -1, -1));
 
         jButton4.setText("Uncheck All");
         jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -216,7 +227,7 @@ public class Reservations extends javax.swing.JPanel {
         jPanel1.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 230, -1, -1));
 
         singleCheck1.setText("Laundry Service");
-        jPanel1.add(singleCheck1, new org.netbeans.lib.awtextra.AbsoluteConstraints(682, 138, -1, -1));
+        jPanel1.add(singleCheck1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 150, -1, -1));
 
         DoubleCheck1.setText("Mini Bar Access");
         DoubleCheck1.addActionListener(new java.awt.event.ActionListener() {
@@ -224,24 +235,24 @@ public class Reservations extends javax.swing.JPanel {
                 DoubleCheck1ActionPerformed(evt);
             }
         });
-        jPanel1.add(DoubleCheck1, new org.netbeans.lib.awtextra.AbsoluteConstraints(682, 171, -1, -1));
+        jPanel1.add(DoubleCheck1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 180, -1, -1));
 
         TwinCheck1.setText("Parking");
-        jPanel1.add(TwinCheck1, new org.netbeans.lib.awtextra.AbsoluteConstraints(682, 205, -1, -1));
+        jPanel1.add(TwinCheck1, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 210, -1, -1));
 
         singleCheck2.setText("Airport Pick-up");
-        jPanel1.add(singleCheck2, new org.netbeans.lib.awtextra.AbsoluteConstraints(844, 138, -1, -1));
+        jPanel1.add(singleCheck2, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 150, -1, -1));
 
         singleCheck3.setText("Extra Bed");
-        jPanel1.add(singleCheck3, new org.netbeans.lib.awtextra.AbsoluteConstraints(844, 171, -1, -1));
+        jPanel1.add(singleCheck3, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 180, -1, -1));
 
         singleCheck4.setText("Extra Linen");
-        jPanel1.add(singleCheck4, new org.netbeans.lib.awtextra.AbsoluteConstraints(844, 205, -1, -1));
-        jPanel1.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(943, 204, -1, -1));
-        jPanel1.add(jSpinner4, new org.netbeans.lib.awtextra.AbsoluteConstraints(943, 170, -1, -1));
+        jPanel1.add(singleCheck4, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 210, -1, -1));
+        jPanel1.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 210, -1, -1));
+        jPanel1.add(jSpinner4, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 180, -1, -1));
 
         jButton5.setText("Clear all");
-        jPanel1.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 220, 120, -1));
+        jPanel1.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 260, 120, -1));
 
         jButton6.setText("Reserve");
         jPanel1.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 260, 122, -1));
@@ -254,6 +265,49 @@ public class Reservations extends javax.swing.JPanel {
         });
         jPanel1.add(jButton7, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 130, -1, -1));
 
+        jLabel9.setForeground(new java.awt.Color(212, 171, 97));
+        jLabel9.setText("Reservation ID:");
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(488, 339, 171, -1));
+
+        jLabel14.setForeground(new java.awt.Color(212, 171, 97));
+        jLabel14.setText("Reservation Status:");
+        jPanel1.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 370, 171, -1));
+
+        jLabel15.setForeground(new java.awt.Color(212, 171, 97));
+        jLabel15.setText("Notes:");
+        jPanel1.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 120, 171, -1));
+
+        jLabel16.setForeground(new java.awt.Color(212, 171, 97));
+        jLabel16.setText("Payment Status:");
+        jPanel1.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 370, 171, -1));
+
+        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane2.setViewportView(jTextArea1);
+
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 460, 200, 160));
+
+        jLabel19.setForeground(new java.awt.Color(212, 171, 97));
+        jLabel19.setText("Contact Number:");
+        jPanel1.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 340, 171, -1));
+
+        jLabel21.setForeground(new java.awt.Color(212, 171, 97));
+        jLabel21.setText("Processed by:");
+        jPanel1.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 400, 230, -1));
+
+        jTextArea2.setColumns(20);
+        jTextArea2.setRows(5);
+        jScrollPane3.setViewportView(jTextArea2);
+
+        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 150, 260, -1));
+
+        jLabel22.setForeground(new java.awt.Color(212, 171, 97));
+        jLabel22.setText("Add-Ons / Extra Services:");
+        jPanel1.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 120, -1, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -262,7 +316,7 @@ public class Reservations extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -317,23 +371,34 @@ public class Reservations extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner2;
     private javax.swing.JSpinner jSpinner3;
     private javax.swing.JSpinner jSpinner4;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JCheckBox singleCheck;
     private javax.swing.JCheckBox singleCheck1;
