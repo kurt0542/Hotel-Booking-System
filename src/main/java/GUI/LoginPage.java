@@ -4,8 +4,13 @@
  */
 package GUI;
 
+import Database.DBConnection;
+import GUI.FrontDesk.FrontDeskMainFrame;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.geom.RoundRectangle2D;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -14,13 +19,39 @@ import java.awt.geom.RoundRectangle2D;
 public class LoginPage extends javax.swing.JFrame {
 
     private int xx, xy;
-  
+    Connection conn;
     public LoginPage() {
+      conn = DBConnection.connectDB();
         setUndecorated(true);
         initComponents();
         setShape(new RoundRectangle2D.Double(0,0,getWidth(),getHeight(),20,20));
     }
-
+    
+    public void login(){
+         String userID = UserField.getText();
+       String password = String.valueOf(PasswordField.getPassword());
+       
+       if(userID.isEmpty() || password.isEmpty()){
+           JOptionPane.showMessageDialog(this, "Please enter username and password","input error",JOptionPane.ERROR_MESSAGE);
+            return;
+       }
+       String sql= "SELECT * FROM LoginInfo WHERE Username = ? AND PASSWORD = ?";
+       try(PreparedStatement pst = conn.prepareStatement(sql)){
+        pst.setString(1,userID);
+        pst.setString(2, password);
+        var rs = pst.executeQuery();
+        if(rs.next()){
+            new FrontDeskMainFrame().setVisible(true);
+            this.dispose();
+        }else{
+            JOptionPane.showMessageDialog(this, "Invalid username or password\nplease try again", "Login Failed", JOptionPane.ERROR_MESSAGE);
+        }
+        rs.close();
+       }
+       catch(Exception e){
+           e.printStackTrace();
+       }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -34,12 +65,12 @@ public class LoginPage extends javax.swing.JFrame {
         BackgroundPanel = new CustomElements.ImagePanel();
         ExitButton = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        UserField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        PasswordField = new javax.swing.JPasswordField();
         jLabel3 = new javax.swing.JLabel();
         curvedPanel2 = new CustomElements.CurvedPanel();
-        jLabel5 = new javax.swing.JLabel();
+        LoginButton = new javax.swing.JLabel();
 
         javax.swing.GroupLayout curvedPanel1Layout = new javax.swing.GroupLayout(curvedPanel1);
         curvedPanel1.setLayout(curvedPanel1Layout);
@@ -75,10 +106,21 @@ public class LoginPage extends javax.swing.JFrame {
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/astrid_smith-removebg-preview (3).png"))); // NOI18N
 
-        jTextField1.setName(""); // NOI18N
+        UserField.setName(""); // NOI18N
+        UserField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UserFieldActionPerformed(evt);
+            }
+        });
 
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Username:");
+
+        PasswordField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PasswordFieldActionPerformed(evt);
+            }
+        });
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Password:");
@@ -89,14 +131,14 @@ public class LoginPage extends javax.swing.JFrame {
         curvedPanel2.setRoundTopLeft(20);
         curvedPanel2.setRoundTopRight(15);
 
-        jLabel5.setFont(new java.awt.Font("Cambria", 1, 24)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("Log In");
-        jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
+        LoginButton.setFont(new java.awt.Font("Cambria", 1, 24)); // NOI18N
+        LoginButton.setForeground(new java.awt.Color(255, 255, 255));
+        LoginButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        LoginButton.setText("Log In");
+        LoginButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        LoginButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                jLabel5MousePressed(evt);
+                LoginButtonMousePressed(evt);
             }
         });
 
@@ -104,13 +146,13 @@ public class LoginPage extends javax.swing.JFrame {
         curvedPanel2.setLayout(curvedPanel2Layout);
         curvedPanel2Layout.setHorizontalGroup(
             curvedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(LoginButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         curvedPanel2Layout.setVerticalGroup(
             curvedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(curvedPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                .addComponent(LoginButton, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -134,12 +176,12 @@ public class LoginPage extends javax.swing.JFrame {
                                 .addGap(84, 84, 84)
                                 .addGroup(BackgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(curvedPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jPasswordField1, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(PasswordField, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(BackgroundPanelLayout.createSequentialGroup()
                                         .addGap(6, 6, 6)
                                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(0, 0, Short.MAX_VALUE))
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE))))
+                                    .addComponent(UserField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE))))
                         .addGap(0, 84, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -154,11 +196,11 @@ public class LoginPage extends javax.swing.JFrame {
                 .addGap(2, 2, 2)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(UserField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addGap(9, 9, 9)
-                .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(PasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(curvedPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 84, Short.MAX_VALUE))
@@ -194,9 +236,17 @@ public class LoginPage extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_ExitButtonMousePressed
 
-    private void jLabel5MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MousePressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel5MousePressed
+    private void LoginButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LoginButtonMousePressed
+        login();
+    }//GEN-LAST:event_LoginButtonMousePressed
+
+    private void UserFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UserFieldActionPerformed
+        login();
+    }//GEN-LAST:event_UserFieldActionPerformed
+
+    private void PasswordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PasswordFieldActionPerformed
+        login();
+    }//GEN-LAST:event_PasswordFieldActionPerformed
             
     /**
      * @param args the command line arguments
@@ -236,13 +286,13 @@ public class LoginPage extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private CustomElements.ImagePanel BackgroundPanel;
     private javax.swing.JLabel ExitButton;
+    private javax.swing.JLabel LoginButton;
+    private javax.swing.JPasswordField PasswordField;
+    private javax.swing.JTextField UserField;
     private CustomElements.CurvedPanel curvedPanel1;
     private CustomElements.CurvedPanel curvedPanel2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }

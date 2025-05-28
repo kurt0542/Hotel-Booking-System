@@ -44,10 +44,10 @@ public class Dashboard extends javax.swing.JPanel {
         RoomFilter = new javax.swing.JComboBox<>();
         curvedPanel4 = new CustomElements.CurvedPanel();
         circularProgressBar3 = new CustomElements.CircularProgressBar();
-        jLabel1 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         curvedPanel5 = new CustomElements.CurvedPanel();
         circularProgressBar4 = new CustomElements.CircularProgressBar();
-        jLabel4 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         floor11 = new GUI.FrontDesk.DashboardPanels.Floor1();
 
@@ -81,7 +81,9 @@ public class Dashboard extends javax.swing.JPanel {
         curvedPanel1.setRoundTopLeft(20);
         curvedPanel1.setRoundTopRight(20);
 
-        jLabel3.setText("checkout");
+        jLabel3.setFont(new java.awt.Font("Cambria", 1, 24)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Check-Out");
 
         javax.swing.GroupLayout curvedPanel1Layout = new javax.swing.GroupLayout(curvedPanel1);
         curvedPanel1.setLayout(curvedPanel1Layout);
@@ -90,20 +92,20 @@ public class Dashboard extends javax.swing.JPanel {
             .addGroup(curvedPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(circularProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
                 .addComponent(jLabel3)
-                .addGap(51, 51, 51))
+                .addContainerGap())
         );
         curvedPanel1Layout.setVerticalGroup(
             curvedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(curvedPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, curvedPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(circularProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGroup(curvedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(curvedPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel3))
+                    .addComponent(circularProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(curvedPanel1Layout.createSequentialGroup()
-                .addGap(49, 49, 49)
-                .addComponent(jLabel3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         curvedPanel3.setBackground(new java.awt.Color(45, 45, 45));
@@ -164,7 +166,9 @@ public class Dashboard extends javax.swing.JPanel {
         curvedPanel4.setRoundTopLeft(20);
         curvedPanel4.setRoundTopRight(20);
 
-        jLabel1.setText("vacant");
+        jLabel5.setFont(new java.awt.Font("Cambria", 1, 24)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("Vacant");
 
         javax.swing.GroupLayout curvedPanel4Layout = new javax.swing.GroupLayout(curvedPanel4);
         curvedPanel4.setLayout(curvedPanel4Layout);
@@ -173,20 +177,20 @@ public class Dashboard extends javax.swing.JPanel {
             .addGroup(curvedPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(circularProgressBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(54, 54, 54))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
+                .addComponent(jLabel5)
+                .addContainerGap())
         );
         curvedPanel4Layout.setVerticalGroup(
             curvedPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(curvedPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(circularProgressBar3, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
-                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, curvedPanel4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(55, 55, 55))
+                .addContainerGap()
+                .addGroup(curvedPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(curvedPanel4Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel5))
+                    .addComponent(circularProgressBar3, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         curvedPanel5.setBackground(new java.awt.Color(230, 126, 34));
@@ -196,7 +200,9 @@ public class Dashboard extends javax.swing.JPanel {
         curvedPanel5.setRoundTopLeft(20);
         curvedPanel5.setRoundTopRight(20);
 
-        jLabel4.setText("pending");
+        jLabel6.setFont(new java.awt.Font("Cambria", 1, 24)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("Pending");
 
         javax.swing.GroupLayout curvedPanel5Layout = new javax.swing.GroupLayout(curvedPanel5);
         curvedPanel5.setLayout(curvedPanel5Layout);
@@ -205,20 +211,21 @@ public class Dashboard extends javax.swing.JPanel {
             .addGroup(curvedPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(circularProgressBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addGap(48, 48, 48))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                .addComponent(jLabel6)
+                .addContainerGap())
         );
         curvedPanel5Layout.setVerticalGroup(
             curvedPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, curvedPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(circularProgressBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGroup(curvedPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(curvedPanel5Layout.createSequentialGroup()
+                        .addGap(50, 95, Short.MAX_VALUE)
+                        .addComponent(jLabel6))
+                    .addGroup(curvedPanel5Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(circularProgressBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(curvedPanel5Layout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addComponent(jLabel4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(45, 45, 45));
@@ -275,10 +282,10 @@ public class Dashboard extends javax.swing.JPanel {
     private CustomElements.CurvedPanel curvedPanel4;
     private CustomElements.CurvedPanel curvedPanel5;
     private GUI.FrontDesk.DashboardPanels.Floor1 floor11;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;

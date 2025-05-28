@@ -1,4 +1,5 @@
 
+import Database.DBConnection;
 import GUI.LoginPage;
 import com.formdev.flatlaf.FlatLightLaf;
 
@@ -15,5 +16,12 @@ public class Main {
     public static void main(String[] args){
         FlatLightLaf.setup();
         new LoginPage().setVisible(true);
+        try{
+        DBConnection.connectDB();
+        System.out.println("Connected Successfully!");
+        }
+        catch(Exception e){
+            
+        }
     }
 }
