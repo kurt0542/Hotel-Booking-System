@@ -15,11 +15,10 @@ import raven.drawer.component.menu.SimpleMenuOption;
  * @author RAVEN
  */
 public class DrawerLayout extends SimpleDrawerBuilder {
-
     private FrontDeskMainFrame mainFrame;
-
     public DrawerLayout(FrontDeskMainFrame mainFrame) {
         this.mainFrame = mainFrame;
+
     }
 
     
@@ -27,8 +26,8 @@ public class DrawerLayout extends SimpleDrawerBuilder {
     public SimpleHeaderData getSimpleHeaderData() {
         return new SimpleHeaderData()
               //  .setIcon(new AvatarIcon(getClass().getResource("/raven/image/profile.png"), 60, 60, 999))
-                .setTitle("employee name")
-                .setDescription("FrontDesk");
+                .setTitle(LoginPage.getEmployeeName())
+                .setDescription(LoginPage.getRole());
             
     }
 
@@ -70,8 +69,8 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                 .addMenuEvent(new MenuEvent() {
                     @Override
                     public void selected(MenuAction action, int index, int subIndex) {
-                        if (index == 0) {
-                            
+                        if (index == 0 && subIndex == 0) {
+                            mainFrame.showPanel("Dashboard");
                         }else if (index == 2 && subIndex == 1) {
                             mainFrame.showPanel("checkIn");
                         }

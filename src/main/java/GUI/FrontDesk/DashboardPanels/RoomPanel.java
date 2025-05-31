@@ -14,7 +14,7 @@ import java.awt.geom.RoundRectangle2D;
  * @author ADMIN
  */
 public class RoomPanel extends javax.swing.JPanel {
-
+    private String roomNo, status, checkOut, price, type;
     /**
      * Creates new form RoomPanel
      */
@@ -23,6 +23,30 @@ public class RoomPanel extends javax.swing.JPanel {
         setOpaque(false);
     }
 
+    public void setRoomNo(String roomNo){
+        this.roomNo = roomNo;
+        jLabel1.setText(roomNo);
+    }
+    
+    public void setStatus(String status){
+        this.status = status;
+        jLabel3.setText("Status: " + status);
+    }
+    
+    public void setCheckOut(String checkOut){
+        this.checkOut = checkOut;
+        jLabel4.setText("Check-Out: " + checkOut);
+    }
+    
+    public void setRoomDetails(String price, String type){
+        this.price = price;
+        this.type = type;
+        
+        jLabel2.setText(price + " / " + type);
+    }
+    
+    
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -76,12 +100,13 @@ public class RoomPanel extends javax.swing.JPanel {
         jButton2.setForeground(new java.awt.Color(19, 19, 19));
         jButton2.setText("Check-Out");
         jButton2.setBorderPainted(false);
+        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         jLabel4.setForeground(new java.awt.Color(212, 171, 97));
         jLabel4.setText("Check-Out:");
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-edit-22.png"))); // NOI18N
-        jLabel5.setPreferredSize(new java.awt.Dimension(22, 22));
+        jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -92,21 +117,19 @@ public class RoomPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(6, 6, 6)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE))))
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(curvedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel5)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -125,7 +148,7 @@ public class RoomPanel extends javax.swing.JPanel {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
                     .addComponent(jButton2))
                 .addGap(7, 7, 7))
         );

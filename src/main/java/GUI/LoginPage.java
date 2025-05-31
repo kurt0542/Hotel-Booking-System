@@ -6,6 +6,7 @@ package GUI;
 
 import Database.DBConnection;
 import GUI.FrontDesk.FrontDeskMainFrame;
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.geom.RoundRectangle2D;
 import java.sql.Connection;
@@ -17,7 +18,8 @@ import javax.swing.JOptionPane;
  * @author ADMIN
  */
 public class LoginPage extends javax.swing.JFrame {
-
+    private static String EmployeeName;
+    private static String role;
     private int xx, xy;
     Connection conn;
     public LoginPage() {
@@ -35,12 +37,15 @@ public class LoginPage extends javax.swing.JFrame {
            JOptionPane.showMessageDialog(this, "Please enter username and password","input error",JOptionPane.ERROR_MESSAGE);
             return;
        }
-       String sql= "SELECT * FROM LoginInfo WHERE Username = ? AND PASSWORD = ?";
+       String sql= "SELECT * FROM LoginInfo WHERE Username = ? AND Password = ?";
        try(PreparedStatement pst = conn.prepareStatement(sql)){
         pst.setString(1,userID);
         pst.setString(2, password);
         var rs = pst.executeQuery();
         if(rs.next()){
+            FlatDarkLaf.setup();
+            this.EmployeeName = rs.getString("EmployeeName");
+            this.role = rs.getString("role");
             new FrontDeskMainFrame().setVisible(true);
             this.dispose();
         }else{
@@ -51,6 +56,13 @@ public class LoginPage extends javax.swing.JFrame {
        catch(Exception e){
            e.printStackTrace();
        }
+    }
+    public static String getEmployeeName(){
+        return LoginPage.EmployeeName;
+    }
+    
+    public static String getRole(){
+        return LoginPage.role;
     }
     /**
      * This method is called from within the constructor to initialize the form.

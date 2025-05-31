@@ -18,7 +18,6 @@ import raven.popup.GlassPanePopup;
  * @author ADMIN
  */
 public class FrontDeskMainFrame extends javax.swing.JFrame {
-
     CardLayout cardLayout;
 
     public FrontDeskMainFrame() {
@@ -26,7 +25,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         initDrawer();
         initLayout();
         cardLayout = (CardLayout) contentPanel.getLayout();
-        cardLayout.show(contentPanel, "checkOut");
+        cardLayout.show(contentPanel, "Dashboard");
     }
 
     private void initDrawer(){
@@ -42,6 +41,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         contentPanel.add(checkIn1, "checkIn");
         contentPanel.add(checkOut1, "checkOut");
         contentPanel.add(guestRecords1, "guestRecords");
+        contentPanel.add(dashboard1, "Dashboard");
     }
     
 
@@ -57,6 +57,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         checkIn1 = new GUI.FrontDesk.Management.GuestManagement.CheckIn();
         checkOut1 = new GUI.FrontDesk.Management.GuestManagement.CheckOut();
         guestRecords1 = new GUI.FrontDesk.Management.GuestManagement.GuestRecords();
+        dashboard1 = new GUI.FrontDesk.Dashboard();
         divider = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -107,6 +108,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         contentPanel.add(checkIn1, "card2");
         contentPanel.add(checkOut1, "card3");
         contentPanel.add(guestRecords1, "card4");
+        contentPanel.add(dashboard1, "card5");
 
         divider.setBackground(new java.awt.Color(212, 171, 97));
 
@@ -191,6 +193,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
     private GUI.FrontDesk.Management.GuestManagement.CheckIn checkIn1;
     private GUI.FrontDesk.Management.GuestManagement.CheckOut checkOut1;
     private javax.swing.JPanel contentPanel;
+    private GUI.FrontDesk.Dashboard dashboard1;
     private javax.swing.JPanel divider;
     private GUI.FrontDesk.Management.GuestManagement.GuestRecords guestRecords1;
     private javax.swing.JPanel header;

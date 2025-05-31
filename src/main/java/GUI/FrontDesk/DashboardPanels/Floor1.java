@@ -4,6 +4,11 @@
  */
 package GUI.FrontDesk.DashboardPanels;
 
+import Database.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 /**
  *
  * @author ADMIN
@@ -13,14 +18,37 @@ public class Floor1 extends javax.swing.JPanel {
     /**
      * Creates new form BasePanel
      */
-    
+    Connection conn;
     public Floor1() {
+       conn = DBConnection.connectDB();
         initComponents();
-
+        initPanels();
     }
     public void initPanels(){
-        
-    }
+        RoomPanel[] roomPanel = {
+            panel1, panel2, panel3, panel4, panel5,
+            panel6, panel7, panel8, panel9, panel10,
+            panel11, panel12, panel13, panel14, roomPanel26
+        };
+
+        String sql = "SELECT TOP 15 rt.Room_Number, rt.Status, rt.CheckOut, rt.Room_Type, rr.Price_Rate " +
+                     "FROM RoomList AS rt " +
+                     "INNER JOIN Room_Rate AS rr ON rt.Room_Type = rr.Room_Type";
+
+        try(PreparedStatement pst = conn.prepareStatement(sql)){
+            ResultSet rs = pst.executeQuery();
+
+            for(int i = 0; i < 15 && rs.next(); i++){
+                roomPanel[i].setRoomNo(rs.getString("Room_Number"));
+                roomPanel[i].setStatus(rs.getString("Status"));
+                roomPanel[i].setCheckOut(rs.getString("CheckOut"));
+                double price = rs.getDouble("Price_Rate");
+                roomPanel[i].setRoomDetails(String.format("₱%.2f", price), rs.getString("Room_Type"));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -32,21 +60,21 @@ public class Floor1 extends javax.swing.JPanel {
 
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        roomPanel5 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel1 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel2 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel3 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel4 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel10 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel15 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel14 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel13 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel9 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel8 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel6 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel7 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel12 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
-        roomPanel11 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel1 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel2 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel3 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel4 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel5 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel6 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel7 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel8 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel9 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel10 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel11 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel12 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel13 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        panel14 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
+        roomPanel26 = new GUI.FrontDesk.DashboardPanels.RoomPanel();
 
         setBackground(new java.awt.Color(19, 19, 19));
         setMaximumSize(new java.awt.Dimension(869, 439));
@@ -55,21 +83,21 @@ public class Floor1 extends javax.swing.JPanel {
 
         jPanel3.setBackground(new java.awt.Color(51, 51, 51));
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 12, 11));
-        jPanel3.add(roomPanel5);
-        jPanel3.add(roomPanel1);
-        jPanel3.add(roomPanel2);
-        jPanel3.add(roomPanel3);
-        jPanel3.add(roomPanel4);
-        jPanel3.add(roomPanel10);
-        jPanel3.add(roomPanel15);
-        jPanel3.add(roomPanel14);
-        jPanel3.add(roomPanel13);
-        jPanel3.add(roomPanel9);
-        jPanel3.add(roomPanel8);
-        jPanel3.add(roomPanel6);
-        jPanel3.add(roomPanel7);
-        jPanel3.add(roomPanel12);
-        jPanel3.add(roomPanel11);
+        jPanel3.add(panel1);
+        jPanel3.add(panel2);
+        jPanel3.add(panel3);
+        jPanel3.add(panel4);
+        jPanel3.add(panel5);
+        jPanel3.add(panel6);
+        jPanel3.add(panel7);
+        jPanel3.add(panel8);
+        jPanel3.add(panel9);
+        jPanel3.add(panel10);
+        jPanel3.add(panel11);
+        jPanel3.add(panel12);
+        jPanel3.add(panel13);
+        jPanel3.add(panel14);
+        jPanel3.add(roomPanel26);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -91,20 +119,20 @@ public class Floor1 extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel1;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel10;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel11;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel12;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel13;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel14;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel15;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel2;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel3;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel4;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel5;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel6;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel7;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel8;
-    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel9;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel1;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel10;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel11;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel12;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel13;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel14;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel2;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel3;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel4;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel5;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel6;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel7;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel8;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel panel9;
+    private GUI.FrontDesk.DashboardPanels.RoomPanel roomPanel26;
     // End of variables declaration//GEN-END:variables
 }

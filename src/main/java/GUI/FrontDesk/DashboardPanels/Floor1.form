@@ -61,35 +61,35 @@
         <Property name="verticalGap" type="int" value="11"/>
       </Layout>
       <SubComponents>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel5">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel1">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel1">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel2">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel2">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel3">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel3">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel4">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel4">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel5">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel10">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel6">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel15">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel7">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel14">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel8">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel13">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel9">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel9">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel10">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel8">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel11">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel6">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel12">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel7">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel13">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel12">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="panel14">
         </Component>
-        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel11">
+        <Component class="GUI.FrontDesk.DashboardPanels.RoomPanel" name="roomPanel26">
         </Component>
       </SubComponents>
     </Container>

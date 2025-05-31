@@ -4,6 +4,14 @@
  */
 package GUI.FrontDesk;
 
+import Database.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author ADMIN
@@ -13,11 +21,44 @@ public class Dashboard extends javax.swing.JPanel {
     /**
      * Creates new form Dashboard
      */
+    Connection conn;
     public Dashboard() {
+        conn = DBConnection.connectDB();
         initComponents();
+        initTable();
     }
     
-    
+    public void initTable(){
+        DefaultTableModel dt = (DefaultTableModel) jTable1.getModel();
+        
+        dt.setRowCount(0);
+        String sql = "SELECT rt.Room_Number, rt.Status, rt.Room_Type, rr.Price_Rate " +
+                     "FROM RoomList AS rt " +
+                     "INNER JOIN Room_Rate AS rr ON rt.Room_Type = rr.Room_Type";
+
+        try(PreparedStatement pst = conn.prepareStatement(sql)){
+            ResultSet rs = pst.executeQuery();
+
+            while(rs.next()){
+                String roomNumber = rs.getString("Room_Number");
+                String status = rs.getString("Status");
+                String roomType = rs.getString("Room_Type");
+                String priceRate = rs.getString("Price_Rate");
+
+
+                dt.addRow(new Object[]{roomNumber, status, roomType, priceRate});
+            }
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < jTable1.getColumnCount(); i++) {
+                jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -50,6 +91,9 @@ public class Dashboard extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         floor11 = new GUI.FrontDesk.DashboardPanels.Floor1();
+        pageCounter1 = new javax.swing.JLabel();
+        pageCounter2 = new javax.swing.JLabel();
+        pageCounter3 = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -83,7 +127,7 @@ public class Dashboard extends javax.swing.JPanel {
 
         jLabel3.setFont(new java.awt.Font("Cambria", 1, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Check-Out");
+        jLabel3.setText("Arrivals");
 
         javax.swing.GroupLayout curvedPanel1Layout = new javax.swing.GroupLayout(curvedPanel1);
         curvedPanel1.setLayout(curvedPanel1Layout);
@@ -92,7 +136,7 @@ public class Dashboard extends javax.swing.JPanel {
             .addGroup(curvedPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(circularProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
                 .addComponent(jLabel3)
                 .addContainerGap())
         );
@@ -129,6 +173,7 @@ public class Dashboard extends javax.swing.JPanel {
                 "Room No.", "Type", "Status", "Rate"
             }
         ));
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
 
         RoomFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -155,7 +200,7 @@ public class Dashboard extends javax.swing.JPanel {
                     .addComponent(jLabel2)
                     .addComponent(RoomFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -235,23 +280,46 @@ public class Dashboard extends javax.swing.JPanel {
         jPanel2.setLayout(new java.awt.CardLayout());
         jPanel2.add(floor11, "card2");
 
+        pageCounter1.setBackground(new java.awt.Color(212, 175, 55));
+        pageCounter1.setForeground(new java.awt.Color(212, 175, 55));
+        pageCounter1.setText("Floor 1");
+
+        pageCounter2.setBackground(new java.awt.Color(212, 175, 55));
+        pageCounter2.setForeground(new java.awt.Color(212, 175, 55));
+        pageCounter2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-chevron-left-26.png"))); // NOI18N
+        pageCounter2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        pageCounter3.setBackground(new java.awt.Color(212, 175, 55));
+        pageCounter3.setForeground(new java.awt.Color(212, 175, 55));
+        pageCounter3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-chevron-right-26.png"))); // NOI18N
+        pageCounter3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(curvedPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(curvedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(curvedPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(curvedPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(26, 26, 26))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(curvedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(curvedPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(curvedPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(26, 26, 26))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(pageCounter2, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pageCounter1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pageCounter3)
+                        .addGap(407, 407, 407))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -264,9 +332,18 @@ public class Dashboard extends javax.swing.JPanel {
                             .addComponent(curvedPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
                             .addComponent(curvedPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(curvedPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 587, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(26, Short.MAX_VALUE))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(pageCounter3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(2, 2, 2)
+                                .addComponent(pageCounter1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(pageCounter2)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(curvedPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 609, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 10, Short.MAX_VALUE)))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -294,5 +371,8 @@ public class Dashboard extends javax.swing.JPanel {
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel pageCounter1;
+    private javax.swing.JLabel pageCounter2;
+    private javax.swing.JLabel pageCounter3;
     // End of variables declaration//GEN-END:variables
 }
