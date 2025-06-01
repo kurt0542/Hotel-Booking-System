@@ -70,23 +70,23 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                     public void selected(MenuAction action, int index, int subIndex) {
                         if (index == 0 && subIndex == 0) {
                             mainFrame.showPanel("Dashboard");
-                        }else if (index == 2 && subIndex == 1) {
+                        }else if (index == 1 && subIndex == 1) {
                             mainFrame.showPanel("checkIn");
                         }
-                        else if (index == 2 && subIndex == 2) {
+                        else if (index == 1 && subIndex == 2) {
                             mainFrame.showPanel("checkOut");
                         }
-                        else if (index == 2 && subIndex == 3) {
+                        else if (index == 1 && subIndex == 3) {
                             mainFrame.showPanel("guestRecords");  
                         }
                         else if(index == 3 && subIndex == 0){
                             mainFrame.showPanel("Reservations");
                         }
-                        else if (index == 9 && subIndex == 0) {
+                        else if (index == 7 && subIndex == 0) {
                           mainFrame.dispose();
                           new LoginPage().setVisible(true);
                         }
-                        if(index == 2 && subIndex == 0){
+                        if(index == 1 && subIndex == 0){
                             
                         }
                         else{
