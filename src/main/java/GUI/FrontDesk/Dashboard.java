@@ -5,6 +5,7 @@
 package GUI.FrontDesk;
 
 import Database.DBConnection;
+import java.awt.CardLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,15 +18,20 @@ import javax.swing.table.DefaultTableModel;
  * @author ADMIN
  */
 public class Dashboard extends javax.swing.JPanel {
-
+    private int currentFloor = 2;
     /**
      * Creates new form Dashboard
      */
     Connection conn;
+    CardLayout cardLayout;
     public Dashboard() {
         conn = DBConnection.connectDB();
         initComponents();
         initTable();
+        initLayout();
+        cardLayout = (CardLayout) jPanel2.getLayout();
+        cardLayout.show(jPanel2, "Floor1");
+        pageCounter1.setText("Floor " + currentFloor);
     }
     
     public void initTable(){
@@ -43,10 +49,10 @@ public class Dashboard extends javax.swing.JPanel {
                 String roomNumber = rs.getString("Room_Number");
                 String status = rs.getString("Status");
                 String roomType = rs.getString("Room_Type");
-                String priceRate = rs.getString("Price_Rate");
+                double price = rs.getDouble("Price_Rate");
 
 
-                dt.addRow(new Object[]{roomNumber, status, roomType, priceRate});
+                dt.addRow(new Object[]{roomNumber, roomType, status,  String.format("₱%.2f",price)});
             }
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
             centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -59,7 +65,11 @@ public class Dashboard extends javax.swing.JPanel {
             e.printStackTrace();
         }
     }
-
+    
+    public void initLayout(){
+        jPanel2.add(floor11, "Floor2");
+        jPanel2.add(floor21,"Floor3");
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -90,10 +100,11 @@ public class Dashboard extends javax.swing.JPanel {
         circularProgressBar4 = new CustomElements.CircularProgressBar();
         jLabel6 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        floor11 = new GUI.FrontDesk.DashboardPanels.Floor1();
+        floor11 = new GUI.FrontDesk.DashboardPanels.Floor2();
+        floor21 = new GUI.FrontDesk.DashboardPanels.Floor3();
         pageCounter1 = new javax.swing.JLabel();
-        pageCounter2 = new javax.swing.JLabel();
-        pageCounter3 = new javax.swing.JLabel();
+        leftBtn = new javax.swing.JLabel();
+        rightBtn = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -162,6 +173,7 @@ public class Dashboard extends javax.swing.JPanel {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Available Rooms");
 
+        jTable1.setBackground(new java.awt.Color(45, 45, 45));
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -173,10 +185,12 @@ public class Dashboard extends javax.swing.JPanel {
                 "Room No.", "Type", "Status", "Rate"
             }
         ));
+        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTable1.getTableHeader().setResizingAllowed(false);
         jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
 
-        RoomFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        RoomFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Room No.", "Available", "Occupied", "Status", "Rate" }));
 
         javax.swing.GroupLayout curvedPanel3Layout = new javax.swing.GroupLayout(curvedPanel3);
         curvedPanel3.setLayout(curvedPanel3Layout);
@@ -185,7 +199,7 @@ public class Dashboard extends javax.swing.JPanel {
             .addGroup(curvedPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 124, Short.MAX_VALUE)
                 .addComponent(RoomFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(curvedPanel3Layout.createSequentialGroup()
@@ -279,20 +293,31 @@ public class Dashboard extends javax.swing.JPanel {
         jPanel2.setPreferredSize(new java.awt.Dimension(869, 439));
         jPanel2.setLayout(new java.awt.CardLayout());
         jPanel2.add(floor11, "card2");
+        jPanel2.add(floor21, "card3");
 
         pageCounter1.setBackground(new java.awt.Color(212, 175, 55));
         pageCounter1.setForeground(new java.awt.Color(212, 175, 55));
-        pageCounter1.setText("Floor 1");
+        pageCounter1.setText("Floor 2");
 
-        pageCounter2.setBackground(new java.awt.Color(212, 175, 55));
-        pageCounter2.setForeground(new java.awt.Color(212, 175, 55));
-        pageCounter2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-chevron-left-26.png"))); // NOI18N
-        pageCounter2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        leftBtn.setBackground(new java.awt.Color(212, 175, 55));
+        leftBtn.setForeground(new java.awt.Color(212, 175, 55));
+        leftBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-chevron-left-26.png"))); // NOI18N
+        leftBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        leftBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                leftBtnMousePressed(evt);
+            }
+        });
 
-        pageCounter3.setBackground(new java.awt.Color(212, 175, 55));
-        pageCounter3.setForeground(new java.awt.Color(212, 175, 55));
-        pageCounter3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-chevron-right-26.png"))); // NOI18N
-        pageCounter3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        rightBtn.setBackground(new java.awt.Color(212, 175, 55));
+        rightBtn.setForeground(new java.awt.Color(212, 175, 55));
+        rightBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-chevron-right-26.png"))); // NOI18N
+        rightBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        rightBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                rightBtnMousePressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -314,11 +339,11 @@ public class Dashboard extends javax.swing.JPanel {
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(26, 26, 26))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(pageCounter2, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(leftBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pageCounter1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pageCounter3)
+                        .addComponent(rightBtn)
                         .addGap(407, 407, 407))))
         );
         layout.setVerticalGroup(
@@ -335,17 +360,33 @@ public class Dashboard extends javax.swing.JPanel {
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(12, 12, 12)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(pageCounter3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(rightBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(2, 2, 2)
                                 .addComponent(pageCounter1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(pageCounter2)))
+                            .addComponent(leftBtn)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(curvedPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 609, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 10, Short.MAX_VALUE)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void leftBtnMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_leftBtnMousePressed
+        if (currentFloor > 2) {
+        currentFloor--;
+        cardLayout.show(jPanel2, "Floor" + currentFloor);
+        pageCounter1.setText("Floor " + currentFloor);
+        }
+    }//GEN-LAST:event_leftBtnMousePressed
+
+    private void rightBtnMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rightBtnMousePressed
+        if (currentFloor < 3) {
+        currentFloor++;
+        cardLayout.show(jPanel2, "Floor" + currentFloor);
+        pageCounter1.setText("Floor " + currentFloor);
+    }
+    }//GEN-LAST:event_rightBtnMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -358,7 +399,8 @@ public class Dashboard extends javax.swing.JPanel {
     private CustomElements.CurvedPanel curvedPanel3;
     private CustomElements.CurvedPanel curvedPanel4;
     private CustomElements.CurvedPanel curvedPanel5;
-    private GUI.FrontDesk.DashboardPanels.Floor1 floor11;
+    private GUI.FrontDesk.DashboardPanels.Floor2 floor11;
+    private GUI.FrontDesk.DashboardPanels.Floor3 floor21;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
@@ -371,8 +413,8 @@ public class Dashboard extends javax.swing.JPanel {
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel leftBtn;
     private javax.swing.JLabel pageCounter1;
-    private javax.swing.JLabel pageCounter2;
-    private javax.swing.JLabel pageCounter3;
+    private javax.swing.JLabel rightBtn;
     // End of variables declaration//GEN-END:variables
 }

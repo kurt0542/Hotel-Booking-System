@@ -13,13 +13,13 @@ import java.sql.ResultSet;
  *
  * @author ADMIN
  */
-public class Floor1 extends javax.swing.JPanel {
+public class Floor2 extends javax.swing.JPanel {
 
     /**
      * Creates new form BasePanel
      */
     Connection conn;
-    public Floor1() {
+    public Floor2() {
        conn = DBConnection.connectDB();
         initComponents();
         initPanels();
@@ -32,8 +32,8 @@ public class Floor1 extends javax.swing.JPanel {
         };
 
         String sql = "SELECT TOP 15 rt.Room_Number, rt.Status, rt.CheckOut, rt.Room_Type, rr.Price_Rate " +
-                     "FROM RoomList AS rt " +
-                     "INNER JOIN Room_Rate AS rr ON rt.Room_Type = rr.Room_Type";
+             "FROM RoomList rt INNER JOIN Room_Rate rr ON rt.Room_Type = rr.Room_Type " +
+             "ORDER BY rt.Room_Number;";
 
         try(PreparedStatement pst = conn.prepareStatement(sql)){
             ResultSet rs = pst.executeQuery();

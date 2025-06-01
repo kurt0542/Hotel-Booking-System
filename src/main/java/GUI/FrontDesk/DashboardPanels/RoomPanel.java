@@ -30,12 +30,19 @@ public class RoomPanel extends javax.swing.JPanel {
     
     public void setStatus(String status){
         this.status = status;
+        if("Available".equals(status)){
+            jButton2.setText("Check-In");
+        }
         jLabel3.setText("Status: " + status);
     }
     
     public void setCheckOut(String checkOut){
         this.checkOut = checkOut;
+        if(checkOut == null || checkOut.trim().isEmpty()){
+        jLabel4.setText("Check-Out: ");
+    } else {
         jLabel4.setText("Check-Out: " + checkOut);
+    }
     }
     
     public void setRoomDetails(String price, String type){
@@ -74,6 +81,7 @@ public class RoomPanel extends javax.swing.JPanel {
         jButton2 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(42, 42, 42));
         setMaximumSize(new java.awt.Dimension(160, 132));
@@ -98,7 +106,7 @@ public class RoomPanel extends javax.swing.JPanel {
 
         jButton2.setBackground(new java.awt.Color(212, 171, 97));
         jButton2.setForeground(new java.awt.Color(19, 19, 19));
-        jButton2.setText("Check-Out");
+        jButton2.setText("Check-In");
         jButton2.setBorderPainted(false);
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
@@ -107,6 +115,12 @@ public class RoomPanel extends javax.swing.JPanel {
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-edit-22.png"))); // NOI18N
         jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        jButton3.setBackground(new java.awt.Color(212, 171, 97));
+        jButton3.setForeground(new java.awt.Color(19, 19, 19));
+        jButton3.setText("Check-Out");
+        jButton3.setBorderPainted(false);
+        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -129,7 +143,10 @@ public class RoomPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel5)))
+                        .addComponent(jLabel5))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(34, 34, 34)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -149,7 +166,10 @@ public class RoomPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
-                    .addComponent(jButton2))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3)))
                 .addGap(7, 7, 7))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -158,6 +178,7 @@ public class RoomPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private CustomElements.CurvedPanel curvedPanel1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -36,7 +36,6 @@ public class DrawerLayout extends SimpleDrawerBuilder {
         String menus[][] = {
             {"~MAIN~"},
             {"Dashboard"},
-            {"Notifications"},
             {"~MANAGEMENT~"},
             {"Guest Management", "Check-In","Check-Out", "Guest Records"},
             {"Room Management"},
@@ -78,9 +77,12 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                             mainFrame.showPanel("checkOut");
                         }
                         else if (index == 2 && subIndex == 3) {
-                            mainFrame.showPanel("guestRecords");
-                            
-                        }else if (index == 9 && subIndex == 0) {
+                            mainFrame.showPanel("guestRecords");  
+                        }
+                        else if(index == 3 && subIndex == 0){
+                            mainFrame.showPanel("Reservations");
+                        }
+                        else if (index == 9 && subIndex == 0) {
                           mainFrame.dispose();
                           new LoginPage().setVisible(true);
                         }

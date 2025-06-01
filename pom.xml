@@ -31,8 +31,13 @@
         <dependency>
             <groupId>net.sf.ucanaccess</groupId>
             <artifactId>ucanaccess</artifactId>
-            <version>3.0.1</version>
+            <version>5.0.1</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.dj-raven</groupId>
+            <artifactId>swing-datetime-picker</artifactId>
+            <version>2.1.1</version>
         </dependency>
     </dependencies>
     <properties>

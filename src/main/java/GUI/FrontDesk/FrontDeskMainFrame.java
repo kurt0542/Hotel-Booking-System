@@ -42,6 +42,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         contentPanel.add(checkOut1, "checkOut");
         contentPanel.add(guestRecords1, "guestRecords");
         contentPanel.add(dashboard1, "Dashboard");
+        contentPanel.add(reservations2,"Reservations");
     }
     
 
@@ -49,6 +50,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        reservations1 = new GUI.FrontDesk.Management.Reservations();
         header = new javax.swing.JPanel();
         CompanyLogo = new javax.swing.JLabel();
         LogoLabel = new javax.swing.JLabel();
@@ -58,6 +60,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         checkOut1 = new GUI.FrontDesk.Management.GuestManagement.CheckOut();
         guestRecords1 = new GUI.FrontDesk.Management.GuestManagement.GuestRecords();
         dashboard1 = new GUI.FrontDesk.Dashboard();
+        reservations2 = new GUI.FrontDesk.Management.Reservations();
         divider = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -109,6 +112,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         contentPanel.add(checkOut1, "card3");
         contentPanel.add(guestRecords1, "card4");
         contentPanel.add(dashboard1, "card5");
+        contentPanel.add(reservations2, "card6");
 
         divider.setBackground(new java.awt.Color(212, 171, 97));
 
@@ -197,6 +201,8 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel divider;
     private GUI.FrontDesk.Management.GuestManagement.GuestRecords guestRecords1;
     private javax.swing.JPanel header;
+    private GUI.FrontDesk.Management.Reservations reservations1;
+    private GUI.FrontDesk.Management.Reservations reservations2;
     // End of variables declaration//GEN-END:variables
 }
 
