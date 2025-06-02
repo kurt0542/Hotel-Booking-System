@@ -70,6 +70,10 @@ public class Dashboard extends javax.swing.JPanel {
         jPanel2.add(floor11, "Floor2");
         jPanel2.add(floor21,"Floor3");
     }
+    
+    public void comboFilter(String sql){
+        
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

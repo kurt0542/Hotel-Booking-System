@@ -16,6 +16,10 @@ import raven.drawer.component.menu.SimpleMenuOption;
  */
 public class DrawerLayout extends SimpleDrawerBuilder {
     private FrontDeskMainFrame mainFrame;
+    private String employeeName;
+    public String getEmployeeName(){
+        return employeeName;
+    }
     public DrawerLayout(FrontDeskMainFrame mainFrame) {
         this.mainFrame = mainFrame;
 
@@ -62,8 +66,6 @@ public class DrawerLayout extends SimpleDrawerBuilder {
 
         return new SimpleMenuOption()
                 .setMenus(menus)
-//                .setIcons(icons)
-//                .setBaseIconPath("CustomElements/drawer/icon")
                 .setIconScale(0.45f)
                 .addMenuEvent(new MenuEvent() {
                     @Override

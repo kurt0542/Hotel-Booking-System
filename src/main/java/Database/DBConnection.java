@@ -5,28 +5,30 @@
 package Database;
 
 import java.io.File;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-/**
- *
- * @author ADMIN
- */
 public class DBConnection {
-    private static Connection conn;
-    public static Connection connectDB(){
-        try{
+    public static Connection connectDB() {
+        try {
             Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
-            URL resource = DBConnection.class.getResource("/HotelBookingSystem.accdb");
-            File file = new File(resource.toURI());
-            String dbPath = file.getAbsolutePath();
+
+            String projectRoot = System.getProperty("user.dir");
+            String dbPath = projectRoot + File.separator + "db" + File.separator + "HotelBookingSystem.accdb";
+
+            File dbFile = new File(dbPath);
+            if (!dbFile.exists()) {
+                System.err.println("Database file not found at: " + dbPath);
+                return null;
+            }
+
             Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + dbPath);
+
             return conn;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }    
+        }
     }
-    
 }
+

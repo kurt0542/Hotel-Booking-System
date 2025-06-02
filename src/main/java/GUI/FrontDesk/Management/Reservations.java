@@ -5,6 +5,7 @@
 package GUI.FrontDesk.Management;
 
 import Database.DBConnection;
+import GUI.LoginPage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,16 +33,40 @@ public class Reservations extends javax.swing.JPanel {
     }
 
     public void addReservation(){
-        String fullName = guestName.getText();         String contact = contactField.getText();
-        String email =  emailField.getText();          String checkIn = checkInDate.getText();
-        String checkOut = checkOutDate.getText();      String arrivalTime = estimatedArrivalPicker.getText();
+        
+        String fullName = guestName.getText();
+        String contact = contactField.getText();
+        String email = emailField.getText();
+        String checkIn = checkInDate.getText();
+        String checkOut = checkOutDate.getText();
+        String arrivalTime = estimatedArrivalPicker.getText();
         int numberOfRooms = (int) roomSpinner.getValue();
         int numberOfGuests = (int) guestSpinner.getValue();
         String note = notesTextArea.getText();
+
+        // room type
+        String isSingle = String.valueOf(singleCheck.isSelected());
+        String isDouble = String.valueOf(doubleCheck.isSelected());
+        String isTwin = String.valueOf(twinCheck.isSelected());
+        String isExecutive = String.valueOf(executiveCheck.isSelected()); // Fixed typo
+        String isDeluxe = String.valueOf(deluxeCheck.isSelected());
+        String isSuite = String.valueOf(suiteCheck.isSelected());
+        String isPresidential = String.valueOf(presidentialCheck.isSelected());
+
+        // room add ons
+        String isLaundry = String.valueOf(laundryCheck.isSelected());
+        String isBar = String.valueOf(barCheck.isSelected());
+        String isParking = String.valueOf(parkingCheck.isSelected());
+        String isAirport = String.valueOf(airportCheck.isSelected());
+        int extraBed = (int) extraBedSpinner.getValue();
+        int extraLinen = (int) extraLinenSpinner.getValue();
+
         String sql = "INSERT INTO Guest_Reservation (FullName, ContactNumber, Email, CheckIn_Date, CheckOut_Date, " +
-                 "Estimated_Arrival, NumberOfRooms, NumberOfGuests, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try(PreparedStatement pst = conn.prepareStatement(sql)){
+                     "Estimated_Arrival, NumberOfRooms, NumberOfGuests, Notes, ProcessedBy, Single, Double, Twin, Executive, " +
+                     "Deluxe, Suite, Presidential, Laundry, Parking, MiniBar, AirportPickUp, ExtraBed, ExtraLinen) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setString(1, fullName);
             pst.setString(2, contact);
             pst.setString(3, email);
@@ -51,11 +76,27 @@ public class Reservations extends javax.swing.JPanel {
             pst.setInt(7, numberOfRooms);
             pst.setInt(8, numberOfGuests);
             pst.setString(9, note);
-            
-            clearForm();
-            
-        }catch(Exception e){
-            
+            pst.setString(10, LoginPage.getEmployeeName());
+            pst.setString(11, isSingle);
+            pst.setString(12, isDouble);
+            pst.setString(13, isTwin);
+            pst.setString(14, isExecutive);
+            pst.setString(15, isDeluxe);
+            pst.setString(16, isSuite);
+            pst.setString(17, isPresidential);
+            pst.setString(18, isLaundry);
+            pst.setString(19, isParking);
+            pst.setString(20, isBar);
+            pst.setString(21, isAirport);
+            pst.setInt(22, extraBed);
+            pst.setInt(23, extraLinen);
+
+            pst.executeUpdate();
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
@@ -106,23 +147,21 @@ public class Reservations extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        DoubleCheck = new javax.swing.JCheckBox();
+        doubleCheck = new javax.swing.JCheckBox();
         singleCheck = new javax.swing.JCheckBox();
-        TwinCheck = new javax.swing.JCheckBox();
-        ExecuteiveCheck = new javax.swing.JCheckBox();
-        DeluxeCheck = new javax.swing.JCheckBox();
-        SuiteCheck = new javax.swing.JCheckBox();
-        PresedentialCheck = new javax.swing.JCheckBox();
+        twinCheck = new javax.swing.JCheckBox();
+        executiveCheck = new javax.swing.JCheckBox();
+        deluxeCheck = new javax.swing.JCheckBox();
+        suiteCheck = new javax.swing.JCheckBox();
+        presidentialCheck = new javax.swing.JCheckBox();
         jLabel20 = new javax.swing.JLabel();
         uncheckBtn = new javax.swing.JButton();
-        singleCheck1 = new javax.swing.JCheckBox();
-        DoubleCheck1 = new javax.swing.JCheckBox();
-        TwinCheck1 = new javax.swing.JCheckBox();
-        singleCheck2 = new javax.swing.JCheckBox();
-        singleCheck3 = new javax.swing.JCheckBox();
-        singleCheck4 = new javax.swing.JCheckBox();
-        jSpinner1 = new javax.swing.JSpinner();
-        jSpinner4 = new javax.swing.JSpinner();
+        laundryCheck = new javax.swing.JCheckBox();
+        barCheck = new javax.swing.JCheckBox();
+        parkingCheck = new javax.swing.JCheckBox();
+        airportCheck = new javax.swing.JCheckBox();
+        extraLinenSpinner = new javax.swing.JSpinner();
+        extraBedSpinner = new javax.swing.JSpinner();
         clearBtn = new javax.swing.JButton();
         ReserveBtn = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
@@ -142,6 +181,9 @@ public class Reservations extends javax.swing.JPanel {
         jScrollPane4 = new javax.swing.JScrollPane();
         jTextArea3 = new javax.swing.JTextArea();
         estimatedArrivalPicker = new javax.swing.JFormattedTextField();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        clearBtn1 = new javax.swing.JButton();
 
         jCheckBox1.setText("jCheckBox1");
 
@@ -214,24 +256,24 @@ public class Reservations extends javax.swing.JPanel {
         jLabel8.setForeground(new java.awt.Color(212, 171, 97));
         jLabel8.setText("Estimated Arrival:");
 
-        DoubleCheck.setText("Double");
-        DoubleCheck.addActionListener(new java.awt.event.ActionListener() {
+        doubleCheck.setText("Double");
+        doubleCheck.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DoubleCheckActionPerformed(evt);
+                doubleCheckActionPerformed(evt);
             }
         });
 
         singleCheck.setText("Single");
 
-        TwinCheck.setText("Twin");
+        twinCheck.setText("Twin");
 
-        ExecuteiveCheck.setText("Executive");
+        executiveCheck.setText("Executive");
 
-        DeluxeCheck.setText("Deluxe");
+        deluxeCheck.setText("Deluxe");
 
-        SuiteCheck.setText("Suite");
+        suiteCheck.setText("Suite");
 
-        PresedentialCheck.setText("Presidential");
+        presidentialCheck.setText("Presidential");
 
         jLabel20.setForeground(new java.awt.Color(212, 171, 97));
         jLabel20.setText("Add-Ons / Extra Services:");
@@ -243,24 +285,20 @@ public class Reservations extends javax.swing.JPanel {
             }
         });
 
-        singleCheck1.setText("Laundry Service");
+        laundryCheck.setText("Laundry Service");
 
-        DoubleCheck1.setText("Mini Bar Access");
-        DoubleCheck1.addActionListener(new java.awt.event.ActionListener() {
+        barCheck.setText("Mini Bar Access");
+        barCheck.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DoubleCheck1ActionPerformed(evt);
+                barCheckActionPerformed(evt);
             }
         });
 
-        TwinCheck1.setText("Parking");
+        parkingCheck.setText("Parking");
 
-        singleCheck2.setText("Airport Pick-up");
+        airportCheck.setText("Airport Pick-up");
 
-        singleCheck3.setText("Extra Bed");
-
-        singleCheck4.setText("Extra Linen");
-
-        clearBtn.setText("Clear all");
+        clearBtn.setText("Process Payment");
         clearBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 clearBtnMousePressed(evt);
@@ -320,135 +358,148 @@ public class Reservations extends javax.swing.JPanel {
         jTextArea3.setRows(5);
         jScrollPane4.setViewportView(jTextArea3);
 
+        jLabel25.setText("Extra Linen");
+
+        jLabel26.setText("Extra Bed");
+
+        clearBtn1.setText("Clear all");
+        clearBtn1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                clearBtn1MousePressed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(62, 62, 62)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(129, 129, 129)
+                .addComponent(jLabel4)
+                .addGap(101, 101, 101)
+                .addComponent(jLabel5)
+                .addGap(161, 161, 161)
+                .addComponent(jLabel6)
+                .addGap(115, 115, 115)
+                .addComponent(jLabel7)
+                .addGap(105, 105, 105)
+                .addComponent(jLabel8))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(62, 62, 62)
+                .addComponent(guestName, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(contactField, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(checkInDate, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(checkOutDate, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(estimatedArrivalPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(110, 110, 110)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel18)
+                    .addComponent(roomSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13)
+                    .addComponent(singleCheck)
+                    .addComponent(doubleCheck))
+                .addGap(19, 19, 19)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel17)
+                    .addComponent(guestSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(executiveCheck)
+                    .addComponent(deluxeCheck))
+                .addGap(21, 21, 21)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton7)
+                    .addComponent(presidentialCheck)
+                    .addComponent(uncheckBtn))
+                .addGap(89, 89, 89)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel22)
+                    .addComponent(laundryCheck)
+                    .addComponent(barCheck)
+                    .addComponent(parkingCheck))
+                .addGap(27, 27, 27)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(airportCheck)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel25, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(extraLinenSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(extraBedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(56, 56, 56)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(110, 110, 110)
+                .addComponent(twinCheck)
+                .addGap(72, 72, 72)
+                .addComponent(suiteCheck)
+                .addGap(523, 523, 523)
+                .addComponent(clearBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(clearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(ReserveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(84, 84, 84)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel12))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(2, 2, 2)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel20))))
+                .addGap(8, 8, 8)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(62, 62, 62)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(129, 129, 129)
-                        .addComponent(jLabel4)
-                        .addGap(101, 101, 101)
-                        .addComponent(jLabel5)
-                        .addGap(161, 161, 161)
-                        .addComponent(jLabel6)
-                        .addGap(115, 115, 115)
-                        .addComponent(jLabel7)
-                        .addGap(105, 105, 105)
-                        .addComponent(jLabel8))
+                        .addGap(2, 2, 2)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(58, 58, 58)
+                        .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(110, 110, 110)
-                        .addComponent(TwinCheck)
-                        .addGap(72, 72, 72)
-                        .addComponent(SuiteCheck)
-                        .addGap(661, 661, 661)
-                        .addComponent(clearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(20, 20, 20)
-                        .addComponent(ReserveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(80, 80, 80)
+                        .addComponent(jLabel23))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(84, 84, 84)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel12))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(12, 12, 12)
-                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(2, 2, 2)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel20)
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                                .addGap(31, 31, 31)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(88, 88, 88)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel23)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(62, 62, 62)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(guestName, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(contactField, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(checkInDate, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(checkOutDate, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(estimatedArrivalPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel18)
-                                    .addComponent(roomSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel13)
-                                    .addComponent(singleCheck)
-                                    .addComponent(DoubleCheck))
-                                .addGap(19, 19, 19)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel17)
-                                    .addComponent(guestSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(ExecuteiveCheck)
-                                    .addComponent(DeluxeCheck))
-                                .addGap(21, 21, 21)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton7)
-                                    .addComponent(PresedentialCheck)
-                                    .addComponent(uncheckBtn))
-                                .addGap(89, 89, 89)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel22)
-                                    .addComponent(singleCheck1)
-                                    .addComponent(DoubleCheck1)
-                                    .addComponent(TwinCheck1))
-                                .addGap(27, 27, 27)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(singleCheck2)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(singleCheck3)
-                                        .addGap(28, 28, 28)
-                                        .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(singleCheck4)
-                                        .addGap(19, 19, 19)
-                                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(56, 56, 56)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addGap(78, 78, 78))
+                        .addGap(80, 80, 80)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -468,10 +519,9 @@ public class Reservations extends javax.swing.JPanel {
                     .addComponent(guestName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(contactField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(checkOutDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(checkInDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(estimatedArrivalPicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(checkInDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(checkOutDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(estimatedArrivalPicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(13, 13, 13)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -483,52 +533,57 @@ public class Reservations extends javax.swing.JPanel {
                         .addGap(14, 14, 14)
                         .addComponent(singleCheck)
                         .addGap(10, 10, 10)
-                        .addComponent(DoubleCheck))
+                        .addComponent(doubleCheck))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel17)
                         .addGap(4, 4, 4)
                         .addComponent(guestSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(48, 48, 48)
-                        .addComponent(ExecuteiveCheck)
+                        .addComponent(executiveCheck)
                         .addGap(10, 10, 10)
-                        .addComponent(DeluxeCheck))
+                        .addComponent(deluxeCheck))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(20, 20, 20)
                         .addComponent(jButton7)
                         .addGap(47, 47, 47)
-                        .addComponent(PresedentialCheck)
+                        .addComponent(presidentialCheck)
                         .addGap(10, 10, 10)
                         .addComponent(uncheckBtn))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(jLabel22)
                         .addGap(14, 14, 14)
-                        .addComponent(singleCheck1)
+                        .addComponent(laundryCheck)
                         .addGap(10, 10, 10)
-                        .addComponent(DoubleCheck1)
+                        .addComponent(barCheck)
                         .addGap(10, 10, 10)
-                        .addComponent(TwinCheck1))
+                        .addComponent(parkingCheck))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(40, 40, 40)
-                        .addComponent(singleCheck2)
+                        .addComponent(airportCheck)
                         .addGap(10, 10, 10)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(singleCheck3)
-                            .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(8, 8, 8)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(singleCheck4)
-                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(extraBedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel26))
+                                .addGap(8, 8, 8)
+                                .addComponent(extraLinenSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel25))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(jLabel15)
-                        .addGap(14, 14, 14)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(7, 7, 7)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(TwinCheck)
-                    .addComponent(SuiteCheck)
-                    .addComponent(clearBtn)
+                    .addComponent(twinCheck)
+                    .addComponent(suiteCheck)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(clearBtn)
+                        .addComponent(clearBtn1))
                     .addComponent(ReserveBtn))
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -547,31 +602,27 @@ public class Reservations extends javax.swing.JPanel {
                             .addComponent(jButton1)
                             .addComponent(jButton3)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addGap(15, 15, 15)
+                        .addComponent(jLabel16)
+                        .addGap(47, 47, 47)
+                        .addComponent(jLabel20)
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel9)
-                                    .addComponent(jLabel2))
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(15, 15, 15)
-                                        .addComponent(jLabel16))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel1)
-                                            .addComponent(jLabel21))))
-                                .addGap(44, 44, 44)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel20)
-                                    .addComponent(jLabel23)))
+                            .addComponent(jLabel2)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(1, 1, 1)
                                 .addComponent(jLabel19)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(17, 17, 17)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel21))
+                        .addGap(44, 44, 44)
+                        .addComponent(jLabel23)
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -586,24 +637,24 @@ public class Reservations extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void DoubleCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DoubleCheckActionPerformed
+    private void doubleCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doubleCheckActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_DoubleCheckActionPerformed
+    }//GEN-LAST:event_doubleCheckActionPerformed
 
     private void uncheckBtnMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_uncheckBtnMousePressed
 
-       DoubleCheck.setSelected(false);
+       doubleCheck.setSelected(false);
        singleCheck.setSelected(false);
-       TwinCheck.setSelected(false);
-       ExecuteiveCheck.setSelected(false);
-       DeluxeCheck.setSelected(false);
-       SuiteCheck.setSelected(false);
-       PresedentialCheck.setSelected(false);
+       twinCheck.setSelected(false);
+       executiveCheck.setSelected(false);
+       deluxeCheck.setSelected(false);
+       suiteCheck.setSelected(false);
+       presidentialCheck.setSelected(false);
     }//GEN-LAST:event_uncheckBtnMousePressed
 
-    private void DoubleCheck1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DoubleCheck1ActionPerformed
+    private void barCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_barCheckActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_DoubleCheck1ActionPerformed
+    }//GEN-LAST:event_barCheckActionPerformed
 
     private void jButton7MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MousePressed
         // TODO add your handling code here:
@@ -614,26 +665,30 @@ public class Reservations extends javax.swing.JPanel {
     }//GEN-LAST:event_clearBtnMousePressed
 
     private void ReserveBtnMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ReserveBtnMousePressed
-        // TODO add your handling code here:
+        addReservation();
     }//GEN-LAST:event_ReserveBtnMousePressed
+
+    private void clearBtn1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clearBtn1MousePressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_clearBtn1MousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox DeluxeCheck;
-    private javax.swing.JCheckBox DoubleCheck;
-    private javax.swing.JCheckBox DoubleCheck1;
-    private javax.swing.JCheckBox ExecuteiveCheck;
-    private javax.swing.JCheckBox PresedentialCheck;
     private javax.swing.JButton ReserveBtn;
-    private javax.swing.JCheckBox SuiteCheck;
-    private javax.swing.JCheckBox TwinCheck;
-    private javax.swing.JCheckBox TwinCheck1;
+    private javax.swing.JCheckBox airportCheck;
+    private javax.swing.JCheckBox barCheck;
     private javax.swing.JFormattedTextField checkInDate;
     private javax.swing.JFormattedTextField checkOutDate;
     private javax.swing.JButton clearBtn;
+    private javax.swing.JButton clearBtn1;
     private javax.swing.JTextField contactField;
+    private javax.swing.JCheckBox deluxeCheck;
+    private javax.swing.JCheckBox doubleCheck;
     private javax.swing.JTextField emailField;
     private javax.swing.JFormattedTextField estimatedArrivalPicker;
+    private javax.swing.JCheckBox executiveCheck;
+    private javax.swing.JSpinner extraBedSpinner;
+    private javax.swing.JSpinner extraLinenSpinner;
     private javax.swing.JTextField guestName;
     private javax.swing.JSpinner guestSpinner;
     private javax.swing.JButton jButton1;
@@ -656,6 +711,8 @@ public class Reservations extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -668,19 +725,18 @@ public class Reservations extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JSpinner jSpinner4;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea3;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JCheckBox laundryCheck;
     private javax.swing.JTextArea notesTextArea;
+    private javax.swing.JCheckBox parkingCheck;
+    private javax.swing.JCheckBox presidentialCheck;
     private javax.swing.JSpinner roomSpinner;
     private javax.swing.JCheckBox singleCheck;
-    private javax.swing.JCheckBox singleCheck1;
-    private javax.swing.JCheckBox singleCheck2;
-    private javax.swing.JCheckBox singleCheck3;
-    private javax.swing.JCheckBox singleCheck4;
+    private javax.swing.JCheckBox suiteCheck;
+    private javax.swing.JCheckBox twinCheck;
     private javax.swing.JButton uncheckBtn;
     // End of variables declaration//GEN-END:variables
 }
