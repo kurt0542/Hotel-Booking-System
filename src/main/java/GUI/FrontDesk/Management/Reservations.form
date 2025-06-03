@@ -154,9 +154,7 @@
               <Group type="102" attributes="0">
                   <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
                   <Component id="jLabel10" min="-2" pref="168" max="-2" attributes="0"/>
-                  <EmptySpace min="84" pref="84" max="-2" attributes="0"/>
-                  <Component id="jTextField1" min="-2" pref="200" max="-2" attributes="0"/>
-                  <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="302" max="-2" attributes="0"/>
                   <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
               </Group>
               <Group type="102" attributes="0">
@@ -310,13 +308,9 @@
                   <EmptySpace min="20" pref="20" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                      <Group type="102" attributes="0">
-                          <EmptySpace min="2" pref="2" max="-2" attributes="0"/>
-                          <Component id="jTextField1" min="-2" max="-2" attributes="0"/>
-                      </Group>
                       <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <Component id="jScrollPane1" min="-2" pref="254" max="-2" attributes="0"/>
@@ -374,7 +368,7 @@
                     <Column editable="true" title="Reservation ID" type="java.lang.Object"/>
                     <Column editable="true" title="Guest Name" type="java.lang.Object"/>
                     <Column editable="true" title="Check-In Date" type="java.lang.Object"/>
-                    <Column editable="true" title="Payment Status" type="java.lang.Object"/>
+                    <Column editable="true" title="Check-Out Date" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -419,8 +413,6 @@
             <Property name="text" type="java.lang.String" value="Reserved Guests:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField1">
-        </Component>
         <Component class="javax.swing.JLabel" name="jLabel11">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -452,6 +444,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Remove Reservation"/>
           </Properties>
+          <Events>
+            <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jButton2MousePressed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButton3">
           <Properties>
@@ -717,7 +712,7 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="61" green="ab" red="d4" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Processed by:"/>
+            <Property name="text" type="java.lang.String" value="Check-In Date:"/>
           </Properties>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane3">

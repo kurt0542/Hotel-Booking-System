@@ -5,12 +5,19 @@
 package GUI.FrontDesk.Management;
 
 import Database.DBConnection;
-import GUI.LoginPage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import raven.datetime.DatePicker;
 import raven.datetime.TimePicker;
+import raven.toast.Notifications;
 
 /**
  *
@@ -30,9 +37,14 @@ public class Reservations extends javax.swing.JPanel {
         datePicker1.setEditor(checkOutDate);
         datePicker2.setEditor(checkInDate);
         timePicker.setEditor(estimatedArrivalPicker);
+        displayData();
     }
-
-    public void addReservation(){
+    
+    private void errorNotif(String message){
+        Notifications.getInstance().show(Notifications.Type.ERROR, Notifications.Location.BOTTOM_RIGHT, message);
+    }
+    
+    private void addReservation(){
         
         String fullName = guestName.getText();
         String contact = contactField.getText();
@@ -60,12 +72,90 @@ public class Reservations extends javax.swing.JPanel {
         String isAirport = String.valueOf(airportCheck.isSelected());
         int extraBed = (int) extraBedSpinner.getValue();
         int extraLinen = (int) extraLinenSpinner.getValue();
+        
+        boolean hasRoomType = singleCheck.isSelected() || doubleCheck.isSelected() || 
+                             twinCheck.isSelected() || executiveCheck.isSelected() || 
+                             deluxeCheck.isSelected() || suiteCheck.isSelected() || 
+                             presidentialCheck.isSelected();        
 
-        String sql = "INSERT INTO Guest_Reservation (FullName, ContactNumber, Email, CheckIn_Date, CheckOut_Date, " +
-                     "Estimated_Arrival, NumberOfRooms, NumberOfGuests, Notes, ProcessedBy, Single, Double, Twin, Executive, " +
+         if (fullName.isEmpty() || contact.isEmpty() || email.isEmpty()) {
+             errorNotif("Please fill all of the fields");
+             return;
+        }
+        else {
+             if(fullName.length() < 2 || fullName.length() > 100) {
+            errorNotif("Full name must be between 2-100 characters");
+            return;
+            } else if (!contact.matches("^09[0-9]{9}$")) {
+                errorNotif("Invalid contact number format");
+                return;
+            } else if (!email.matches(".*@.*\\..*")) {
+                errorNotif("Invalid email format");
+                return;
+            }
+        }
+        
+        if (checkIn.isEmpty()) {
+            errorNotif("Check-in date is required");
+            return;
+        }
+        
+        if (checkOut.isEmpty()) {
+            errorNotif("Check-out date is required");
+            return;
+        }
+        
+            if (!checkIn.isEmpty() && !checkOut.isEmpty() && 
+                !checkIn.equals("--/--/----") && !checkOut.equals("--/--/----")) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDate checkInLocalDate = LocalDate.parse(checkIn, formatter);
+                    LocalDate checkOutLocalDate = LocalDate.parse(checkOut, formatter);
+                    LocalDate today = LocalDate.now();
+
+                    if (checkInLocalDate.isBefore(today)) {
+                        errorNotif("Check-in date cannot be in the past");
+                        return;
+                    }
+
+                    if (checkOutLocalDate.isBefore(checkInLocalDate) || checkOutLocalDate.isEqual(checkInLocalDate)) {
+                        errorNotif("Check-out date must be after check-in date");
+                        return;
+                    }
+                } catch (DateTimeParseException e) {
+                }
+            } else {
+                errorNotif("Please enter both check-in and check-out dates");
+                return;
+            }
+        
+        if (numberOfRooms <= 0) {
+            errorNotif("Number of rooms must be greater than 0");
+            return;
+        }
+        if (numberOfGuests <= 0) {
+            errorNotif("Number of guests must be greater than 0");
+            return;
+        }  
+        if (!hasRoomType) {
+            errorNotif("Please select at least one room type");
+            return;
+        }
+        if (extraBed < 0 || extraBed > 3) {
+            errorNotif("Extra linen must be between 0-3");
+            return;
+        }
+        if (extraLinen < 0 || extraLinen > 6) {
+            errorNotif("Extra linen must be between 0-6");
+            return;
+        }
+        
+        
+    String sql = "INSERT INTO Guest_Reservation (FullName, ContactNumber, Email, CheckIn_Date, CheckOut_Date, " +
+                     "Estimated_Arrival, NumberOfRooms, NumberOfGuests, Notes, Single, Double, Twin, Executive, " +
                      "Deluxe, Suite, Presidential, Laundry, Parking, MiniBar, AirportPickUp, ExtraBed, ExtraLinen) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
         try (PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setString(1, fullName);
             pst.setString(2, contact);
@@ -76,30 +166,29 @@ public class Reservations extends javax.swing.JPanel {
             pst.setInt(7, numberOfRooms);
             pst.setInt(8, numberOfGuests);
             pst.setString(9, note);
-            pst.setString(10, LoginPage.getEmployeeName());
-            pst.setString(11, isSingle);
-            pst.setString(12, isDouble);
-            pst.setString(13, isTwin);
-            pst.setString(14, isExecutive);
-            pst.setString(15, isDeluxe);
-            pst.setString(16, isSuite);
-            pst.setString(17, isPresidential);
-            pst.setString(18, isLaundry);
-            pst.setString(19, isParking);
-            pst.setString(20, isBar);
-            pst.setString(21, isAirport);
-            pst.setInt(22, extraBed);
-            pst.setInt(23, extraLinen);
-
-            pst.executeUpdate();
-
-
-
+            pst.setString(10, isSingle);
+            pst.setString(11, isDouble);
+            pst.setString(12, isTwin);
+            pst.setString(13, isExecutive);
+            pst.setString(14, isDeluxe);
+            pst.setString(15, isSuite);
+            pst.setString(16, isPresidential);
+            pst.setString(17, isLaundry);
+            pst.setString(18, isParking);
+            pst.setString(19, isBar);
+            pst.setString(20, isAirport);
+            pst.setInt(21, extraBed);
+            pst.setInt(22, extraLinen);
+            
+            pst.executeUpdate();  
+            clearForm();
+            displayData();
+            Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.BOTTOM_RIGHT, "Successfully added Reservation!");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+     
     private void clearForm(){
     guestName.setText("");
     contactField.setText("");
@@ -110,7 +199,72 @@ public class Reservations extends javax.swing.JPanel {
     roomSpinner.setValue(1);
     guestSpinner.setValue(1);
     notesTextArea.setText("");
-}
+    }
+    
+    private void displayData(){
+        String sql = "SELECT * FROM Guest_Reservation";
+        try(PreparedStatement pst = conn.prepareStatement(sql)){
+            DefaultTableModel dt = (DefaultTableModel) jTable1.getModel();
+            dt.setRowCount(0);
+                    ResultSet rs = pst.executeQuery();
+
+            while(rs.next()){
+                String reservationNumber = String.format("R%05d", rs.getInt("ReservationID"));
+                String guestName = rs.getString("FullName");
+                String checkInDate = rs.getString("CheckIn_Date");
+                String checkOutDate = rs.getString("CheckOut_Date");
+
+
+                dt.addRow(new Object[]{reservationNumber, guestName, checkInDate,  checkOutDate});
+            }
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < jTable1.getColumnCount(); i++) {
+                jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        
+    }
+    
+    private void deleteFunction() {
+        int rowcount = jTable1.getSelectedRow();
+
+        // Check if a row is selected
+        if (rowcount == -1) {
+            errorNotif("Please select a reservation to delete.");
+            return;
+        }
+
+        String selection = jTable1.getModel().getValueAt(rowcount, 0).toString();
+        int confirm = JOptionPane.showConfirmDialog(null,
+                "Are you sure you want to delete reservation " + selection + "?",
+                "Confirm Deletion",
+                JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        String sql = "DELETE FROM Guest_Reservation WHERE ReservationID = ?";
+
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            int rawId = Integer.parseInt(selection.substring(1)); 
+
+            pst.setInt(1, rawId);
+            int rowsAffected = pst.executeUpdate();
+
+            if (rowsAffected > 0) {
+                Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.BOTTOM_RIGHT, "Reservation deleted successfully!");
+                displayData(); 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            errorNotif("Error deleting reservation.");
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -125,7 +279,6 @@ public class Reservations extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel10 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
@@ -200,7 +353,7 @@ public class Reservations extends javax.swing.JPanel {
                 {null, null, null, null}
             },
             new String [] {
-                "Reservation ID", "Guest Name", "Check-In Date", "Payment Status"
+                "Reservation ID", "Guest Name", "Check-In Date", "Check-Out Date"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
@@ -220,6 +373,11 @@ public class Reservations extends javax.swing.JPanel {
         jButton1.setText("Edit");
 
         jButton2.setText("Remove Reservation");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jButton2MousePressed(evt);
+            }
+        });
 
         jButton3.setText("Check-In");
 
@@ -339,7 +497,7 @@ public class Reservations extends javax.swing.JPanel {
         jLabel19.setText("Contact Number:");
 
         jLabel21.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel21.setText("Processed by:");
+        jLabel21.setText("Check-In Date:");
 
         notesTextArea.setColumns(20);
         notesTextArea.setRows(5);
@@ -460,9 +618,7 @@ public class Reservations extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(84, 84, 84)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(302, 302, 302)
                 .addComponent(jLabel12))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
@@ -588,11 +744,8 @@ public class Reservations extends javax.swing.JPanel {
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel10)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel12))
-                .addGap(12, 12, 12)
+                .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -672,6 +825,10 @@ public class Reservations extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_clearBtn1MousePressed
 
+    private void jButton2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MousePressed
+        deleteFunction();
+    }//GEN-LAST:event_jButton2MousePressed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ReserveBtn;
@@ -728,7 +885,6 @@ public class Reservations extends javax.swing.JPanel {
     private javax.swing.JTable jTable1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea3;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JCheckBox laundryCheck;
     private javax.swing.JTextArea notesTextArea;
     private javax.swing.JCheckBox parkingCheck;

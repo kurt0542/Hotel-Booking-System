@@ -10,9 +10,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.CardLayout;
 import raven.drawer.Drawer;
 import raven.popup.GlassPanePopup;
-
-
-
+import raven.toast.Notifications;
 /**
  *
  * @author ADMIN
@@ -21,6 +19,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
     CardLayout cardLayout;
 
     public FrontDeskMainFrame() {
+        Notifications.getInstance().setJFrame(this);
         initComponents();
         initDrawer();
         initLayout();
