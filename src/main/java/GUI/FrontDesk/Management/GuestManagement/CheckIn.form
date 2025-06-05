@@ -68,21 +68,24 @@
                           <EmptySpace pref="339" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jLabel4" min="-2" pref="142" max="-2" attributes="0"/>
-                              <Component id="guestName2" min="-2" pref="210" max="-2" attributes="0"/>
+                              <Component id="emailField" min="-2" pref="210" max="-2" attributes="0"/>
                               <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                              <Component id="jComboBox1" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
+                              <Component id="idTypeCombo" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="guestName3" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                              <Component id="jLabel6" alignment="0" min="-2" pref="142" max="-2" attributes="0"/>
-                              <Component id="jLabel12" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="jComboBox2" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="guestName4" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
-                              <Component id="jLabel7" alignment="0" min="-2" pref="142" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="jLabel6" min="-2" pref="142" max="-2" attributes="0"/>
+                                      <Component id="birthField" min="-2" pref="210" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="nationalityField" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
+                                      <Component id="jLabel7" alignment="0" min="-2" pref="142" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Component id="infoClearBtn" min="-2" pref="120" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
@@ -116,7 +119,7 @@
                                                   <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="jLabel13" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="jComboBox3" alignment="0" pref="210" max="32767" attributes="0"/>
-                                                  <Component id="guestName" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="guestField" alignment="0" max="32767" attributes="0"/>
                                                   <Component id="jLabel2" alignment="0" max="32767" attributes="0"/>
                                               </Group>
                                               <Component id="jSpinner3" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -124,9 +127,9 @@
                                           <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Component id="jLabel9" alignment="0" min="-2" pref="142" max="-2" attributes="0"/>
-                                              <Component id="guestName5" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
+                                              <Component id="idNumberField" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                                               <Component id="jLabel3" min="-2" pref="142" max="-2" attributes="0"/>
-                                              <Component id="guestName1" min="-2" pref="210" max="-2" attributes="0"/>
+                                              <Component id="contactField" min="-2" pref="210" max="-2" attributes="0"/>
                                               <Component id="jLabel22" alignment="0" min="-2" max="-2" attributes="0"/>
                                               <Component id="jComboBox5" alignment="0" min="-2" pref="210" max="-2" attributes="0"/>
                                           </Group>
@@ -221,9 +224,9 @@
                           </Group>
                           <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="guestName3" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="guestName4" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="guestName2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="nationalityField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="emailField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="birthField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
@@ -232,9 +235,9 @@
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                                  <Component id="guestName" min="-2" max="-2" attributes="0"/>
+                                  <Component id="guestField" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="guestName1" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="contactField" alignment="1" min="-2" max="-2" attributes="0"/>
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
@@ -247,27 +250,18 @@
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
                               <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" attributes="0">
-                                          <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
-                                          <Group type="103" groupAlignment="3" attributes="0">
-                                              <Component id="maleRadio" alignment="3" min="-2" max="-2" attributes="0"/>
-                                              <Component id="femaleRadio" alignment="3" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                      </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jComboBox2" min="-2" max="-2" attributes="0"/>
-                                      </Group>
+                                  <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="maleRadio" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="femaleRadio" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                                  <Component id="guestName5" min="-2" max="-2" attributes="0"/>
+                                  <Component id="idNumberField" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="32767" attributes="0"/>
                               </Group>
                           </Group>
@@ -298,8 +292,11 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jComboBox1" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="idTypeCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="infoClearBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
                           <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="guestName6" min="-2" max="-2" attributes="0"/>
@@ -393,7 +390,7 @@
             <Property name="text" type="java.lang.String" value="Room Details:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="guestName">
+        <Component class="javax.swing.JTextField" name="guestField">
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
           <Properties>
@@ -411,9 +408,9 @@
             <Property name="text" type="java.lang.String" value="Contact Number:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="guestName1">
+        <Component class="javax.swing.JTextField" name="contactField">
         </Component>
-        <Component class="javax.swing.JTextField" name="guestName2">
+        <Component class="javax.swing.JTextField" name="emailField">
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel4">
           <Properties>
@@ -447,8 +444,6 @@
             <Property name="text" type="java.lang.String" value="Gender:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="guestName3">
-        </Component>
         <Component class="javax.swing.JLabel" name="jLabel6">
           <Properties>
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -457,7 +452,7 @@
             <Property name="text" type="java.lang.String" value="Date of Birth:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="guestName4">
+        <Component class="javax.swing.JTextField" name="nationalityField">
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel7">
           <Properties>
@@ -475,17 +470,20 @@
             <Property name="text" type="java.lang.String" value="ID Type:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox1">
+        <Component class="javax.swing.JComboBox" name="idTypeCombo">
           <Properties>
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="61" green="ab" red="d4" type="rgb"/>
             </Property>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="4">
-                <StringItem index="0" value="Item 1"/>
-                <StringItem index="1" value="Item 2"/>
-                <StringItem index="2" value="Item 3"/>
-                <StringItem index="3" value="Item 4"/>
+              <StringArray count="7">
+                <StringItem index="0" value="Passport"/>
+                <StringItem index="1" value="National ID "/>
+                <StringItem index="2" value="Driver&#x2019;s License"/>
+                <StringItem index="3" value="SSS ID / UMID Card "/>
+                <StringItem index="4" value="GSIS ID / UMID Card"/>
+                <StringItem index="5" value="PRC ID"/>
+                <StringItem index="6" value="Voter&#x2019;s ID / Voter&#x2019;s Certification "/>
               </StringArray>
             </Property>
           </Properties>
@@ -493,7 +491,7 @@
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JTextField" name="guestName5">
+        <Component class="javax.swing.JTextField" name="idNumberField">
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel9">
           <Properties>
@@ -512,32 +510,6 @@
               <Color blue="61" green="ab" red="d4" type="rgb"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Guest Information:"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox2">
-          <Properties>
-            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="61" green="ab" red="d4" type="rgb"/>
-            </Property>
-            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="4">
-                <StringItem index="0" value="Item 1"/>
-                <StringItem index="1" value="Item 2"/>
-                <StringItem index="2" value="Item 3"/>
-                <StringItem index="3" value="Item 4"/>
-              </StringArray>
-            </Property>
-          </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-          </AuxValues>
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabel12">
-          <Properties>
-            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="61" green="ab" red="d4" type="rgb"/>
-            </Property>
-            <Property name="text" type="java.lang.String" value="Booking Source:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JComboBox" name="jComboBox3">
@@ -845,6 +817,16 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Clear All"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="infoClearBtn">
+          <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="61" green="ab" red="d4" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Clear All"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JFormattedTextField" name="birthField">
         </Component>
       </SubComponents>
     </Container>

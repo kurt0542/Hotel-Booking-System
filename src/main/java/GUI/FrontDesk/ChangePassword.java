@@ -4,21 +4,85 @@
  */
 package GUI.FrontDesk;
 
+import Database.DBConnection;
+import GUI.LoginPage;
 import com.formdev.flatlaf.FlatLightLaf;
+import customElements.drawer.DrawerLayout;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author ADMIN
  */
 public class ChangePassword extends javax.swing.JFrame {
-
+    
     /**
      * Creates new form ChangePassword
      */
+    Connection conn;
     public ChangePassword() {
+        conn = DBConnection.connectDB();
         initComponents();
     }
 
+     private void changePassword(){
+        String username = LoginPage.getEmployeeUsername();
+        String oldPassword = String.valueOf(jPasswordField1.getPassword());
+        String newPassword = String.valueOf(jPasswordField2.getPassword());
+        String confirmPassword = String.valueOf(jPasswordField3.getPassword());
+        
+        if(oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()){
+        JOptionPane.showMessageDialog(this, "All password fields must be filled!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+        }
+
+        if(!newPassword.equals(confirmPassword)){
+            JOptionPane.showMessageDialog(this, "New password and confirm password do not match!","Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if(oldPassword.equals(newPassword)){
+            JOptionPane.showMessageDialog(this, "New password must be different from the old password!","Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    
+    String verifyOldPasswordSQL = "SELECT Password FROM LoginInfo WHERE Username = ?";
+    try(PreparedStatement verifyPst = conn.prepareStatement(verifyOldPasswordSQL)){
+        verifyPst.setString(1, username);
+        ResultSet rs = verifyPst.executeQuery();
+        
+        if(rs.next()){
+            String currentPassword = rs.getString("Password");
+            if(!currentPassword.equals(oldPassword)){
+                JOptionPane.showMessageDialog(this, "Current password is incorrect!", "Authentication Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "User not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    } catch(Exception e){
+        JOptionPane.showMessageDialog(this, "Error verifying current password: " + e.getMessage(), 
+                                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+        return;
+    }
+    
+        String sql = "UPDATE LoginInfo SET Password = '"+ newPassword +"' WHERE Username = '" + username + "'";
+        try(PreparedStatement pst = conn.prepareStatement(sql)){
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Password changed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            jPasswordField1.setText("");
+            jPasswordField2.setText("");
+            jPasswordField3.setText("");
+            this.dispose();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -29,14 +93,14 @@ public class ChangePassword extends javax.swing.JFrame {
     private void initComponents() {
 
         imagePanel1 = new CustomElements.ImagePanel();
-        jTextField1 = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        jPasswordField1 = new javax.swing.JPasswordField();
+        jPasswordField2 = new javax.swing.JPasswordField();
+        jPasswordField3 = new javax.swing.JPasswordField();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -44,16 +108,39 @@ public class ChangePassword extends javax.swing.JFrame {
         jLabel11.setForeground(new java.awt.Color(212, 171, 97));
         jLabel11.setText("Change Password");
 
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setForeground(new java.awt.Color(212, 171, 97));
         jLabel1.setText("Old Password:");
 
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setForeground(new java.awt.Color(212, 171, 97));
         jLabel2.setText("New Password:");
 
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setForeground(new java.awt.Color(212, 171, 97));
         jLabel3.setText("Confirm Your Password:");
 
-        jButton1.setText("Change Password");
+        jPasswordField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPasswordField1ActionPerformed(evt);
+            }
+        });
+
+        jPasswordField2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPasswordField2ActionPerformed(evt);
+            }
+        });
+
+        jPasswordField3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPasswordField3ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Change Password");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout imagePanel1Layout = new javax.swing.GroupLayout(imagePanel1);
         imagePanel1.setLayout(imagePanel1Layout);
@@ -62,18 +149,18 @@ public class ChangePassword extends javax.swing.JFrame {
             .addGroup(imagePanel1Layout.createSequentialGroup()
                 .addGroup(imagePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(imagePanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(imagePanel1Layout.createSequentialGroup()
                         .addGap(73, 73, 73)
                         .addGroup(imagePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel1)
-                            .addComponent(jTextField1)
                             .addComponent(jLabel2)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
                             .addComponent(jLabel3)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(imagePanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jPasswordField1)
+                            .addComponent(jPasswordField2)
+                            .addComponent(jPasswordField3)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE))))
                 .addContainerGap(86, Short.MAX_VALUE))
         );
         imagePanel1Layout.setVerticalGroup(
@@ -84,18 +171,18 @@ public class ChangePassword extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPasswordField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addComponent(jButton2)
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -113,6 +200,22 @@ public class ChangePassword extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        changePassword();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
+        changePassword();
+    }//GEN-LAST:event_jPasswordField1ActionPerformed
+
+    private void jPasswordField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField2ActionPerformed
+        changePassword();
+    }//GEN-LAST:event_jPasswordField2ActionPerformed
+
+    private void jPasswordField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField3ActionPerformed
+        changePassword();
+    }//GEN-LAST:event_jPasswordField3ActionPerformed
+   
     /**
      * @param args the command line arguments
      */
@@ -150,13 +253,13 @@ public class ChangePassword extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private CustomElements.ImagePanel imagePanel1;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JPasswordField jPasswordField2;
+    private javax.swing.JPasswordField jPasswordField3;
     // End of variables declaration//GEN-END:variables
 }

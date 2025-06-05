@@ -1,5 +1,6 @@
 package customElements.drawer;
 
+import GUI.FrontDesk.ChangePassword;
 import GUI.FrontDesk.FrontDeskMainFrame;
 import GUI.LoginPage;
 import raven.drawer.component.SimpleDrawerBuilder;
@@ -84,9 +85,8 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                         else if(index == 3 && subIndex == 0){
                             mainFrame.showPanel("Reservations");
                         }
-                        else if (index == 7 && subIndex == 0) {
-                          mainFrame.dispose();
-                          new LoginPage().setVisible(true);
+                        else if (index == 7 && subIndex == 0) {    
+                          new ChangePassword().setVisible(true);
                         }
                         if(index == 1 && subIndex == 0){
                             

@@ -18,8 +18,7 @@ import javax.swing.JOptionPane;
  * @author ADMIN
  */
 public class LoginPage extends javax.swing.JFrame {
-    private static String EmployeeName;
-    private static String role;
+    private static String employeeName, role, username;
     private int xx, xy;
     Connection conn;
     public LoginPage() {
@@ -44,7 +43,8 @@ public class LoginPage extends javax.swing.JFrame {
         var rs = pst.executeQuery();
         if(rs.next()){
             FlatDarkLaf.setup();
-            this.EmployeeName = rs.getString("EmployeeName");
+            this.employeeName = rs.getString("EmployeeName");
+            this.username = rs.getString("username");
             this.role = rs.getString("role");
             new FrontDeskMainFrame().setVisible(true);
             this.dispose();
@@ -58,11 +58,15 @@ public class LoginPage extends javax.swing.JFrame {
        }
     }
     public static String getEmployeeName(){
-        return LoginPage.EmployeeName;
+        return LoginPage.employeeName;
     }
     
     public static String getRole(){
         return LoginPage.role;
+    }
+    
+    public static String getEmployeeUsername(){
+        return LoginPage.username;
     }
     /**
      * This method is called from within the constructor to initialize the form.
