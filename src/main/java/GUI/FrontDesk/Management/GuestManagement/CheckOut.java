@@ -147,7 +147,7 @@ public class CheckOut extends javax.swing.JPanel {
 
         jButton3.setText("Confirm Checkout");
 
-        jButton4.setText("Print Invoice");
+        jButton4.setText("Print Receipt");
 
         jButton5.setText("Update Charge");
 
@@ -262,7 +262,7 @@ public class CheckOut extends javax.swing.JPanel {
                     .addComponent(jLabel10)
                     .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 559, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -324,8 +324,7 @@ public class CheckOut extends javax.swing.JPanel {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel18)
-                            .addComponent(jButton7))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(jButton7))))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 

@@ -29,6 +29,7 @@ public class Dashboard extends javax.swing.JPanel {
         initComponents();
         initTable();
         initLayout();
+        initCounter();
         cardLayout = (CardLayout) jPanel2.getLayout();
         cardLayout.show(jPanel2, "Floor1");
         pageCounter1.setText("Floor " + currentFloor);
@@ -71,6 +72,20 @@ public class Dashboard extends javax.swing.JPanel {
         jPanel2.add(floor21,"Floor3");
     }
     
+    private void initCounter() {
+        String sql = "SELECT COUNT(*) FROM RoomList WHERE Status = 'Available'";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                vacantCount.setText(String.valueOf(count));
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void comboFilter(String sql){
         
     }
@@ -91,6 +106,7 @@ public class Dashboard extends javax.swing.JPanel {
         circularProgressBar2 = new CustomElements.CircularProgressBar();
         curvedPanel1 = new CustomElements.CurvedPanel();
         jLabel3 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
         curvedPanel3 = new CustomElements.CurvedPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -98,8 +114,10 @@ public class Dashboard extends javax.swing.JPanel {
         RoomFilter = new javax.swing.JComboBox<>();
         curvedPanel4 = new CustomElements.CurvedPanel();
         jLabel5 = new javax.swing.JLabel();
+        vacantCount = new javax.swing.JLabel();
         curvedPanel5 = new CustomElements.CurvedPanel();
         jLabel6 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         floor11 = new GUI.FrontDesk.DashboardPanels.Floor2();
         floor21 = new GUI.FrontDesk.DashboardPanels.Floor3();
@@ -141,6 +159,11 @@ public class Dashboard extends javax.swing.JPanel {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Arrivals");
 
+        jLabel8.setFont(new java.awt.Font("Cambria", 1, 48)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("00");
+
         javax.swing.GroupLayout curvedPanel1Layout = new javax.swing.GroupLayout(curvedPanel1);
         curvedPanel1.setLayout(curvedPanel1Layout);
         curvedPanel1Layout.setHorizontalGroup(
@@ -148,7 +171,9 @@ public class Dashboard extends javax.swing.JPanel {
             .addGroup(curvedPanel1Layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(jLabel3)
-                .addContainerGap(172, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18))
         );
         curvedPanel1Layout.setVerticalGroup(
             curvedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -156,6 +181,7 @@ public class Dashboard extends javax.swing.JPanel {
                 .addGap(17, 17, 17)
                 .addComponent(jLabel3)
                 .addContainerGap(84, Short.MAX_VALUE))
+            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         curvedPanel3.setBackground(new java.awt.Color(45, 45, 45));
@@ -224,6 +250,11 @@ public class Dashboard extends javax.swing.JPanel {
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Vacant");
 
+        vacantCount.setFont(new java.awt.Font("Cambria", 1, 48)); // NOI18N
+        vacantCount.setForeground(new java.awt.Color(255, 255, 255));
+        vacantCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        vacantCount.setText("00");
+
         javax.swing.GroupLayout curvedPanel4Layout = new javax.swing.GroupLayout(curvedPanel4);
         curvedPanel4.setLayout(curvedPanel4Layout);
         curvedPanel4Layout.setHorizontalGroup(
@@ -232,13 +263,23 @@ public class Dashboard extends javax.swing.JPanel {
                 .addGap(20, 20, 20)
                 .addComponent(jLabel5)
                 .addContainerGap(186, Short.MAX_VALUE))
+            .addGroup(curvedPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, curvedPanel4Layout.createSequentialGroup()
+                    .addContainerGap(145, Short.MAX_VALUE)
+                    .addComponent(vacantCount, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(12, 12, 12)))
         );
         curvedPanel4Layout.setVerticalGroup(
             curvedPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(curvedPanel4Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(jLabel5)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(85, Short.MAX_VALUE))
+            .addGroup(curvedPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(curvedPanel4Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(vacantCount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
 
         curvedPanel5.setBackground(new java.awt.Color(230, 126, 34));
@@ -252,6 +293,11 @@ public class Dashboard extends javax.swing.JPanel {
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Occupied");
 
+        jLabel9.setFont(new java.awt.Font("Cambria", 1, 48)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("00");
+
         javax.swing.GroupLayout curvedPanel5Layout = new javax.swing.GroupLayout(curvedPanel5);
         curvedPanel5.setLayout(curvedPanel5Layout);
         curvedPanel5Layout.setHorizontalGroup(
@@ -260,6 +306,11 @@ public class Dashboard extends javax.swing.JPanel {
                 .addGap(16, 16, 16)
                 .addComponent(jLabel6)
                 .addContainerGap(163, Short.MAX_VALUE))
+            .addGroup(curvedPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, curvedPanel5Layout.createSequentialGroup()
+                    .addContainerGap(146, Short.MAX_VALUE)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(11, 11, 11)))
         );
         curvedPanel5Layout.setVerticalGroup(
             curvedPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -267,6 +318,11 @@ public class Dashboard extends javax.swing.JPanel {
                 .addGap(14, 14, 14)
                 .addComponent(jLabel6)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(curvedPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(curvedPanel5Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
 
         jPanel2.setBackground(new java.awt.Color(45, 45, 45));
@@ -384,6 +440,8 @@ public class Dashboard extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -395,5 +453,6 @@ public class Dashboard extends javax.swing.JPanel {
     private javax.swing.JLabel leftBtn;
     private javax.swing.JLabel pageCounter1;
     private javax.swing.JLabel rightBtn;
+    private javax.swing.JLabel vacantCount;
     // End of variables declaration//GEN-END:variables
 }

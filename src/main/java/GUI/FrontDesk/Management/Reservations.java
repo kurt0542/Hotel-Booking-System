@@ -204,7 +204,7 @@ public class Reservations extends javax.swing.JPanel {
     private void displayData(){
         String sql = "SELECT * FROM Guest_Reservation";
         try(PreparedStatement pst = conn.prepareStatement(sql)){
-            DefaultTableModel dt = (DefaultTableModel) jTable1.getModel();
+            DefaultTableModel dt = (DefaultTableModel) reservedTable.getModel();
             dt.setRowCount(0);
                     ResultSet rs = pst.executeQuery();
 
@@ -220,8 +220,8 @@ public class Reservations extends javax.swing.JPanel {
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
             centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-            for (int i = 0; i < jTable1.getColumnCount(); i++) {
-                jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            for (int i = 0; i < reservedTable.getColumnCount(); i++) {
+                reservedTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -230,7 +230,7 @@ public class Reservations extends javax.swing.JPanel {
     }
     
     private void deleteFunction() {
-        int rowcount = jTable1.getSelectedRow();
+        int rowcount = reservedTable.getSelectedRow();
 
         // Check if a row is selected
         if (rowcount == -1) {
@@ -238,7 +238,7 @@ public class Reservations extends javax.swing.JPanel {
             return;
         }
 
-        String selection = jTable1.getModel().getValueAt(rowcount, 0).toString();
+        String selection = reservedTable.getModel().getValueAt(rowcount, 0).toString();
         int confirm = JOptionPane.showConfirmDialog(null,
                 "Are you sure you want to delete reservation " + selection + "?",
                 "Confirm Deletion",
@@ -277,15 +277,15 @@ public class Reservations extends javax.swing.JPanel {
         jCheckBox1 = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        reservedTable = new javax.swing.JTable();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        checkOutLbl = new javax.swing.JLabel();
+        guestNameLbl = new javax.swing.JLabel();
         guestName = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         contactField = new javax.swing.JTextField();
@@ -318,13 +318,13 @@ public class Reservations extends javax.swing.JPanel {
         clearBtn = new javax.swing.JButton();
         ReserveBtn = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
-        jLabel9 = new javax.swing.JLabel();
+        reservationIDLbl = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
+        checkInLbl = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jLabel19 = new javax.swing.JLabel();
-        jLabel21 = new javax.swing.JLabel();
+        notesArea = new javax.swing.JTextArea();
+        contactLbl = new javax.swing.JLabel();
+        emailLbl = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         notesTextArea = new javax.swing.JTextArea();
         jLabel22 = new javax.swing.JLabel();
@@ -332,7 +332,7 @@ public class Reservations extends javax.swing.JPanel {
         checkInDate = new javax.swing.JFormattedTextField();
         jLabel23 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTextArea3 = new javax.swing.JTextArea();
+        addOnsArea = new javax.swing.JTextArea();
         estimatedArrivalPicker = new javax.swing.JFormattedTextField();
         jLabel25 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
@@ -345,7 +345,7 @@ public class Reservations extends javax.swing.JPanel {
 
         jPanel1.setBackground(new java.awt.Color(19, 19, 19));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        reservedTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -356,7 +356,14 @@ public class Reservations extends javax.swing.JPanel {
                 "Reservation ID", "Guest Name", "Check-In Date", "Check-Out Date"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        reservedTable.setFocusable(false);
+        reservedTable.getTableHeader().setReorderingAllowed(false);
+        reservedTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                reservedTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(reservedTable);
 
         jLabel10.setFont(new java.awt.Font("Cambria", 1, 18)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(212, 171, 97));
@@ -381,11 +388,11 @@ public class Reservations extends javax.swing.JPanel {
 
         jButton3.setText("Check-In");
 
-        jLabel1.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel1.setText("Email:");
+        checkOutLbl.setForeground(new java.awt.Color(212, 171, 97));
+        checkOutLbl.setText("Check-Out Date:");
 
-        jLabel2.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel2.setText("Guest Name:");
+        guestNameLbl.setForeground(new java.awt.Color(212, 171, 97));
+        guestNameLbl.setText("Guest Name:");
 
         jLabel3.setForeground(new java.awt.Color(212, 171, 97));
         jLabel3.setText("Full Name:");
@@ -414,6 +421,7 @@ public class Reservations extends javax.swing.JPanel {
         jLabel8.setForeground(new java.awt.Color(212, 171, 97));
         jLabel8.setText("Estimated Arrival:");
 
+        doubleCheck.setForeground(new java.awt.Color(212, 171, 97));
         doubleCheck.setText("Double");
         doubleCheck.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -421,16 +429,22 @@ public class Reservations extends javax.swing.JPanel {
             }
         });
 
+        singleCheck.setForeground(new java.awt.Color(212, 171, 97));
         singleCheck.setText("Single");
 
+        twinCheck.setForeground(new java.awt.Color(212, 171, 97));
         twinCheck.setText("Twin");
 
+        executiveCheck.setForeground(new java.awt.Color(212, 171, 97));
         executiveCheck.setText("Executive");
 
+        deluxeCheck.setForeground(new java.awt.Color(212, 171, 97));
         deluxeCheck.setText("Deluxe");
 
+        suiteCheck.setForeground(new java.awt.Color(212, 171, 97));
         suiteCheck.setText("Suite");
 
+        presidentialCheck.setForeground(new java.awt.Color(212, 171, 97));
         presidentialCheck.setText("Presidential");
 
         jLabel20.setForeground(new java.awt.Color(212, 171, 97));
@@ -443,8 +457,10 @@ public class Reservations extends javax.swing.JPanel {
             }
         });
 
+        laundryCheck.setForeground(new java.awt.Color(212, 171, 97));
         laundryCheck.setText("Laundry Service");
 
+        barCheck.setForeground(new java.awt.Color(212, 171, 97));
         barCheck.setText("Mini Bar Access");
         barCheck.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -452,8 +468,10 @@ public class Reservations extends javax.swing.JPanel {
             }
         });
 
+        parkingCheck.setForeground(new java.awt.Color(212, 171, 97));
         parkingCheck.setText("Parking");
 
+        airportCheck.setForeground(new java.awt.Color(212, 171, 97));
         airportCheck.setText("Airport Pick-up");
 
         clearBtn.setText("Process Payment");
@@ -477,27 +495,34 @@ public class Reservations extends javax.swing.JPanel {
             }
         });
 
-        jLabel9.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel9.setText("Reservation ID:");
+        reservationIDLbl.setForeground(new java.awt.Color(212, 171, 97));
+        reservationIDLbl.setText("Reservation ID:");
 
         jLabel15.setForeground(new java.awt.Color(212, 171, 97));
         jLabel15.setText("Notes:");
 
-        jLabel16.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel16.setText("Payment Status:");
+        checkInLbl.setForeground(new java.awt.Color(212, 171, 97));
+        checkInLbl.setText("Check-In Date:");
 
+        jScrollPane2.setBorder(null);
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        notesArea.setEditable(false);
+        notesArea.setBackground(new java.awt.Color(19, 19, 19));
+        notesArea.setColumns(20);
+        notesArea.setForeground(new java.awt.Color(212, 171, 97));
+        notesArea.setRows(5);
+        notesArea.setBorder(null);
+        notesArea.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        notesArea.setFocusable(false);
+        jScrollPane2.setViewportView(notesArea);
 
-        jLabel19.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel19.setText("Contact Number:");
+        contactLbl.setForeground(new java.awt.Color(212, 171, 97));
+        contactLbl.setText("Contact Number:");
 
-        jLabel21.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel21.setText("Check-In Date:");
+        emailLbl.setForeground(new java.awt.Color(212, 171, 97));
+        emailLbl.setText("Email:");
 
         notesTextArea.setColumns(20);
         notesTextArea.setRows(5);
@@ -509,15 +534,25 @@ public class Reservations extends javax.swing.JPanel {
         jLabel23.setForeground(new java.awt.Color(212, 171, 97));
         jLabel23.setText("Notes:");
 
+        jScrollPane4.setBackground(new java.awt.Color(19, 19, 19));
+        jScrollPane4.setBorder(null);
         jScrollPane4.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane4.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
-        jTextArea3.setColumns(20);
-        jTextArea3.setRows(5);
-        jScrollPane4.setViewportView(jTextArea3);
+        addOnsArea.setEditable(false);
+        addOnsArea.setBackground(new java.awt.Color(19, 19, 19));
+        addOnsArea.setColumns(20);
+        addOnsArea.setForeground(new java.awt.Color(212, 171, 97));
+        addOnsArea.setRows(5);
+        addOnsArea.setBorder(null);
+        addOnsArea.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        addOnsArea.setFocusable(false);
+        jScrollPane4.setViewportView(addOnsArea);
 
+        jLabel25.setForeground(new java.awt.Color(212, 171, 97));
         jLabel25.setText("Extra Linen");
 
+        jLabel26.setForeground(new java.awt.Color(212, 171, 97));
         jLabel26.setText("Extra Bed");
 
         clearBtn1.setText("Clear all");
@@ -609,8 +644,10 @@ public class Reservations extends javax.swing.JPanel {
                 .addComponent(twinCheck)
                 .addGap(72, 72, 72)
                 .addComponent(suiteCheck)
-                .addGap(523, 523, 523)
+                .addGap(384, 384, 384)
                 .addComponent(clearBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(clearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
@@ -625,37 +662,34 @@ public class Reservations extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(reservationIDLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(2, 2, 2)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(checkInLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel20))))
                 .addGap(8, 8, 8)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31)
-                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(58, 58, 58)
-                        .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(80, 80, 80)
-                        .addComponent(jLabel23))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(guestNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(31, 31, 31)
+                            .addComponent(contactLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(checkOutLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(58, 58, 58)
+                            .addComponent(emailLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(80, 80, 80)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel23)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -739,7 +773,8 @@ public class Reservations extends javax.swing.JPanel {
                     .addComponent(suiteCheck)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(clearBtn)
-                        .addComponent(clearBtn1))
+                        .addComponent(clearBtn1)
+                        .addComponent(jButton1))
                     .addComponent(ReserveBtn))
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -752,26 +787,25 @@ public class Reservations extends javax.swing.JPanel {
                         .addGap(12, 12, 12)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton2)
-                            .addComponent(jButton1)
                             .addComponent(jButton3)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel9)
+                        .addComponent(reservationIDLbl)
                         .addGap(15, 15, 15)
-                        .addComponent(jLabel16)
+                        .addComponent(checkInLbl)
                         .addGap(47, 47, 47)
                         .addComponent(jLabel20)
                         .addGap(6, 6, 6)
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
+                            .addComponent(guestNameLbl)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(1, 1, 1)
-                                .addComponent(jLabel19)))
+                                .addComponent(contactLbl)))
                         .addGap(17, 17, 17)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel21))
+                            .addComponent(checkOutLbl)
+                            .addComponent(emailLbl))
                         .addGap(44, 44, 44)
                         .addComponent(jLabel23)
                         .addGap(6, 6, 6)
@@ -829,43 +863,86 @@ public class Reservations extends javax.swing.JPanel {
         deleteFunction();
     }//GEN-LAST:event_jButton2MousePressed
 
+    private void reservedTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reservedTableMouseClicked
+      addOnsArea.setText(null);
+        int row = reservedTable.getSelectedRow();
+      String selection = reservedTable.getModel().getValueAt(row, 0).toString();
+      String sql = "SELECT * FROM Guest_Reservation WHERE ReservationID = " + Integer.parseInt(selection.substring(1)); 
+      try(PreparedStatement pst = conn.prepareStatement(sql)){
+          ResultSet rs = pst.executeQuery();
+          
+          while(rs.next()){
+              reservationIDLbl.setText("Reservation ID: " + String.format("R%05d", rs.getInt("ReservationID")));
+              guestNameLbl.setText("Guest Name: " + rs.getString("FullName"));
+              contactLbl.setText("Contact Number : " + rs.getString("ContactNumber"));
+              checkInLbl.setText("Check-In Date: " + rs.getString("CheckIn_Date"));
+              checkOutLbl.setText("Check-Out Date: " + rs.getString("CheckOut_Date"));
+              emailLbl.setText("Email : " + rs.getString("Email"));
+              
+              if(rs.getString("Laundry").equals("true")){
+                  addOnsArea.append("● Laundry \n");
+              }
+              if (rs.getString("MiniBar").equals("true")){
+                  addOnsArea.append("● Mini-Bar Access \n");
+              }
+              if(rs.getString("Parking").equals("true")){
+                  addOnsArea.append("● Parking \n");
+              }
+              if(rs.getString("AirportPickup").equals("true")){
+                  addOnsArea.append("● Airport Pickup \n");
+              }
+              if(rs.getInt("ExtraBed") >= 1){
+                  addOnsArea.append("● Extra Bed - "+ rs.getInt("ExtraBed") +" \n");
+              }
+              if(rs.getInt("ExtraLinen") >= 1){
+                  addOnsArea.append("● Extra Linen - "+ rs.getInt("ExtraLinen") +" \n");
+              }
+              
+              notesArea.setText(rs.getString("Notes"));
+          }
+      }catch(Exception e){
+          e.printStackTrace();
+      }
+    }//GEN-LAST:event_reservedTableMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ReserveBtn;
+    private javax.swing.JTextArea addOnsArea;
     private javax.swing.JCheckBox airportCheck;
     private javax.swing.JCheckBox barCheck;
     private javax.swing.JFormattedTextField checkInDate;
+    private javax.swing.JLabel checkInLbl;
     private javax.swing.JFormattedTextField checkOutDate;
+    private javax.swing.JLabel checkOutLbl;
     private javax.swing.JButton clearBtn;
     private javax.swing.JButton clearBtn1;
     private javax.swing.JTextField contactField;
+    private javax.swing.JLabel contactLbl;
     private javax.swing.JCheckBox deluxeCheck;
     private javax.swing.JCheckBox doubleCheck;
     private javax.swing.JTextField emailField;
+    private javax.swing.JLabel emailLbl;
     private javax.swing.JFormattedTextField estimatedArrivalPicker;
     private javax.swing.JCheckBox executiveCheck;
     private javax.swing.JSpinner extraBedSpinner;
     private javax.swing.JSpinner extraLinenSpinner;
     private javax.swing.JTextField guestName;
+    private javax.swing.JLabel guestNameLbl;
     private javax.swing.JSpinner guestSpinner;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton7;
     private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel25;
@@ -876,19 +953,18 @@ public class Reservations extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea3;
     private javax.swing.JCheckBox laundryCheck;
+    private javax.swing.JTextArea notesArea;
     private javax.swing.JTextArea notesTextArea;
     private javax.swing.JCheckBox parkingCheck;
     private javax.swing.JCheckBox presidentialCheck;
+    private javax.swing.JLabel reservationIDLbl;
+    private javax.swing.JTable reservedTable;
     private javax.swing.JSpinner roomSpinner;
     private javax.swing.JCheckBox singleCheck;
     private javax.swing.JCheckBox suiteCheck;

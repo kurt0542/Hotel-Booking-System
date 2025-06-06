@@ -26,6 +26,7 @@ public class ChangePassword extends javax.swing.JFrame {
     public ChangePassword() {
         conn = DBConnection.connectDB();
         initComponents();
+        setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
     }
 
      private void changePassword(){
