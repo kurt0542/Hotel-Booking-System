@@ -27,6 +27,8 @@ public class Reservations extends javax.swing.JPanel {
     private final DatePicker datePicker1 = new DatePicker();
     private final DatePicker datePicker2 = new DatePicker();
     private final TimePicker timePicker = new TimePicker();
+    private boolean isEditMode = false;
+    private int selectedReservationId = -1;
     /**
      * Creates new form Reservations
      */
@@ -44,152 +46,179 @@ public class Reservations extends javax.swing.JPanel {
         Notifications.getInstance().show(Notifications.Type.ERROR, Notifications.Location.BOTTOM_RIGHT, message);
     }
     
-    private void addReservation(){
-        
-        String fullName = guestName.getText();
-        String contact = contactField.getText();
-        String email = emailField.getText();
-        String checkIn = checkInDate.getText();
-        String checkOut = checkOutDate.getText();
-        String arrivalTime = estimatedArrivalPicker.getText();
-        int numberOfRooms = (int) roomSpinner.getValue();
-        int numberOfGuests = (int) guestSpinner.getValue();
-        String note = notesTextArea.getText();
+    private void addReservation() {
+    String fullName = guestName.getText();
+    String contact = contactField.getText();
+    String email = emailField.getText();
+    String checkIn = checkInDate.getText();
+    String checkOut = checkOutDate.getText();
+    String arrivalTime = estimatedArrivalPicker.getText();
+    int numberOfRooms = (int) roomSpinner.getValue();
+    int numberOfGuests = (int) guestSpinner.getValue();
+    String note = notesTextArea.getText();
 
-        // room type
-        String isSingle = String.valueOf(singleCheck.isSelected());
-        String isDouble = String.valueOf(doubleCheck.isSelected());
-        String isTwin = String.valueOf(twinCheck.isSelected());
-        String isExecutive = String.valueOf(executiveCheck.isSelected()); // Fixed typo
-        String isDeluxe = String.valueOf(deluxeCheck.isSelected());
-        String isSuite = String.valueOf(suiteCheck.isSelected());
-        String isPresidential = String.valueOf(presidentialCheck.isSelected());
+    // room type
+    String isSingle = String.valueOf(singleCheck.isSelected());
+    String isDouble = String.valueOf(doubleCheck.isSelected());
+    String isTwin = String.valueOf(twinCheck.isSelected());
+    String isExecutive = String.valueOf(executiveCheck.isSelected());
+    String isDeluxe = String.valueOf(deluxeCheck.isSelected());
+    String isSuite = String.valueOf(suiteCheck.isSelected());
+    String isPresidential = String.valueOf(presidentialCheck.isSelected());
 
-        // room add ons
-        String isLaundry = String.valueOf(laundryCheck.isSelected());
-        String isBar = String.valueOf(barCheck.isSelected());
-        String isParking = String.valueOf(parkingCheck.isSelected());
-        String isAirport = String.valueOf(airportCheck.isSelected());
-        int extraBed = (int) extraBedSpinner.getValue();
-        int extraLinen = (int) extraLinenSpinner.getValue();
-        
-        boolean hasRoomType = singleCheck.isSelected() || doubleCheck.isSelected() || 
-                             twinCheck.isSelected() || executiveCheck.isSelected() || 
-                             deluxeCheck.isSelected() || suiteCheck.isSelected() || 
-                             presidentialCheck.isSelected();        
+    // room add ons
+    String isLaundry = String.valueOf(laundryCheck.isSelected());
+    String isBar = String.valueOf(barCheck.isSelected());
+    String isParking = String.valueOf(parkingCheck.isSelected());
+    String isAirport = String.valueOf(airportCheck.isSelected());
+    int extraBed = (int) extraBedSpinner.getValue();
+    int extraLinen = (int) extraLinenSpinner.getValue();
 
-         if (fullName.isEmpty() || contact.isEmpty() || email.isEmpty()) {
-             errorNotif("Please fill all of the fields");
-             return;
-        }
-        else {
-             if(fullName.length() < 2 || fullName.length() > 100) {
+    boolean hasRoomType = singleCheck.isSelected() || doubleCheck.isSelected() || 
+                         twinCheck.isSelected() || executiveCheck.isSelected() || 
+                         deluxeCheck.isSelected() || suiteCheck.isSelected() || 
+                         presidentialCheck.isSelected();
+
+    // Validation (same as before)
+    if (fullName.isEmpty() || contact.isEmpty() || email.isEmpty()) {
+        errorNotif("Please fill all of the fields");
+        return;
+    } else {
+        if (fullName.length() < 2 || fullName.length() > 100) {
             errorNotif("Full name must be between 2-100 characters");
             return;
-            } else if (!contact.matches("^09[0-9]{9}$")) {
-                errorNotif("Invalid contact number format");
-                return;
-            } else if (!email.matches(".*@.*\\..*")) {
-                errorNotif("Invalid email format");
-                return;
-            }
-        }
-        
-        if (checkIn.isEmpty()) {
-            errorNotif("Check-in date is required");
+        } else if (!contact.matches("^09[0-9]{9}$")) {
+            errorNotif("Invalid contact number format");
             return;
-        }
-        
-        if (checkOut.isEmpty()) {
-            errorNotif("Check-out date is required");
+        } else if (!email.matches(".*@.*\\..*")) {
+            errorNotif("Invalid email format");
             return;
-        }
-        
-            if (!checkIn.isEmpty() && !checkOut.isEmpty() && 
-                !checkIn.equals("--/--/----") && !checkOut.equals("--/--/----")) {
-                try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                    LocalDate checkInLocalDate = LocalDate.parse(checkIn, formatter);
-                    LocalDate checkOutLocalDate = LocalDate.parse(checkOut, formatter);
-                    LocalDate today = LocalDate.now();
-
-                    if (checkInLocalDate.isBefore(today)) {
-                        errorNotif("Check-in date cannot be in the past");
-                        return;
-                    }
-
-                    if (checkOutLocalDate.isBefore(checkInLocalDate) || checkOutLocalDate.isEqual(checkInLocalDate)) {
-                        errorNotif("Check-out date must be after check-in date");
-                        return;
-                    }
-                } catch (DateTimeParseException e) {
-                }
-            } else {
-                errorNotif("Please enter both check-in and check-out dates");
-                return;
-            }
-        
-        if (numberOfRooms <= 0) {
-            errorNotif("Number of rooms must be greater than 0");
-            return;
-        }
-        if (numberOfGuests <= 0) {
-            errorNotif("Number of guests must be greater than 0");
-            return;
-        }  
-        if (!hasRoomType) {
-            errorNotif("Please select at least one room type");
-            return;
-        }
-        if (extraBed < 0 || extraBed > 3) {
-            errorNotif("Extra linen must be between 0-3");
-            return;
-        }
-        if (extraLinen < 0 || extraLinen > 6) {
-            errorNotif("Extra linen must be between 0-6");
-            return;
-        }
-        
-        
-    String sql = "INSERT INTO Guest_Reservation (FullName, ContactNumber, Email, CheckIn_Date, CheckOut_Date, " +
-                     "Estimated_Arrival, NumberOfRooms, NumberOfGuests, Notes, Single, Double, Twin, Executive, " +
-                     "Deluxe, Suite, Presidential, Laundry, Parking, MiniBar, AirportPickUp, ExtraBed, ExtraLinen) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try (PreparedStatement pst = conn.prepareStatement(sql)) {
-            pst.setString(1, fullName);
-            pst.setString(2, contact);
-            pst.setString(3, email);
-            pst.setString(4, checkIn);
-            pst.setString(5, checkOut);
-            pst.setString(6, arrivalTime);
-            pst.setInt(7, numberOfRooms);
-            pst.setInt(8, numberOfGuests);
-            pst.setString(9, note);
-            pst.setString(10, isSingle);
-            pst.setString(11, isDouble);
-            pst.setString(12, isTwin);
-            pst.setString(13, isExecutive);
-            pst.setString(14, isDeluxe);
-            pst.setString(15, isSuite);
-            pst.setString(16, isPresidential);
-            pst.setString(17, isLaundry);
-            pst.setString(18, isParking);
-            pst.setString(19, isBar);
-            pst.setString(20, isAirport);
-            pst.setInt(21, extraBed);
-            pst.setInt(22, extraLinen);
-            
-            pst.executeUpdate();  
-            clearForm();
-            displayData();
-            Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.BOTTOM_RIGHT, "Successfully added Reservation!");
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
+
+    if (checkIn.isEmpty()) {
+        errorNotif("Check-in date is required");
+        return;
+    }
+
+    if (checkOut.isEmpty()) {
+        errorNotif("Check-out date is required");
+        return;
+    }
+
+    if (!checkIn.isEmpty() && !checkOut.isEmpty() && 
+        !checkIn.equals("--/--/----") && !checkOut.equals("--/--/----")) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate checkInLocalDate = LocalDate.parse(checkIn, formatter);
+            LocalDate checkOutLocalDate = LocalDate.parse(checkOut, formatter);
+            LocalDate today = LocalDate.now();
+
+            if (checkInLocalDate.isBefore(today)) {
+                errorNotif("Check-in date cannot be in the past");
+                return;
+            }
+
+            if (checkOutLocalDate.isBefore(checkInLocalDate) || checkOutLocalDate.isEqual(checkInLocalDate)) {
+                errorNotif("Check-out date must be after check-in date");
+                return;
+            }
+        } catch (DateTimeParseException e) {
+            errorNotif("Invalid date format");
+            return;
+        }
+    } else {
+        errorNotif("Please enter both check-in and check-out dates");
+        return;
+    }
+
+    if (numberOfRooms <= 0) {
+        errorNotif("Number of rooms must be greater than 0");
+        return;
+    }
+    if (numberOfGuests <= 0) {
+        errorNotif("Number of guests must be greater than 0");
+        return;
+    }
+    if (!hasRoomType) {
+        errorNotif("Please select at least one room type");
+        return;
+    }
+    if (extraBed < 0 || extraBed > 3) {
+        errorNotif("Extra bed must be between 0-3");
+        return;
+    }
+    if (extraLinen < 0 || extraLinen > 6) {
+        errorNotif("Extra linen must be between 0-6");
+        return;
+    }
+
+    
+    String sql;
+    if (isEditMode && selectedReservationId != -1) {
+        
+        sql = "UPDATE Guest_Reservation SET FullName=?, ContactNumber=?, Email=?, CheckIn_Date=?, CheckOut_Date=?, " +
+              "Estimated_Arrival=?, NumberOfRooms=?, NumberOfGuests=?, Notes=?, Single=?, Double=?, Twin=?, Executive=?, " +
+              "Deluxe=?, Suite=?, Presidential=?, Laundry=?, Parking=?, MiniBar=?, AirportPickUp=?, ExtraBed=?, ExtraLinen=? " +
+              "WHERE ReservationID=?";
+    } else {
+        // Insert new reservation
+        sql = "INSERT INTO Guest_Reservation (FullName, ContactNumber, Email, CheckIn_Date, CheckOut_Date, " +
+              "Estimated_Arrival, NumberOfRooms, NumberOfGuests, Notes, Single, Double, Twin, Executive, " +
+              "Deluxe, Suite, Presidential, Laundry, Parking, MiniBar, AirportPickUp, ExtraBed, ExtraLinen) " +
+              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    }
+
+    try (PreparedStatement pst = conn.prepareStatement(sql)) {
+        pst.setString(1, fullName);
+        pst.setString(2, contact);
+        pst.setString(3, email);
+        pst.setString(4, checkIn);
+        pst.setString(5, checkOut);
+        pst.setString(6, arrivalTime);
+        pst.setInt(7, numberOfRooms);
+        pst.setInt(8, numberOfGuests);
+        pst.setString(9, note);
+        pst.setString(10, isSingle);
+        pst.setString(11, isDouble);
+        pst.setString(12, isTwin);
+        pst.setString(13, isExecutive);
+        pst.setString(14, isDeluxe);
+        pst.setString(15, isSuite);
+        pst.setString(16, isPresidential);
+        pst.setString(17, isLaundry);
+        pst.setString(18, isParking);
+        pst.setString(19, isBar);
+        pst.setString(20, isAirport);
+        pst.setInt(21, extraBed);
+        pst.setInt(22, extraLinen);
+
+        if (isEditMode && selectedReservationId != -1) {
+            pst.setInt(23, selectedReservationId);
+        }
+
+        pst.executeUpdate();
+        clearForm();
+        displayData();
+        
+        // Reset edit mode
+        if (isEditMode) {
+            isEditMode = false;
+            jToggleButton1.setSelected(false);
+            jToggleButton1.setText("Edit Mode");
+            ReserveBtn.setText("Reserve");
+            selectedReservationId = -1;
+            Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.BOTTOM_RIGHT, "Reservation updated successfully!");
+        } else {
+            Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.BOTTOM_RIGHT, "Successfully added Reservation!");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        errorNotif("Error saving reservation");
+    }
+}
      
-    private void clearForm(){
+    private void clearForm() {
     guestName.setText("");
     contactField.setText("");
     emailField.setText("");
@@ -199,7 +228,24 @@ public class Reservations extends javax.swing.JPanel {
     roomSpinner.setValue(1);
     guestSpinner.setValue(1);
     notesTextArea.setText("");
-    }
+    
+    // Clear checkboxes
+    singleCheck.setSelected(false);
+    doubleCheck.setSelected(false);
+    twinCheck.setSelected(false);
+    executiveCheck.setSelected(false);
+    deluxeCheck.setSelected(false);
+    suiteCheck.setSelected(false);
+    presidentialCheck.setSelected(false);
+    
+    // Clear add-ons
+    laundryCheck.setSelected(false);
+    barCheck.setSelected(false);
+    parkingCheck.setSelected(false);
+    airportCheck.setSelected(false);
+    extraBedSpinner.setValue(0);
+    extraLinenSpinner.setValue(0);
+}
     
     private void displayData(){
         String sql = "SELECT * FROM Guest_Reservation";
@@ -264,6 +310,50 @@ public class Reservations extends javax.swing.JPanel {
             errorNotif("Error deleting reservation.");
         }
     }
+    
+    private void loadReservationForEdit(int row) {
+    String selection = reservedTable.getModel().getValueAt(row, 0).toString();
+    selectedReservationId = Integer.parseInt(selection.substring(1));
+    
+    String sql = "SELECT * FROM Guest_Reservation WHERE ReservationID = ?";
+    try (PreparedStatement pst = conn.prepareStatement(sql)) {
+        pst.setInt(1, selectedReservationId);
+        ResultSet rs = pst.executeQuery();
+        
+        if (rs.next()) {
+            // Load basic information
+            guestName.setText(rs.getString("FullName"));
+            contactField.setText(rs.getString("ContactNumber"));
+            emailField.setText(rs.getString("Email"));
+            checkInDate.setText(rs.getString("CheckIn_Date"));
+            checkOutDate.setText(rs.getString("CheckOut_Date"));
+            estimatedArrivalPicker.setText(rs.getString("Estimated_Arrival"));
+            roomSpinner.setValue(rs.getInt("NumberOfRooms"));
+            guestSpinner.setValue(rs.getInt("NumberOfGuests"));
+            notesTextArea.setText(rs.getString("Notes"));
+            
+            // Load room types
+            singleCheck.setSelected(rs.getString("Single").equals("true"));
+            doubleCheck.setSelected(rs.getString("Double").equals("true"));
+            twinCheck.setSelected(rs.getString("Twin").equals("true"));
+            executiveCheck.setSelected(rs.getString("Executive").equals("true"));
+            deluxeCheck.setSelected(rs.getString("Deluxe").equals("true"));
+            suiteCheck.setSelected(rs.getString("Suite").equals("true"));
+            presidentialCheck.setSelected(rs.getString("Presidential").equals("true"));
+            
+            // Load add-ons
+            laundryCheck.setSelected(rs.getString("Laundry").equals("true"));
+            barCheck.setSelected(rs.getString("MiniBar").equals("true"));
+            parkingCheck.setSelected(rs.getString("Parking").equals("true"));
+            airportCheck.setSelected(rs.getString("AirportPickUp").equals("true"));
+            extraBedSpinner.setValue(rs.getInt("ExtraBed"));
+            extraLinenSpinner.setValue(rs.getInt("ExtraLinen"));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        errorNotif("Error loading reservation data");
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -281,7 +371,6 @@ public class Reservations extends javax.swing.JPanel {
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         checkOutLbl = new javax.swing.JLabel();
@@ -337,6 +426,7 @@ public class Reservations extends javax.swing.JPanel {
         jLabel25 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
         clearBtn1 = new javax.swing.JButton();
+        jToggleButton1 = new javax.swing.JToggleButton();
 
         jCheckBox1.setText("jCheckBox1");
 
@@ -376,8 +466,6 @@ public class Reservations extends javax.swing.JPanel {
         jLabel12.setFont(new java.awt.Font("Cambria", 1, 18)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(212, 171, 97));
         jLabel12.setText("Reservation Details:");
-
-        jButton1.setText("Edit");
 
         jButton2.setText("Remove Reservation");
         jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -562,134 +650,145 @@ public class Reservations extends javax.swing.JPanel {
             }
         });
 
+        jToggleButton1.setText("Edit Mode");
+        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(62, 62, 62)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(129, 129, 129)
-                .addComponent(jLabel4)
-                .addGap(101, 101, 101)
-                .addComponent(jLabel5)
-                .addGap(161, 161, 161)
-                .addComponent(jLabel6)
-                .addGap(115, 115, 115)
-                .addComponent(jLabel7)
-                .addGap(105, 105, 105)
-                .addComponent(jLabel8))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(62, 62, 62)
-                .addComponent(guestName, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(contactField, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(checkInDate, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(checkOutDate, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(estimatedArrivalPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(110, 110, 110)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel18)
-                    .addComponent(roomSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13)
-                    .addComponent(singleCheck)
-                    .addComponent(doubleCheck))
-                .addGap(19, 19, 19)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel17)
-                    .addComponent(guestSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(executiveCheck)
-                    .addComponent(deluxeCheck))
-                .addGap(21, 21, 21)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton7)
-                    .addComponent(presidentialCheck)
-                    .addComponent(uncheckBtn))
-                .addGap(89, 89, 89)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel22)
-                    .addComponent(laundryCheck)
-                    .addComponent(barCheck)
-                    .addComponent(parkingCheck))
-                .addGap(27, 27, 27)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(airportCheck)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(1, 1, 1)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel25, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(extraLinenSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(extraBedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(56, 56, 56)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(110, 110, 110)
-                .addComponent(twinCheck)
-                .addGap(72, 72, 72)
-                .addComponent(suiteCheck)
-                .addGap(384, 384, 384)
-                .addComponent(clearBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(clearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(ReserveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(302, 302, 302)
-                .addComponent(jLabel12))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(reservationIDLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(checkInLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel20))))
-                .addGap(8, 8, 8)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(guestNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(31, 31, 31)
-                            .addComponent(contactLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(checkOutLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(58, 58, 58)
-                            .addComponent(emailLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(62, 62, 62)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(129, 129, 129)
+                        .addComponent(jLabel4)
+                        .addGap(101, 101, 101)
+                        .addComponent(jLabel5)
+                        .addGap(161, 161, 161)
+                        .addComponent(jLabel6)
+                        .addGap(115, 115, 115)
+                        .addComponent(jLabel7)
+                        .addGap(105, 105, 105)
+                        .addComponent(jLabel8))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(80, 80, 80)
+                        .addGap(62, 62, 62)
+                        .addComponent(guestName, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(contactField, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(checkInDate, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(checkOutDate, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(estimatedArrivalPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(302, 302, 302)
+                        .addComponent(jLabel12))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel23)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(reservationIDLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(2, 2, 2)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(checkInLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel20))))
+                        .addGap(8, 8, 8)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(guestNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(31, 31, 31)
+                                    .addComponent(contactLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(checkOutLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(58, 58, 58)
+                                    .addComponent(emailLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(80, 80, 80)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel23)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(110, 110, 110)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(twinCheck)
+                                .addGap(72, 72, 72)
+                                .addComponent(suiteCheck)
+                                .addGap(384, 384, 384)
+                                .addComponent(clearBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(clearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(20, 20, 20)
+                                .addComponent(ReserveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel18)
+                                    .addComponent(roomSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel13)
+                                    .addComponent(singleCheck)
+                                    .addComponent(doubleCheck))
+                                .addGap(19, 19, 19)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel17)
+                                    .addComponent(guestSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(executiveCheck)
+                                    .addComponent(deluxeCheck))
+                                .addGap(21, 21, 21)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButton7)
+                                    .addComponent(presidentialCheck)
+                                    .addComponent(uncheckBtn))
+                                .addGap(89, 89, 89)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel22)
+                                    .addComponent(laundryCheck)
+                                    .addComponent(barCheck)
+                                    .addComponent(parkingCheck))
+                                .addGap(27, 27, 27)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(airportCheck)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(1, 1, 1)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jLabel25, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(18, 18, 18)
+                                                .addComponent(extraLinenSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                                .addGap(18, 18, 18)
+                                                .addComponent(extraBedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addGap(56, 56, 56)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addGap(78, 78, 78))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -774,7 +873,7 @@ public class Reservations extends javax.swing.JPanel {
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(clearBtn)
                         .addComponent(clearBtn1)
-                        .addComponent(jButton1))
+                        .addComponent(jToggleButton1))
                     .addComponent(ReserveBtn))
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -865,45 +964,80 @@ public class Reservations extends javax.swing.JPanel {
 
     private void reservedTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reservedTableMouseClicked
       addOnsArea.setText(null);
-        int row = reservedTable.getSelectedRow();
-      String selection = reservedTable.getModel().getValueAt(row, 0).toString();
-      String sql = "SELECT * FROM Guest_Reservation WHERE ReservationID = " + Integer.parseInt(selection.substring(1)); 
-      try(PreparedStatement pst = conn.prepareStatement(sql)){
-          ResultSet rs = pst.executeQuery();
-          
-          while(rs.next()){
-              reservationIDLbl.setText("Reservation ID: " + String.format("R%05d", rs.getInt("ReservationID")));
-              guestNameLbl.setText("Guest Name: " + rs.getString("FullName"));
-              contactLbl.setText("Contact Number : " + rs.getString("ContactNumber"));
-              checkInLbl.setText("Check-In Date: " + rs.getString("CheckIn_Date"));
-              checkOutLbl.setText("Check-Out Date: " + rs.getString("CheckOut_Date"));
-              emailLbl.setText("Email : " + rs.getString("Email"));
-              
-              if(rs.getString("Laundry").equals("true")){
-                  addOnsArea.append("● Laundry \n");
-              }
-              if (rs.getString("MiniBar").equals("true")){
-                  addOnsArea.append("● Mini-Bar Access \n");
-              }
-              if(rs.getString("Parking").equals("true")){
-                  addOnsArea.append("● Parking \n");
-              }
-              if(rs.getString("AirportPickup").equals("true")){
-                  addOnsArea.append("● Airport Pickup \n");
-              }
-              if(rs.getInt("ExtraBed") >= 1){
-                  addOnsArea.append("● Extra Bed - "+ rs.getInt("ExtraBed") +" \n");
-              }
-              if(rs.getInt("ExtraLinen") >= 1){
-                  addOnsArea.append("● Extra Linen - "+ rs.getInt("ExtraLinen") +" \n");
-              }
-              
-              notesArea.setText(rs.getString("Notes"));
-          }
-      }catch(Exception e){
-          e.printStackTrace();
-      }
+    int row = reservedTable.getSelectedRow();
+    
+    if (row == -1) return;
+    
+    String selection = reservedTable.getModel().getValueAt(row, 0).toString();
+    String sql = "SELECT * FROM Guest_Reservation WHERE ReservationID = " + Integer.parseInt(selection.substring(1));
+    
+    try (PreparedStatement pst = conn.prepareStatement(sql)) {
+        ResultSet rs = pst.executeQuery();
+
+        while (rs.next()) {
+            reservationIDLbl.setText("Reservation ID: " + String.format("R%05d", rs.getInt("ReservationID")));
+            guestNameLbl.setText("Guest Name: " + rs.getString("FullName"));
+            contactLbl.setText("Contact Number : " + rs.getString("ContactNumber"));
+            checkInLbl.setText("Check-In Date: " + rs.getString("CheckIn_Date"));
+            checkOutLbl.setText("Check-Out Date: " + rs.getString("CheckOut_Date"));
+            emailLbl.setText("Email : " + rs.getString("Email"));
+
+            if (rs.getString("Laundry").equals("true")) {
+                addOnsArea.append("● Laundry \n");
+            }
+            if (rs.getString("MiniBar").equals("true")) {
+                addOnsArea.append("● Mini-Bar Access \n");
+            }
+            if (rs.getString("Parking").equals("true")) {
+                addOnsArea.append("● Parking \n");
+            }
+            if (rs.getString("AirportPickup").equals("true")) {
+                addOnsArea.append("● Airport Pickup \n");
+            }
+            if (rs.getInt("ExtraBed") >= 1) {
+                addOnsArea.append("● Extra Bed - " + rs.getInt("ExtraBed") + " \n");
+            }
+            if (rs.getInt("ExtraLinen") >= 1) {
+                addOnsArea.append("● Extra Linen - " + rs.getInt("ExtraLinen") + " \n");
+            }
+
+            notesArea.setText(rs.getString("Notes"));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    
+    // If in edit mode, load the data into form fields
+    if (isEditMode) {
+        loadReservationForEdit(row);
+    }
     }//GEN-LAST:event_reservedTableMouseClicked
+
+    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+         isEditMode = jToggleButton1.isSelected();
+    
+    if (isEditMode) {
+        jToggleButton1.setText("Cancel Edit");
+        ReserveBtn.setText("Update");
+        
+        // Check if a reservation is selected
+        int row = reservedTable.getSelectedRow();
+        if (row != -1) {
+            loadReservationForEdit(row);
+        } else {
+            errorNotif("Please select a reservation to edit");
+            jToggleButton1.setSelected(false);
+            isEditMode = false;
+            jToggleButton1.setText("Edit Mode");
+            ReserveBtn.setText("Reserve");
+        }
+    } else {
+        jToggleButton1.setText("Edit Mode");
+        ReserveBtn.setText("Reserve");
+        clearForm();
+        selectedReservationId = -1;
+    }
+    }//GEN-LAST:event_jToggleButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -930,7 +1064,6 @@ public class Reservations extends javax.swing.JPanel {
     private javax.swing.JTextField guestName;
     private javax.swing.JLabel guestNameLbl;
     private javax.swing.JSpinner guestSpinner;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton7;
@@ -958,6 +1091,7 @@ public class Reservations extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JCheckBox laundryCheck;
     private javax.swing.JTextArea notesArea;
     private javax.swing.JTextArea notesTextArea;
