@@ -262,7 +262,7 @@ public class CheckIn extends javax.swing.JPanel {
         checkOutField = new javax.swing.JFormattedTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         reservationTable = new javax.swing.JTable();
-        jButton4 = new javax.swing.JButton();
+        reservationCheckInBtn = new javax.swing.JButton();
         jLabel14 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         roomTable = new javax.swing.JTable();
@@ -411,9 +411,14 @@ public class CheckIn extends javax.swing.JPanel {
             reservationTable.getColumnModel().getColumn(3).setResizable(false);
         }
 
-        jButton4.setBackground(new java.awt.Color(212, 171, 97));
-        jButton4.setForeground(new java.awt.Color(19, 19, 19));
-        jButton4.setText("Check-In");
+        reservationCheckInBtn.setBackground(new java.awt.Color(212, 171, 97));
+        reservationCheckInBtn.setForeground(new java.awt.Color(19, 19, 19));
+        reservationCheckInBtn.setText("Check-In");
+        reservationCheckInBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reservationCheckInBtnActionPerformed(evt);
+            }
+        });
 
         jLabel14.setFont(new java.awt.Font("Cambria", 1, 18)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(212, 171, 97));
@@ -540,7 +545,7 @@ public class CheckIn extends javax.swing.JPanel {
                                     .addGap(31, 31, 31)
                                     .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(149, 149, 149)
-                                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(reservationCheckInBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(30, 30, 30)
                                     .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(jPanel1Layout.createSequentialGroup()
@@ -629,7 +634,7 @@ public class CheckIn extends javax.swing.JPanel {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(2, 2, 2)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton4)
+                                    .addComponent(reservationCheckInBtn)
                                     .addComponent(jLabel12))))
                         .addGap(7, 7, 7))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -704,6 +709,17 @@ public class CheckIn extends javax.swing.JPanel {
         checkInFunction();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void reservationCheckInBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reservationCheckInBtnActionPerformed
+      int row = reservationTable.getSelectedRow();
+      String selection = reservationTable.getModel().getValueAt(row, 0).toString();
+      String sql = "SELECT * FROM Guest_Reservation WHERE ReservationId = " + Integer.parseInt(selection.substring(1));
+      try(PreparedStatement pst = conn.prepareStatement(sql)){
+          ResultSet rs = pst.executeQuery();
+      }catch(Exception e){
+          e.printStackTrace();
+      }
+    }//GEN-LAST:event_reservationCheckInBtnActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox barCheck;
@@ -722,7 +738,6 @@ public class CheckIn extends javax.swing.JPanel {
     private javax.swing.JButton infoClearBtn;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -754,6 +769,7 @@ public class CheckIn extends javax.swing.JPanel {
     private javax.swing.JRadioButton maleRadio;
     private javax.swing.JTextField nationalityField;
     private javax.swing.JCheckBox parkingCheck;
+    private javax.swing.JButton reservationCheckInBtn;
     private javax.swing.JTable reservationTable;
     private javax.swing.JComboBox<String> roomNumberCombo;
     private javax.swing.JTable roomTable;

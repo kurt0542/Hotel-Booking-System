@@ -372,7 +372,6 @@ public class Reservations extends javax.swing.JPanel {
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
         checkOutLbl = new javax.swing.JLabel();
         guestNameLbl = new javax.swing.JLabel();
         guestName = new javax.swing.JTextField();
@@ -467,14 +466,14 @@ public class Reservations extends javax.swing.JPanel {
         jLabel12.setForeground(new java.awt.Color(212, 171, 97));
         jLabel12.setText("Reservation Details:");
 
+        jButton2.setBackground(new java.awt.Color(212, 171, 97));
+        jButton2.setForeground(new java.awt.Color(19, 19, 19));
         jButton2.setText("Remove Reservation");
         jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 jButton2MousePressed(evt);
             }
         });
-
-        jButton3.setText("Check-In");
 
         checkOutLbl.setForeground(new java.awt.Color(212, 171, 97));
         checkOutLbl.setText("Check-Out Date:");
@@ -538,6 +537,8 @@ public class Reservations extends javax.swing.JPanel {
         jLabel20.setForeground(new java.awt.Color(212, 171, 97));
         jLabel20.setText("Add-Ons / Extra Services:");
 
+        uncheckBtn.setBackground(new java.awt.Color(212, 171, 97));
+        uncheckBtn.setForeground(new java.awt.Color(19, 19, 19));
         uncheckBtn.setText("Uncheck All");
         uncheckBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -562,6 +563,8 @@ public class Reservations extends javax.swing.JPanel {
         airportCheck.setForeground(new java.awt.Color(212, 171, 97));
         airportCheck.setText("Airport Pick-up");
 
+        clearBtn.setBackground(new java.awt.Color(212, 171, 97));
+        clearBtn.setForeground(new java.awt.Color(19, 19, 19));
         clearBtn.setText("Process Payment");
         clearBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -569,6 +572,8 @@ public class Reservations extends javax.swing.JPanel {
             }
         });
 
+        ReserveBtn.setBackground(new java.awt.Color(212, 171, 97));
+        ReserveBtn.setForeground(new java.awt.Color(19, 19, 19));
         ReserveBtn.setText("Reserve");
         ReserveBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -576,6 +581,8 @@ public class Reservations extends javax.swing.JPanel {
             }
         });
 
+        jButton7.setBackground(new java.awt.Color(212, 171, 97));
+        jButton7.setForeground(new java.awt.Color(19, 19, 19));
         jButton7.setText("Check Availablity");
         jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -643,6 +650,8 @@ public class Reservations extends javax.swing.JPanel {
         jLabel26.setForeground(new java.awt.Color(212, 171, 97));
         jLabel26.setText("Extra Bed");
 
+        clearBtn1.setBackground(new java.awt.Color(212, 171, 97));
+        clearBtn1.setForeground(new java.awt.Color(19, 19, 19));
         clearBtn1.setText("Clear all");
         clearBtn1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -650,6 +659,8 @@ public class Reservations extends javax.swing.JPanel {
             }
         });
 
+        jToggleButton1.setBackground(new java.awt.Color(212, 171, 97));
+        jToggleButton1.setForeground(new java.awt.Color(19, 19, 19));
         jToggleButton1.setText("Edit Mode");
         jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -704,7 +715,7 @@ public class Reservations extends javax.swing.JPanel {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(reservationIDLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -737,10 +748,8 @@ public class Reservations extends javax.swing.JPanel {
                                 .addComponent(twinCheck)
                                 .addGap(72, 72, 72)
                                 .addComponent(suiteCheck)
-                                .addGap(384, 384, 384)
+                                .addGap(521, 521, 521)
                                 .addComponent(clearBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(clearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(20, 20, 20)
@@ -872,8 +881,7 @@ public class Reservations extends javax.swing.JPanel {
                     .addComponent(suiteCheck)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(clearBtn)
-                        .addComponent(clearBtn1)
-                        .addComponent(jToggleButton1))
+                        .addComponent(clearBtn1))
                     .addComponent(ReserveBtn))
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -884,9 +892,9 @@ public class Reservations extends javax.swing.JPanel {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(12, 12, 12)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton2)
-                            .addComponent(jButton3)))
+                            .addComponent(jToggleButton1)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(reservationIDLbl)
                         .addGap(15, 15, 15)
@@ -1065,7 +1073,6 @@ public class Reservations extends javax.swing.JPanel {
     private javax.swing.JLabel guestNameLbl;
     private javax.swing.JSpinner guestSpinner;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton7;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel10;

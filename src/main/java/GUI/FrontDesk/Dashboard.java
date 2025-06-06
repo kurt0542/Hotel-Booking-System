@@ -73,17 +73,28 @@ public class Dashboard extends javax.swing.JPanel {
     }
     
     private void initCounter() {
-        String sql = "SELECT COUNT(*) FROM RoomList WHERE Status = 'Available'";
-        try (PreparedStatement pst = conn.prepareStatement(sql)) {
-            ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                int count = rs.getInt(1);
-                vacantCount.setText(String.valueOf(count));
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
+    String availableStatusSQL = "SELECT COUNT(*) FROM RoomList WHERE Status = 'Available'";
+    String reservationSQL = "SELECT COUNT(*) FROM Guest_Reservation";
+
+    try (
+        PreparedStatement pst1 = conn.prepareStatement(availableStatusSQL);
+        PreparedStatement pst2 = conn.prepareStatement(reservationSQL);
+    ) {
+        ResultSet rs1 = pst1.executeQuery();
+        if (rs1.next()) {
+            int count = rs1.getInt(1);
+            vacantCount.setText(String.valueOf(count));
         }
+
+        ResultSet rs2 = pst2.executeQuery();
+        if (rs2.next()) {
+            int count = rs2.getInt(1);
+            reservationsCount.setText(String.valueOf(count));
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     }
 
     public void comboFilter(String sql){
@@ -117,7 +128,7 @@ public class Dashboard extends javax.swing.JPanel {
         vacantCount = new javax.swing.JLabel();
         curvedPanel5 = new CustomElements.CurvedPanel();
         jLabel6 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        reservationsCount = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         floor11 = new GUI.FrontDesk.DashboardPanels.Floor2();
         floor21 = new GUI.FrontDesk.DashboardPanels.Floor3();
@@ -291,12 +302,12 @@ public class Dashboard extends javax.swing.JPanel {
 
         jLabel6.setFont(new java.awt.Font("Cambria", 1, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Occupied");
+        jLabel6.setText("Reservations");
 
-        jLabel9.setFont(new java.awt.Font("Cambria", 1, 48)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel9.setText("00");
+        reservationsCount.setFont(new java.awt.Font("Cambria", 1, 48)); // NOI18N
+        reservationsCount.setForeground(new java.awt.Color(255, 255, 255));
+        reservationsCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        reservationsCount.setText("00");
 
         javax.swing.GroupLayout curvedPanel5Layout = new javax.swing.GroupLayout(curvedPanel5);
         curvedPanel5.setLayout(curvedPanel5Layout);
@@ -305,11 +316,11 @@ public class Dashboard extends javax.swing.JPanel {
             .addGroup(curvedPanel5Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(jLabel6)
-                .addContainerGap(163, Short.MAX_VALUE))
+                .addContainerGap(119, Short.MAX_VALUE))
             .addGroup(curvedPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, curvedPanel5Layout.createSequentialGroup()
                     .addContainerGap(146, Short.MAX_VALUE)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(reservationsCount, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(11, 11, 11)))
         );
         curvedPanel5Layout.setVerticalGroup(
@@ -321,7 +332,7 @@ public class Dashboard extends javax.swing.JPanel {
             .addGroup(curvedPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(curvedPanel5Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(reservationsCount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addContainerGap()))
         );
 
@@ -441,7 +452,6 @@ public class Dashboard extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -452,6 +462,7 @@ public class Dashboard extends javax.swing.JPanel {
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel leftBtn;
     private javax.swing.JLabel pageCounter1;
+    private javax.swing.JLabel reservationsCount;
     private javax.swing.JLabel rightBtn;
     private javax.swing.JLabel vacantCount;
     // End of variables declaration//GEN-END:variables

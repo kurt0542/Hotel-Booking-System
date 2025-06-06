@@ -114,8 +114,8 @@ public class DrawerLayout extends SimpleDrawerBuilder {
     @Override
     public SimpleFooterData getSimpleFooterData() {
         return new SimpleFooterData()
-                .setTitle("Java Swing Drawer")
-                .setDescription("Version 1.1.0");
+                .setTitle("OOP Final Project")
+                .setDescription("Submitted by: Kurt Justin Aquino");
     }
 
     @Override
