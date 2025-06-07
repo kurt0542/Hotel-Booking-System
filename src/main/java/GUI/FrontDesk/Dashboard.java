@@ -37,6 +37,12 @@ public class Dashboard extends javax.swing.JPanel {
         pageCounter1.setText("Floor " + currentFloor);
     }
     
+    public void refresh(){
+        initTable();
+        initLayout();
+        initCounter();
+    }
+    
     public void initTable(){
         DefaultTableModel dt = (DefaultTableModel) jTable1.getModel();
         
@@ -74,7 +80,7 @@ public class Dashboard extends javax.swing.JPanel {
         jPanel2.add(floor21,"Floor3");
     }
     
-    private void initCounter() {
+    public void initCounter() {
         String availableStatusSQL = "SELECT COUNT(*) FROM RoomList WHERE Status = 'Available'";
         String reservationSQL = "SELECT COUNT(*) FROM Guest_Reservation";
         String arrivalSQL = "SELECT CheckIn_Date FROM Guest_Reservation";

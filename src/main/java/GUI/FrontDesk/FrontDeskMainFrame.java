@@ -17,6 +17,7 @@ import raven.toast.Notifications;
  */
 public class FrontDeskMainFrame extends javax.swing.JFrame {
     CardLayout cardLayout;
+    private Dashboard dashboard = new Dashboard();
 
     public FrontDeskMainFrame() {
         Notifications.getInstance().setJFrame(this);
@@ -26,7 +27,11 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         cardLayout = (CardLayout) contentPanel.getLayout();
         cardLayout.show(contentPanel, "Dashboard");
     }
-
+    
+    public Dashboard getDashboardPanel() {
+    return dashboard;
+    }
+    
     private void initDrawer(){
         GlassPanePopup.install(this);
         DrawerLayout drawer = new DrawerLayout(this);

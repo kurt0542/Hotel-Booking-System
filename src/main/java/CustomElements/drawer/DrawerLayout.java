@@ -1,6 +1,7 @@
 package customElements.drawer;
 
 import GUI.FrontDesk.ChangePassword;
+import GUI.FrontDesk.Dashboard;
 import GUI.FrontDesk.FrontDeskMainFrame;
 import GUI.LoginPage;
 import javax.swing.JOptionPane;
@@ -61,6 +62,7 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                     @Override
                     public void selected(MenuAction action, int index, int subIndex) {
                         if (index == 0 && subIndex == 0) {
+                            mainFrame.getDashboardPanel().refresh();
                             mainFrame.showPanel("Dashboard");
                         }else if (index == 1 && subIndex == 1) {
                             mainFrame.showPanel("checkIn");

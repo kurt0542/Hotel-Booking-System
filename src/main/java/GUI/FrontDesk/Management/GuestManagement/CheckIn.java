@@ -97,17 +97,17 @@ public class CheckIn extends javax.swing.JPanel {
         }
     }
     
-    private void checkInFunction(){
     
+private void checkInFunction() {
     String fullname = guestField.getText();
     String contact = contactField.getText();
     String email = emailField.getText();
     String birthDate = birthField.getText();
     String nationality = nationalityField.getText();
     String gender = "";
-    if(maleRadio.isSelected()){
+    if (maleRadio.isSelected()) {
         gender = "Male";
-    }else if(femaleRadio.isSelected()){
+    } else if (femaleRadio.isSelected()) {
         gender = "Female";
     }
     String idNumber = idNumberField.getText();
@@ -123,67 +123,119 @@ public class CheckIn extends javax.swing.JPanel {
     boolean isBarAccessible = barCheck.isSelected();
     boolean isEarly = earlyCheck.isSelected();
     boolean isParking = parkingCheck.isSelected();
-    
-    if(fullname.trim().isEmpty() || contact.trim().isEmpty() || 
-       email.trim().isEmpty() || birthDate.trim().isEmpty() || 
-       nationality.trim().isEmpty() || gender.isEmpty() || 
-       idNumber.trim().isEmpty() || roomNumber == null || 
-       checkIn.trim().isEmpty() || checkOut.trim().isEmpty()) {
-        
-        JOptionPane.showMessageDialog(this, "Please fill in all required fields!", 
-                                    "Missing Information", JOptionPane.WARNING_MESSAGE);
+
+    if (fullname.trim().isEmpty() || contact.trim().isEmpty() ||
+        email.trim().isEmpty() || birthDate.trim().isEmpty() ||
+        nationality.trim().isEmpty() || gender.isEmpty() ||
+        idNumber.trim().isEmpty() || roomNumber == null ||
+        checkIn.trim().isEmpty() || checkOut.trim().isEmpty()) {
+
+        JOptionPane.showMessageDialog(this, "Please fill in all required fields!",
+                "Missing Information", JOptionPane.WARNING_MESSAGE);
         return;
     }
-    
-        try {
-            String sql = "INSERT INTO Guest_Information (FullName, ContactNumber, Email, BirthDate, " +
-                        "Gender, Nationality, IDType, IDNumber, RoomNumber, RoomType, CheckIn, CheckOut, " +
-                        "NumberOfGuest, ExtraLinen, ExtraBed, Laundry, MiniBar, EarlyIn, Parking) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setString(1, fullname);
-            pst.setString(2, contact);
-            pst.setString(3, email);
-            pst.setString(4, birthDate);
-            pst.setString(5, gender);
-            pst.setString(6, nationality);
-            pst.setString(7, idType);
-            pst.setString(8, idNumber);
-            pst.setString(9, roomNumber);
-            pst.setString(10, roomType);
-            pst.setString(11, checkIn);
-            pst.setString(12, checkOut);
-            pst.setInt(13, numberOfGuest);
-            pst.setInt(14, extraLinen);
-            pst.setInt(15, extraBed);
-            pst.setBoolean(16, isLaundry);
-            pst.setBoolean(17, isBarAccessible);
-            pst.setBoolean(18, isEarly);
-            pst.setBoolean(19, isParking);
+    try {
 
-            int result = pst.executeUpdate();
+        String checkRoomSql = "SELECT Status FROM RoomList WHERE Room_Number = ? AND Room_Type = ?";
+        PreparedStatement checkPst = conn.prepareStatement(checkRoomSql);
+        checkPst.setString(1, roomNumber);
+        checkPst.setString(2, roomType);
+        ResultSet rs = checkPst.executeQuery();
 
-            if(result > 0) {
-                JOptionPane.showMessageDialog(this, "Guest checked in successfully!", 
-                                            "Success", JOptionPane.INFORMATION_MESSAGE);
+        if (rs.next()) {
+            String currentStatus = rs.getString("Status");
+            if (!"Available".equals(currentStatus)) {
+                JOptionPane.showMessageDialog(this, "Room " + roomNumber + " is currently " + currentStatus + "!",
+                        "Room Not Available", JOptionPane.WARNING_MESSAGE);
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return;
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Room not found in the system!",
+                    "Room Error", JOptionPane.ERROR_MESSAGE);
+            conn.rollback();
+            conn.setAutoCommit(true);
+            return;
+        }
 
-                // Clear the form after successful insertion
-                clearForm();
+        // Insert guest info and get generated BookingID
+        String insertGuestSql = "INSERT INTO Guest_Information (FullName, ContactNumber, Email, BirthDate, " +
+                "Gender, Nationality, IDType, IDNumber, RoomNumber, RoomType, CheckIn, CheckOut, " +
+                "NumberOfGuest, ExtraLinen, ExtraBed, Laundry, MiniBar, EarlyIn, Parking) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement insertPst = conn.prepareStatement(insertGuestSql);
+        insertPst.setString(1, fullname);
+        insertPst.setString(2, contact);
+        insertPst.setString(3, email);
+        insertPst.setString(4, birthDate);
+        insertPst.setString(5, gender);
+        insertPst.setString(6, nationality);
+        insertPst.setString(7, idType);
+        insertPst.setString(8, idNumber);
+        insertPst.setString(9, roomNumber);
+        insertPst.setString(10, roomType);
+        insertPst.setString(11, checkIn);
+        insertPst.setString(12, checkOut);
+        insertPst.setInt(13, numberOfGuest);
+        insertPst.setInt(14, extraLinen);
+        insertPst.setInt(15, extraBed);
+        insertPst.setBoolean(16, isLaundry);
+        insertPst.setBoolean(17, isBarAccessible);
+        insertPst.setBoolean(18, isEarly);
+        insertPst.setBoolean(19, isParking);
 
-                // Optionally refresh any data tables or lists you might have
-                // refreshGuestTable(); // if you have such method
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to check in guest!", 
-                                            "Error", JOptionPane.ERROR_MESSAGE);
+        int guestResult = insertPst.executeUpdate();
+
+        if (guestResult > 0) {
+            ResultSet generatedKeys = insertPst.getGeneratedKeys();
+            int guestID = -1;
+            if (generatedKeys.next()) {
+                guestID = generatedKeys.getInt(1);
             }
 
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage(), 
-                                        "Database Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            // Update RoomList with guest ID and dates
+            String updateRoomSql = "UPDATE RoomList SET Status = 'Occupied', GuestID = ?, CheckIn = ?, CheckOut = ? WHERE Room_Number = ? AND Room_Type = ?";
+            PreparedStatement updatePst = conn.prepareStatement(updateRoomSql);
+            updatePst.setInt(1, guestID);
+            updatePst.setString(2, checkIn);
+            updatePst.setString(3, checkOut);
+            updatePst.setString(4, roomNumber);
+            updatePst.setString(5, roomType);
+
+            int roomResult = updatePst.executeUpdate();
+
+            if (roomResult > 0) {
+                conn.commit();
+                JOptionPane.showMessageDialog(this, "Guest checked in successfully!\nRoom " + roomNumber + " is now occupied.",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                clearForm();
+            } else {
+                conn.rollback();
+                JOptionPane.showMessageDialog(this, "Failed to update room status!",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            conn.rollback();
+            JOptionPane.showMessageDialog(this, "Failed to check in guest!",
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        conn.setAutoCommit(true);
+
+    } catch (Exception e) {
+        try {
+            conn.rollback();
+            conn.setAutoCommit(true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
+}
 
     private void clearForm() {
         guestField.setText("");
@@ -731,7 +783,6 @@ public class CheckIn extends javax.swing.JPanel {
               bedSpinner.setValue(rs.getInt("ExtraBed"));
               laundryCheck.setSelected(rs.getBoolean("Laundry"));
               barCheck.setSelected(rs.getBoolean("MiniBar"));
-              earlyCheck.setSelected(rs.getBoolean("EarlyIn"));
               parkingCheck.setSelected(rs.getBoolean("Parking"));
           }
       }catch(Exception e){
