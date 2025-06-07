@@ -403,9 +403,7 @@ public class Reservations extends javax.swing.JPanel {
         airportCheck = new javax.swing.JCheckBox();
         extraLinenSpinner = new javax.swing.JSpinner();
         extraBedSpinner = new javax.swing.JSpinner();
-        clearBtn = new javax.swing.JButton();
         ReserveBtn = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
         reservationIDLbl = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         checkInLbl = new javax.swing.JLabel();
@@ -563,30 +561,12 @@ public class Reservations extends javax.swing.JPanel {
         airportCheck.setForeground(new java.awt.Color(212, 171, 97));
         airportCheck.setText("Airport Pick-up");
 
-        clearBtn.setBackground(new java.awt.Color(212, 171, 97));
-        clearBtn.setForeground(new java.awt.Color(19, 19, 19));
-        clearBtn.setText("Process Payment");
-        clearBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                clearBtnMousePressed(evt);
-            }
-        });
-
         ReserveBtn.setBackground(new java.awt.Color(212, 171, 97));
         ReserveBtn.setForeground(new java.awt.Color(19, 19, 19));
         ReserveBtn.setText("Reserve");
         ReserveBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 ReserveBtnMousePressed(evt);
-            }
-        });
-
-        jButton7.setBackground(new java.awt.Color(212, 171, 97));
-        jButton7.setForeground(new java.awt.Color(19, 19, 19));
-        jButton7.setText("Check Availablity");
-        jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                jButton7MousePressed(evt);
             }
         });
 
@@ -748,11 +728,9 @@ public class Reservations extends javax.swing.JPanel {
                                 .addComponent(twinCheck)
                                 .addGap(72, 72, 72)
                                 .addComponent(suiteCheck)
-                                .addGap(521, 521, 521)
+                                .addGap(661, 661, 661)
                                 .addComponent(clearBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(clearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(20, 20, 20)
                                 .addComponent(ReserveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -769,10 +747,9 @@ public class Reservations extends javax.swing.JPanel {
                                     .addComponent(deluxeCheck))
                                 .addGap(21, 21, 21)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton7)
                                     .addComponent(presidentialCheck)
                                     .addComponent(uncheckBtn))
-                                .addGap(89, 89, 89)
+                                .addGap(117, 117, 117)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel22)
                                     .addComponent(laundryCheck)
@@ -835,10 +812,8 @@ public class Reservations extends javax.swing.JPanel {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel17)
                         .addGap(4, 4, 4)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(guestSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton7))
-                        .addGap(47, 47, 47)
+                        .addComponent(guestSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(48, 48, 48)
                         .addComponent(executiveCheck)
                         .addGap(10, 10, 10)
                         .addComponent(deluxeCheck))
@@ -880,9 +855,8 @@ public class Reservations extends javax.swing.JPanel {
                     .addComponent(twinCheck)
                     .addComponent(suiteCheck)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(clearBtn)
-                        .addComponent(clearBtn1))
-                    .addComponent(ReserveBtn))
+                        .addComponent(ReserveBtn)
+                        .addComponent(clearBtn1)))
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel10)
@@ -949,14 +923,6 @@ public class Reservations extends javax.swing.JPanel {
     private void barCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_barCheckActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_barCheckActionPerformed
-
-    private void jButton7MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MousePressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton7MousePressed
-
-    private void clearBtnMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clearBtnMousePressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_clearBtnMousePressed
 
     private void ReserveBtnMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ReserveBtnMousePressed
         addReservation();
@@ -1057,7 +1023,6 @@ public class Reservations extends javax.swing.JPanel {
     private javax.swing.JLabel checkInLbl;
     private javax.swing.JFormattedTextField checkOutDate;
     private javax.swing.JLabel checkOutLbl;
-    private javax.swing.JButton clearBtn;
     private javax.swing.JButton clearBtn1;
     private javax.swing.JTextField contactField;
     private javax.swing.JLabel contactLbl;
@@ -1073,7 +1038,6 @@ public class Reservations extends javax.swing.JPanel {
     private javax.swing.JLabel guestNameLbl;
     private javax.swing.JSpinner guestSpinner;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton7;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

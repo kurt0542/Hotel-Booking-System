@@ -8,6 +8,7 @@ package GUI.FrontDesk;
 import customElements.drawer.DrawerLayout;
 import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.CardLayout;
+import java.awt.Component;
 import raven.drawer.Drawer;
 import raven.popup.GlassPanePopup;
 import raven.toast.Notifications;
@@ -17,8 +18,7 @@ import raven.toast.Notifications;
  */
 public class FrontDeskMainFrame extends javax.swing.JFrame {
     CardLayout cardLayout;
-    private Dashboard dashboard = new Dashboard();
-
+    
     public FrontDeskMainFrame() {
         Notifications.getInstance().setJFrame(this);
         initComponents();
@@ -28,18 +28,70 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
         cardLayout.show(contentPanel, "Dashboard");
     }
     
-    public Dashboard getDashboardPanel() {
-    return dashboard;
-    }
     
     private void initDrawer(){
         GlassPanePopup.install(this);
         DrawerLayout drawer = new DrawerLayout(this);
         Drawer.getInstance().setDrawerBuilder(drawer);
     }
+    
     public void showPanel(String name) {
-    cardLayout.show(contentPanel, name);
+    
+    contentPanel.remove(getPanelByName(name));
+
+   
+    switch (name) {
+        case "Dashboard":
+            dashboard1 = new Dashboard();
+            contentPanel.add(dashboard1, "Dashboard");
+            break;
+        case "checkIn":
+            checkIn1 = new GUI.FrontDesk.Management.GuestManagement.CheckIn();
+            contentPanel.add(checkIn1, "checkIn");
+            break;
+        case "checkOut":
+            checkOut1 = new GUI.FrontDesk.Management.GuestManagement.CheckOut();
+            contentPanel.add(checkOut1, "checkOut");
+            break;
+        case "guestRecords":
+            guestRecords1 = new GUI.FrontDesk.Management.GuestManagement.GuestRecords();
+            contentPanel.add(guestRecords1, "guestRecords");
+            break;
+        case "Reservations":
+            reservations2 = new GUI.FrontDesk.Management.Reservations();
+            contentPanel.add(reservations2, "Reservations");
+            break;
     }
+
+    
+    cardLayout.show(contentPanel, name);
+    contentPanel.revalidate();
+    contentPanel.repaint();
+}
+    private Component getPanelByName(String name) {
+    for (java.awt.Component comp : contentPanel.getComponents()) {
+        if (contentPanel.getLayout() instanceof CardLayout) {
+            if (((java.awt.CardLayout) contentPanel.getLayout()).toString().contains(name)) {
+                return comp;
+            }
+        }
+    }
+    
+    switch (name) {
+        case "Dashboard":
+            return dashboard1;
+        case "checkIn":
+            return checkIn1;
+        case "checkOut":
+            return checkOut1;
+        case "guestRecords":
+            return guestRecords1;
+        case "Reservations":
+            return reservations2;
+        default:
+            return null;
+    }
+}
 
     public void initLayout(){
         contentPanel.add(checkIn1, "checkIn");

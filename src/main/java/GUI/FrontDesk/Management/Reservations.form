@@ -143,11 +143,9 @@
                                   <Component id="twinCheck" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="72" pref="72" max="-2" attributes="0"/>
                                   <Component id="suiteCheck" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="521" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="661" max="-2" attributes="0"/>
                                   <Component id="clearBtn1" min="-2" pref="120" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="clearBtn" min="-2" pref="120" max="-2" attributes="0"/>
-                                  <EmptySpace min="20" pref="20" max="-2" attributes="0"/>
                                   <Component id="ReserveBtn" min="-2" pref="122" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
@@ -167,11 +165,10 @@
                                   </Group>
                                   <EmptySpace min="21" pref="21" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="jButton7" min="-2" max="-2" attributes="0"/>
                                       <Component id="presidentialCheck" min="-2" max="-2" attributes="0"/>
                                       <Component id="uncheckBtn" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace min="89" pref="89" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="117" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jLabel22" min="-2" max="-2" attributes="0"/>
                                       <Component id="laundryCheck" min="-2" max="-2" attributes="0"/>
@@ -251,11 +248,8 @@
                       <Group type="102" attributes="0">
                           <Component id="jLabel17" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="4" pref="4" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="guestSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jButton7" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="47" pref="47" max="-2" attributes="0"/>
+                          <Component id="guestSpinner" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="48" pref="48" max="-2" attributes="0"/>
                           <Component id="executiveCheck" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
                           <Component id="deluxeCheck" min="-2" max="-2" attributes="0"/>
@@ -307,10 +301,9 @@
                       <Component id="twinCheck" min="-2" max="-2" attributes="0"/>
                       <Component id="suiteCheck" min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="clearBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="ReserveBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="clearBtn1" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="ReserveBtn" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="20" pref="20" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -677,20 +670,6 @@
         </Component>
         <Component class="javax.swing.JSpinner" name="extraBedSpinner">
         </Component>
-        <Component class="javax.swing.JButton" name="clearBtn">
-          <Properties>
-            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="61" green="ab" red="d4" type="rgb"/>
-            </Property>
-            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="13" green="13" red="13" type="rgb"/>
-            </Property>
-            <Property name="text" type="java.lang.String" value="Process Payment"/>
-          </Properties>
-          <Events>
-            <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="clearBtnMousePressed"/>
-          </Events>
-        </Component>
         <Component class="javax.swing.JButton" name="ReserveBtn">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -703,20 +682,6 @@
           </Properties>
           <Events>
             <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="ReserveBtnMousePressed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="jButton7">
-          <Properties>
-            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="61" green="ab" red="d4" type="rgb"/>
-            </Property>
-            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="13" green="13" red="13" type="rgb"/>
-            </Property>
-            <Property name="text" type="java.lang.String" value="Check Availablity"/>
-          </Properties>
-          <Events>
-            <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jButton7MousePressed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="reservationIDLbl">

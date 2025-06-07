@@ -225,12 +225,6 @@ private void checkInFunction() {
         conn.setAutoCommit(true);
 
     } catch (Exception e) {
-        try {
-            conn.rollback();
-            conn.setAutoCommit(true);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
         JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage(),
                 "Database Error", JOptionPane.ERROR_MESSAGE);
         e.printStackTrace();
@@ -745,7 +739,7 @@ private void checkInFunction() {
 
     private void roomTypeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roomTypeComboActionPerformed
         String type = (String) roomTypeCombo.getSelectedItem();
-        String sql = "SELECT * FROM RoomList WHERE Room_Type = '" + type +"'";
+        String sql = "SELECT * FROM RoomList WHERE Room_Type = '" + type +"' AND Status = 'Available'";
         
         try(PreparedStatement pst = conn.prepareStatement(sql)){
             ResultSet rs = pst.executeQuery();

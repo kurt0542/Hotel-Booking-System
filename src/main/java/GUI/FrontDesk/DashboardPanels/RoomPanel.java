@@ -89,62 +89,94 @@ public class RoomPanel extends javax.swing.JPanel {
         jButton2 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(42, 42, 42));
         setMaximumSize(new java.awt.Dimension(160, 132));
         setMinimumSize(new java.awt.Dimension(160, 132));
         setPreferredSize(new java.awt.Dimension(160, 132));
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         curvedPanel1.setBackground(new java.awt.Color(76, 175, 80));
         curvedPanel1.setRoundBottomLeft(90);
         curvedPanel1.setRoundBottomRight(90);
         curvedPanel1.setRoundTopLeft(90);
         curvedPanel1.setRoundTopRight(90);
-        add(curvedPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 4, 30, 30));
 
         jLabel1.setFont(new java.awt.Font("Century", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(212, 171, 97));
         jLabel1.setText("000");
-        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 4, 50, -1));
 
         jLabel2.setForeground(new java.awt.Color(212, 171, 97));
         jLabel2.setText("Price/Type");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 76, 140, -1));
 
         jLabel3.setForeground(new java.awt.Color(212, 171, 97));
         jLabel3.setText("Status:");
-        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 32, 110, -1));
 
         jButton2.setBackground(new java.awt.Color(212, 171, 97));
         jButton2.setForeground(new java.awt.Color(19, 19, 19));
         jButton2.setText("Check-In");
         jButton2.setBorderPainted(false);
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 104, 118, -1));
 
         jLabel4.setForeground(new java.awt.Color(212, 171, 97));
         jLabel4.setText("Check-Out:");
-        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 54, 140, -1));
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-edit-22.png"))); // NOI18N
         jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 104, -1, -1));
 
-        jButton3.setBackground(new java.awt.Color(212, 171, 97));
-        jButton3.setForeground(new java.awt.Color(19, 19, 19));
-        jButton3.setText("Check-Out");
-        jButton3.setBorderPainted(false);
-        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 133, 118, -1));
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(6, 6, 6)
+                        .addComponent(curvedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel5)))
+                .addGap(242, 242, 242))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(4, 4, 4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(6, 6, 6)
+                        .addComponent(jLabel3))
+                    .addComponent(curvedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(6, 6, 6)
+                .addComponent(jLabel4)
+                .addGap(6, 6, 6)
+                .addComponent(jLabel2)
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton2)
+                    .addComponent(jLabel5))
+                .addGap(173, 173, 173))
+        );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private CustomElements.CurvedPanel curvedPanel1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
