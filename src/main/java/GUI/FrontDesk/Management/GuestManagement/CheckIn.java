@@ -66,9 +66,9 @@ public class CheckIn extends javax.swing.JPanel {
             String reservationNumber = String.format("R%05d", rs1.getInt("ReservationID"));
             String guestName = rs1.getString("FullName");
             String checkInDate = rs1.getString("CheckIn_Date");
-            String checkOutDate = rs1.getString("CheckOut_Date");
+            String arrival = rs1.getString("Estimated_Arrival");
 
-            dt1.addRow(new Object[]{reservationNumber, guestName, checkInDate, checkOutDate});
+            dt1.addRow(new Object[]{reservationNumber, guestName, checkInDate, arrival});
         }
 
         PreparedStatement pst2 = conn.prepareStatement(roomSQL);
@@ -372,6 +372,11 @@ public class CheckIn extends javax.swing.JPanel {
         infoClearBtn.setBackground(new java.awt.Color(212, 171, 97));
         infoClearBtn.setForeground(new java.awt.Color(19, 19, 19));
         infoClearBtn.setText("Clear All");
+        infoClearBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                infoClearBtnActionPerformed(evt);
+            }
+        });
 
         jLabel24.setForeground(new java.awt.Color(212, 171, 97));
         jLabel24.setText("Extra Linen");
@@ -391,7 +396,7 @@ public class CheckIn extends javax.swing.JPanel {
                 {null, null, null, null}
             },
             new String [] {
-                "Reservation ID", "Guest Name", "Check-In Date", "Check-Out Date"
+                "Reservation ID", "Guest Name", "Check-In Date", "Estimated Arrival"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -715,10 +720,28 @@ public class CheckIn extends javax.swing.JPanel {
       String sql = "SELECT * FROM Guest_Reservation WHERE ReservationId = " + Integer.parseInt(selection.substring(1));
       try(PreparedStatement pst = conn.prepareStatement(sql)){
           ResultSet rs = pst.executeQuery();
+          while(rs.next()){
+              guestField.setText(rs.getString("FullName"));
+              contactField.setText(rs.getString("ContactNumber"));
+              emailField.setText(rs.getString("Email"));
+              checkInField.setText(rs.getString("CheckIn_Date"));
+              checkOutField.setText(rs.getString("CheckOut_Date"));
+              guestSpinner.setValue(rs.getInt("NumberOfGuests"));
+              linenSpinner.setValue(rs.getInt("ExtraLinen"));
+              bedSpinner.setValue(rs.getInt("ExtraBed"));
+              laundryCheck.setSelected(rs.getBoolean("Laundry"));
+              barCheck.setSelected(rs.getBoolean("MiniBar"));
+              earlyCheck.setSelected(rs.getBoolean("EarlyIn"));
+              parkingCheck.setSelected(rs.getBoolean("Parking"));
+          }
       }catch(Exception e){
           e.printStackTrace();
       }
     }//GEN-LAST:event_reservationCheckInBtnActionPerformed
+
+    private void infoClearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoClearBtnActionPerformed
+        clearForm();
+    }//GEN-LAST:event_infoClearBtnActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

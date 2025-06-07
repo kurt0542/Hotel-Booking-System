@@ -3,6 +3,7 @@ package customElements.drawer;
 import GUI.FrontDesk.ChangePassword;
 import GUI.FrontDesk.FrontDeskMainFrame;
 import GUI.LoginPage;
+import javax.swing.JOptionPane;
 import raven.drawer.component.SimpleDrawerBuilder;
 import raven.drawer.component.footer.SimpleFooterData;
 import raven.drawer.component.header.SimpleHeaderData;
@@ -25,7 +26,6 @@ public class DrawerLayout extends SimpleDrawerBuilder {
         this.mainFrame = mainFrame;
 
     }
-
     
     @Override
     public SimpleHeaderData getSimpleHeaderData() {
@@ -43,27 +43,16 @@ public class DrawerLayout extends SimpleDrawerBuilder {
             {"Dashboard"},
             {"~MANAGEMENT~"},
             {"Guest Management", "Check-In","Check-Out", "Guest Records"},
-            {"Room Management"},
+           // {"Room Management"},
             {"Reservations"},
-            {"~BILLING~"},
-            {"Generate Invoice"},
-            {"Payments"},
-            {"Refunds"},
+//            {"~BILLING~"},
+//            {"Generate Invoice"},
+//            {"Payments"},
+//            {"Refunds"},
             {"~SETTINGS~"},
+            {"Create an Account"},
             {"Change Password"},
             {"Logout"}};
-
-        String icons[] = {
-            "dashboard.svg",
-            "email.svg",
-            "chat.svg",
-            "calendar.svg",
-            "ui.svg",
-            "forms.svg",
-            "chart.svg",
-            "icon.svg",
-            "page.svg",
-            "logout.svg"};
 
         return new SimpleMenuOption()
                 .setMenus(menus)
@@ -82,11 +71,25 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                         else if (index == 1 && subIndex == 3) {
                             mainFrame.showPanel("guestRecords");  
                         }
-                        else if(index == 3 && subIndex == 0){
+                        else if(index == 2 && subIndex == 0){
                             mainFrame.showPanel("Reservations");
                         }
-                        else if (index == 7 && subIndex == 0) {    
+                        else if (index == 3 && subIndex == 0) {    
+                          if(LoginPage.getRole().equals("Manager")){
+                              
+                          }else{
+                              JOptionPane.showMessageDialog(mainFrame, 
+                            "You do not have enough permission to access this feature.", 
+                            "Access Denied", 
+                            JOptionPane.ERROR_MESSAGE);
+                          }
+                        }
+                        else if (index == 4 && subIndex == 0) {    
                           new ChangePassword().setVisible(true);
+                        }
+                        else if (index == 5 && subIndex == 0) {    
+                          new LoginPage().setVisible(true);
+                            mainFrame.dispose();
                         }
                         if(index == 1 && subIndex == 0){
                             

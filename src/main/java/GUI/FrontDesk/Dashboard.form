@@ -158,7 +158,7 @@
                   <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   <EmptySpace pref="30" max="32767" attributes="0"/>
-                  <Component id="jLabel8" min="-2" pref="124" max="-2" attributes="0"/>
+                  <Component id="arrivalCount" min="-2" pref="124" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -170,7 +170,7 @@
                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   <EmptySpace pref="84" max="32767" attributes="0"/>
               </Group>
-              <Component id="jLabel8" alignment="1" max="32767" attributes="0"/>
+              <Component id="arrivalCount" alignment="1" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -186,7 +186,7 @@
             <Property name="text" type="java.lang.String" value="Arrivals"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel8">
+        <Component class="javax.swing.JLabel" name="arrivalCount">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Cambria" size="48" style="1"/>

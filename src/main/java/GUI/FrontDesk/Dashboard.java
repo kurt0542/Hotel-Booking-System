@@ -9,6 +9,8 @@ import java.awt.CardLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -73,28 +75,51 @@ public class Dashboard extends javax.swing.JPanel {
     }
     
     private void initCounter() {
-    String availableStatusSQL = "SELECT COUNT(*) FROM RoomList WHERE Status = 'Available'";
-    String reservationSQL = "SELECT COUNT(*) FROM Guest_Reservation";
+        String availableStatusSQL = "SELECT COUNT(*) FROM RoomList WHERE Status = 'Available'";
+        String reservationSQL = "SELECT COUNT(*) FROM Guest_Reservation";
+        String arrivalSQL = "SELECT CheckIn_Date FROM Guest_Reservation";
 
-    try (
-        PreparedStatement pst1 = conn.prepareStatement(availableStatusSQL);
-        PreparedStatement pst2 = conn.prepareStatement(reservationSQL);
-    ) {
-        ResultSet rs1 = pst1.executeQuery();
-        if (rs1.next()) {
-            int count = rs1.getInt(1);
-            vacantCount.setText(String.valueOf(count));
+        try (
+            PreparedStatement pst1 = conn.prepareStatement(availableStatusSQL);
+            PreparedStatement pst2 = conn.prepareStatement(reservationSQL);
+            PreparedStatement pst3 = conn.prepareStatement(arrivalSQL);
+        ) {
+            ResultSet rs1 = pst1.executeQuery();
+            if (rs1.next()) {
+                int count = rs1.getInt(1);
+                vacantCount.setText(String.valueOf(count));
+            }
+
+            ResultSet rs2 = pst2.executeQuery();
+            if (rs2.next()) {
+                int count = rs2.getInt(1);
+                reservationsCount.setText(String.valueOf(count));
+            }
+
+            ResultSet rs3 = pst3.executeQuery();
+            int arrivalTodayCount = 0;
+            LocalDate today = LocalDate.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
+
+            while (rs3.next()) {
+                String checkInDateStr = rs3.getString("CheckIn_Date");
+                if (checkInDateStr != null && !checkInDateStr.trim().isEmpty()) {
+                    try {
+                        LocalDate checkInDate = LocalDate.parse(checkInDateStr, formatter);
+                        if (checkInDate.equals(today)) {
+                            arrivalTodayCount++;
+                        }
+                    } catch (Exception dateParseException) {
+                        
+                    }
+                }
+            }
+
+            arrivalCount.setText(String.valueOf(arrivalTodayCount));
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        ResultSet rs2 = pst2.executeQuery();
-        if (rs2.next()) {
-            int count = rs2.getInt(1);
-            reservationsCount.setText(String.valueOf(count));
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
     }
 
     public void comboFilter(String sql){
@@ -117,7 +142,7 @@ public class Dashboard extends javax.swing.JPanel {
         circularProgressBar2 = new CustomElements.CircularProgressBar();
         curvedPanel1 = new CustomElements.CurvedPanel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
+        arrivalCount = new javax.swing.JLabel();
         curvedPanel3 = new CustomElements.CurvedPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -170,10 +195,10 @@ public class Dashboard extends javax.swing.JPanel {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Arrivals");
 
-        jLabel8.setFont(new java.awt.Font("Cambria", 1, 48)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("00");
+        arrivalCount.setFont(new java.awt.Font("Cambria", 1, 48)); // NOI18N
+        arrivalCount.setForeground(new java.awt.Color(255, 255, 255));
+        arrivalCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        arrivalCount.setText("00");
 
         javax.swing.GroupLayout curvedPanel1Layout = new javax.swing.GroupLayout(curvedPanel1);
         curvedPanel1.setLayout(curvedPanel1Layout);
@@ -183,7 +208,7 @@ public class Dashboard extends javax.swing.JPanel {
                 .addGap(21, 21, 21)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(arrivalCount, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
         );
         curvedPanel1Layout.setVerticalGroup(
@@ -192,7 +217,7 @@ public class Dashboard extends javax.swing.JPanel {
                 .addGap(17, 17, 17)
                 .addComponent(jLabel3)
                 .addContainerGap(84, Short.MAX_VALUE))
-            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(arrivalCount, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         curvedPanel3.setBackground(new java.awt.Color(45, 45, 45));
@@ -440,6 +465,7 @@ public class Dashboard extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> RoomFilter;
+    private javax.swing.JLabel arrivalCount;
     private CustomElements.CircularProgressBar circularProgressBar2;
     private CustomElements.CurvedPanel curvedPanel1;
     private CustomElements.CurvedPanel curvedPanel3;
@@ -451,7 +477,6 @@ public class Dashboard extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
