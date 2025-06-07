@@ -31,15 +31,9 @@ public class Floor3 extends javax.swing.JPanel {
             panel11, panel12, panel13, panel14, roomPanel26
         };
 
-        String sql = "SELECT TOP 16 rt.Room_Number, rt.Status, rt.CheckOut, rt.Room_Type, rr.Price_Rate " +
-             "FROM RoomList rt " +
-             "INNER JOIN Room_Rate rr ON rt.Room_Type = rr.Room_Type " +
-             "WHERE rt.Room_Number NOT IN ( " +
-             "    SELECT TOP 14 rt2.Room_Number " +
-             "    FROM RoomList rt2 " +
-             "    ORDER BY rt2.Room_Number " +
-             ") " +
-             "ORDER BY rt.Room_Number;";
+        String sql = "SELECT TOP 16 rl.Room_Number, rl.Status, rl.CheckOut, rl.Room_Type, rr.Price_Rate FROM RoomList rl "
+                + "INNER JOIN Room_Rate rr ON rl.Room_Type = rr.Room_Type WHERE rl.Room_Number NOT IN (SELECT TOP 14 "
+                + "rl2.Room_Number FROM RoomList rl2 ORDER BY rl2.Room_Number) ORDER BY rl.Room_Number;";
 
 
 

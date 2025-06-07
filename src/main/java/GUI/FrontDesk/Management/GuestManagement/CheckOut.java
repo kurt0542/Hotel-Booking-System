@@ -35,7 +35,7 @@ public class CheckOut extends javax.swing.JPanel {
      */
     
     private void initTable() {
-        DefaultTableModel dt = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel dt = (DefaultTableModel) guestList.getModel();
         dt.setRowCount(0);
 
         String sql = """
@@ -54,7 +54,7 @@ public class CheckOut extends javax.swing.JPanel {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                String bookingID = rs.getString("BookingID");
+                String bookingID = String.format("R%05d", rs.getInt("BookingID"));
                 String fullName = rs.getString("FullName");
                 String roomNumber = rs.getString("Room_Number");
                 String checkIn = rs.getString("CheckIn");
@@ -65,16 +65,37 @@ public class CheckOut extends javax.swing.JPanel {
 
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
             centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-            for (int i = 0; i < jTable1.getColumnCount(); i++) {
-                jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            for (int i = 0; i < guestList.getColumnCount(); i++) {
+                guestList.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-
+    
+    private void receiptTable(int bookingId){
+       String sql = """
+        SELECT gi.BookingID,
+               gi.PaymentStatus,
+               gi.ExtraLinen,
+               gi.ExtraBed,
+               gi.Laundry,
+               gi.MiniBar,
+               gi.EarlyIn,
+               gi.Parking
+               rl.Room_Type,
+               
+        FROM Guest_Information gi
+        JOIN RoomList rl ON gi.RoomNumber = rl.Room_Number
+        WHERE gi.BookingID = ?
+    """;
+       try(PreparedStatement pst = conn.prepareStatement(sql)){
+           
+       }catch(Exception e){
+           
+       }
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -82,14 +103,14 @@ public class CheckOut extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        guestList = new javax.swing.JTable();
         jLabel11 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        bookingLbl = new javax.swing.JLabel();
+        roomLbl = new javax.swing.JLabel();
+        statusLbl = new javax.swing.JLabel();
+        guestNameLbl = new javax.swing.JLabel();
+        checkInLbl = new javax.swing.JLabel();
+        checkOutLbl = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
@@ -110,8 +131,6 @@ public class CheckOut extends javax.swing.JPanel {
         jLabel15 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
         jTextField5 = new javax.swing.JTextField();
         jButton7 = new javax.swing.JButton();
@@ -125,7 +144,7 @@ public class CheckOut extends javax.swing.JPanel {
         jLabel10.setForeground(new java.awt.Color(212, 171, 97));
         jLabel10.setText("Guest List:");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        guestList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -144,37 +163,42 @@ public class CheckOut extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
-            jTable1.getColumnModel().getColumn(4).setResizable(false);
+        guestList.getTableHeader().setReorderingAllowed(false);
+        guestList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                guestListMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(guestList);
+        if (guestList.getColumnModel().getColumnCount() > 0) {
+            guestList.getColumnModel().getColumn(0).setResizable(false);
+            guestList.getColumnModel().getColumn(1).setResizable(false);
+            guestList.getColumnModel().getColumn(2).setResizable(false);
+            guestList.getColumnModel().getColumn(3).setResizable(false);
+            guestList.getColumnModel().getColumn(4).setResizable(false);
         }
 
         jLabel11.setFont(new java.awt.Font("Cambria", 1, 18)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(212, 171, 97));
         jLabel11.setText("Guest Information:");
 
-        jLabel1.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel1.setText("Booking ID:");
+        bookingLbl.setForeground(new java.awt.Color(212, 171, 97));
+        bookingLbl.setText("Booking ID:");
 
-        jLabel2.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel2.setText("Room No:");
+        roomLbl.setForeground(new java.awt.Color(212, 171, 97));
+        roomLbl.setText("Room No:");
 
-        jLabel3.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel3.setText("Status:");
+        statusLbl.setForeground(new java.awt.Color(212, 171, 97));
+        statusLbl.setText("Payment Status:");
 
-        jLabel4.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel4.setText("Guest Name:");
+        guestNameLbl.setForeground(new java.awt.Color(212, 171, 97));
+        guestNameLbl.setText("Guest Name:");
 
-        jLabel5.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel5.setText("Check-In Date:");
+        checkInLbl.setForeground(new java.awt.Color(212, 171, 97));
+        checkInLbl.setText("Check-In Date:");
 
-        jLabel6.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel6.setText("Check-Out Date:");
+        checkOutLbl.setForeground(new java.awt.Color(212, 171, 97));
+        checkOutLbl.setText("Check-Out Date:");
 
         jLabel12.setFont(new java.awt.Font("Cambria", 1, 18)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(212, 171, 97));
@@ -236,9 +260,6 @@ public class CheckOut extends javax.swing.JPanel {
         jLabel16.setForeground(new java.awt.Color(212, 171, 97));
         jLabel16.setText("Payment Method");
 
-        jLabel17.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel17.setText("Transaction ID:");
-
         jLabel18.setForeground(new java.awt.Color(212, 171, 97));
         jLabel18.setText("Dicount Code:");
 
@@ -257,16 +278,16 @@ public class CheckOut extends javax.swing.JPanel {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(51, 51, 51)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(bookingLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(roomLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(checkInLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(guestNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(48, 48, 48)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(statusLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(checkOutLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(36, 36, 36)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -275,7 +296,7 @@ public class CheckOut extends javax.swing.JPanel {
                                             .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 625, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -292,27 +313,22 @@ public class CheckOut extends javax.swing.JPanel {
                                                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGroup(jPanel1Layout.createSequentialGroup()
-                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                    .addGap(18, 18, 18)
-                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jLabel17)
-                                                        .addComponent(jTextField4)))
-                                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                                    .addComponent(jLabel18)
-                                                    .addGap(18, 18, 18)
-                                                    .addComponent(jTextField5)
+                                                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addGap(13, 13, 13)))
+                                                    .addComponent(jLabel18)))
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                                 .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
                                                 .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
@@ -336,17 +352,18 @@ public class CheckOut extends javax.swing.JPanel {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
+                                .addComponent(guestNameLbl)
                                 .addGap(28, 28, 28))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel3))
+                                    .addComponent(bookingLbl)
+                                    .addComponent(statusLbl))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel6))))
+                                    .addComponent(roomLbl)
+                                    .addComponent(checkInLbl)
+                                    .addComponent(checkOutLbl))))
+                        .addGap(18, 18, 18)
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -384,17 +401,13 @@ public class CheckOut extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel16)
-                            .addComponent(jLabel17))
+                            .addComponent(jLabel18))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel18)
                             .addComponent(jButton7))))
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -413,8 +426,51 @@ public class CheckOut extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void guestListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_guestListMouseClicked
+                                      
+    int row = guestList.getSelectedRow();
+
+    if (row == -1) return;
+
+    String selection = guestList.getModel().getValueAt(row, 0).toString();
+    int bookingId = Integer.parseInt(selection.substring(1)); 
+
+    String sql = """
+        SELECT gi.BookingID,
+               gi.FullName,
+               rl.Room_Number,
+               rl.CheckIn,
+               rl.CheckOut,
+               gi.PaymentStatus
+        FROM Guest_Information gi
+        JOIN RoomList rl ON gi.RoomNumber = rl.Room_Number
+        WHERE gi.BookingID = ?
+    """;
+
+    try (PreparedStatement pst = conn.prepareStatement(sql)) {
+        pst.setInt(1, bookingId);
+        ResultSet rs = pst.executeQuery();
+
+        if (rs.next()) {
+            bookingLbl.setText("Booking ID: " + String.format("R%05d", rs.getInt("BookingID")));
+            guestNameLbl.setText("Guest Name: " + rs.getString("FullName"));
+            statusLbl.setText("Payment Status: " + rs.getString("PaymentStatus"));
+            roomLbl.setText("Room No: " + rs.getString("Room_Number"));
+            checkInLbl.setText("Check-In Date: " + rs.getString("CheckIn"));
+            checkOutLbl.setText("Check-Out Date: " + rs.getString("CheckOut"));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    }//GEN-LAST:event_guestListMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel bookingLbl;
+    private javax.swing.JLabel checkInLbl;
+    private javax.swing.JLabel checkOutLbl;
+    private javax.swing.JTable guestList;
+    private javax.swing.JLabel guestNameLbl;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -423,7 +479,6 @@ public class CheckOut extends javax.swing.JPanel {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -431,13 +486,7 @@ public class CheckOut extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -445,11 +494,11 @@ public class CheckOut extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
+    private javax.swing.JLabel roomLbl;
+    private javax.swing.JLabel statusLbl;
     // End of variables declaration//GEN-END:variables
 }

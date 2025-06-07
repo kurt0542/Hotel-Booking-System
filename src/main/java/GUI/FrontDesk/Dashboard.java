@@ -10,7 +10,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -101,7 +100,7 @@ public class Dashboard extends javax.swing.JPanel {
             ResultSet rs3 = pst3.executeQuery();
             int arrivalTodayCount = 0;
             LocalDate today = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             while (rs3.next()) {
                 String checkInDateStr = rs3.getString("CheckIn_Date");
