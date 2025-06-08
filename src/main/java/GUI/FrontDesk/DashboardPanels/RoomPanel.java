@@ -4,11 +4,17 @@
  */
 package GUI.FrontDesk.DashboardPanels;
 
+import Database.DBConnection;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Date;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -19,7 +25,9 @@ public class RoomPanel extends javax.swing.JPanel {
     /**
      * Creates new form RoomPanel
      */
+    Connection conn;
     public RoomPanel() {
+        conn = DBConnection.connectDB();
         initComponents();
         setOpaque(false);
     }
@@ -33,10 +41,10 @@ public class RoomPanel extends javax.swing.JPanel {
     this.status = status;
 
     if ("Available".equalsIgnoreCase(status)) {
-        jButton2.setText("Check-In");
+        jButton2.setEnabled(false);
         curvedPanel1.setBackground(new Color(76,175,80)); 
     } else {
-        jButton2.setText("View Guest");
+        jButton2.setEnabled(true);
         curvedPanel1.setBackground(new Color(255, 191, 0));
     }
 
@@ -112,7 +120,7 @@ public class RoomPanel extends javax.swing.JPanel {
 
         jButton2.setBackground(new java.awt.Color(212, 171, 97));
         jButton2.setForeground(new java.awt.Color(19, 19, 19));
-        jButton2.setText("Check-In");
+        jButton2.setText("View Details");
         jButton2.setBorderPainted(false);
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -172,7 +180,54 @@ public class RoomPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MousePressed
-        // TODO add your handling code here:
+        try (PreparedStatement pst = conn.prepareStatement("SELECT GuestID FROM RoomList WHERE Room_Number = " + roomNo)) {
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                int guestId = rs.getInt("GuestID");
+
+                try (PreparedStatement guestPst = conn.prepareStatement(
+                    "SELECT FullName, Email, BirthDate, Gender, Nationality, IDType, IDNumber, " +
+                    "CheckIn, CheckOut, NumberOfGuest, ExtraBed, Laundry " +
+                    "FROM Guest_Information WHERE BookingID = ?")) {
+
+                    guestPst.setInt(1, guestId);
+                    ResultSet guestRs = guestPst.executeQuery();
+
+                    if (guestRs.next()) {
+                        String fullName = guestRs.getString("FullName");
+                        String email = guestRs.getString("Email");
+                        String birthDate = guestRs.getString("BirthDate");
+                        String gender = guestRs.getString("Gender");
+                        String nationality = guestRs.getString("Nationality");
+                        String idType = guestRs.getString("IDType");
+                        String idNumber = guestRs.getString("IDNumber");
+                        String checkIn = guestRs.getString("CheckIn");
+                        String checkOut = guestRs.getString("CheckOut");
+                        int numberOfGuests = guestRs.getInt("NumberOfGuest");
+                        int extraBed = guestRs.getInt("ExtraBed");
+                        boolean laundry = guestRs.getBoolean("Laundry");
+
+                        String guestInfo = "=== GUEST INFORMATION ===\n\n" +
+                                         "Guest Name: " + fullName + "\n" +
+                                         "Email: " + email + "\n" +
+                                         "Birth Date: " + birthDate + "\n" +
+                                         "Gender: " + gender + "\n" +
+                                         "Nationality: " + nationality + "\n" +
+                                         "ID Type: " + idType + "\n" +
+                                         "ID Number: " + idNumber + "\n\n" +
+                                         "=== ROOM DETAILS ===\n\n" +
+                                         "Check-in Date: " + checkIn + "\n" +
+                                         "Check-out Date: " + checkOut + "\n" +
+                                         "Number of Guests: " + numberOfGuests + "\n" +
+                                         "Extra Bed: " + extraBed + "\n" +
+                                         "Laundry Service: " + (laundry ? "Yes" : "No");
+
+                        JOptionPane.showMessageDialog(null, guestInfo, "Guest Details", JOptionPane.INFORMATION_MESSAGE);
+                    }}} 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_jButton2MousePressed
 
 
