@@ -8,8 +8,18 @@ import Database.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -75,27 +85,295 @@ public class CheckOut extends javax.swing.JPanel {
     }
     
     private void receiptTable(int bookingId){
-       String sql = """
+    String sql = """
         SELECT gi.BookingID,
+               gi.FullName,
+               gi.NumberOfGuest,
                gi.PaymentStatus,
                gi.ExtraLinen,
                gi.ExtraBed,
                gi.Laundry,
                gi.MiniBar,
                gi.EarlyIn,
-               gi.Parking
+               gi.Parking,
+               rl.Room_Number,
                rl.Room_Type,
-               
+               rl.CheckIn,
+               rl.CheckOut
         FROM Guest_Information gi
         JOIN RoomList rl ON gi.RoomNumber = rl.Room_Number
         WHERE gi.BookingID = ?
     """;
-       try(PreparedStatement pst = conn.prepareStatement(sql)){
-           
-       }catch(Exception e){
-           
-       }
+    
+    try(PreparedStatement pst = conn.prepareStatement(sql)){
+        pst.setInt(1, bookingId);
+        ResultSet rs = pst.executeQuery();
+        
+        if(rs.next()){
+            // Clear existing table data
+            DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+            model.setRowCount(0);
+            
+            // Get room type and base price
+            String roomType = rs.getString("Room_Type");
+            double basePrice = getRoomPrice(roomType);
+            
+            // Add base room charge
+            model.addRow(new Object[]{
+                "Room (" + roomType + ")",
+                rs.getInt("NumberOfGuest") + " guest(s)",
+                String.format("₱%.2f", basePrice),
+                String.format("₱%.2f", basePrice)
+            });
+            
+            double totalAmount = basePrice;
+            
+            // Add extra services if selected
+            if (rs.getInt("ExtraLinen") >= 1) {
+                double extraLinenPrice = 500.0;
+                model.addRow(new Object[]{"Extra Linen", "", String.format("₱%.2f", extraLinenPrice), String.format("₱%.2f", extraLinenPrice)});
+                totalAmount += extraLinenPrice;
+            }
+
+            if (rs.getBoolean("ExtraBed")) {
+                double extraBedPrice = 1000.0;
+                model.addRow(new Object[]{"Extra Bed", "1", String.format("₱%.2f", extraBedPrice), String.format("₱%.2f", extraBedPrice)});
+                totalAmount += extraBedPrice;
+            }
+
+            if (rs.getBoolean("Laundry")) {
+                double laundryPrice = 300.0;
+                model.addRow(new Object[]{"Laundry Service", "1", String.format("₱%.2f", laundryPrice), String.format("₱%.2f", laundryPrice)});
+                totalAmount += laundryPrice;
+            }
+
+            if (rs.getBoolean("MiniBar")) {
+                double miniBarPrice = 800.0;
+                model.addRow(new Object[]{"Mini Bar", "1", String.format("₱%.2f", miniBarPrice), String.format("₱%.2f", miniBarPrice)});
+                totalAmount += miniBarPrice;
+            }
+
+            if (rs.getBoolean("EarlyIn")) {
+                double earlyInPrice = 200.0;
+                model.addRow(new Object[]{"Early Check-in", "1", String.format("₱%.2f", earlyInPrice), String.format("₱%.2f", earlyInPrice)});
+                totalAmount += earlyInPrice;
+            }
+
+            if (rs.getBoolean("Parking")) {
+                double parkingPrice = 150.0;
+                model.addRow(new Object[]{"Parking", "1", String.format("₱%.2f", parkingPrice), String.format("₱%.2f", parkingPrice)});
+                totalAmount += parkingPrice;
+            }
+
+            
+            // Update total label (assuming you have a label for total)
+            // jLabelTotal.setText(String.format("Total: ₱%.2f", totalAmount));
+            
+            // Update guest information fields
+            // jLabelBookingID.setText(rs.getString("BookingID"));
+            // jLabelGuestName.setText(rs.getString("FullName"));
+            // jLabelRoomNo.setText(rs.getString("Room_Number"));
+            // jLabelCheckIn.setText(rs.getString("CheckIn"));
+            // jLabelCheckOut.setText(rs.getString("CheckOut"));
+            // jLabelPaymentStatus.setText(rs.getString("PaymentStatus"));
+        }
+        
+    } catch(SQLException e){
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error loading receipt data: " + e.getMessage());
     }
+}
+
+    private double getRoomPrice(String roomType){
+        switch(roomType.toLowerCase()){
+            case "deluxe": return 9219.0;
+            case "double": return 6459.0;
+            case "executive": return 11990.0;
+            case "presidential": return 44999.0;
+            case "single": return 4259.0;
+            case "suite": return 15999.0;
+            case "twin": return 6999.0;
+            default: return 0.0;
+        }
+    }
+    
+    private void generateReceiptPDF() {
+    
+    int selectedRow = guestList.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Please select a guest first!");
+        return;
+    }
+
+    try {
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String timestamp = dateFormat.format(new Date());
+        String bookingNumber = bookingLbl.getText().replace("Booking ID: ", "").replace(" ", "");
+        String baseFileName = "Receipt_" + bookingNumber + "_" + timestamp + ".pdf";
+        
+        // Choose save location
+        String selectedPath = chooseSaveLocation(baseFileName);
+        if (selectedPath == null) {
+            return; // User cancelled
+        }
+        
+        // Create document with custom page size for thermal printer (58mm width)
+        Rectangle pageSize = new Rectangle(164f, 842f); // Width: 58mm, Height: variable
+        Document document = new Document(pageSize, 5, 5, 10, 10); // Small margins
+        
+        PdfWriter.getInstance(document, new FileOutputStream(selectedPath));
+        document.open();
+
+        // Define fonts
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
+        Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, BaseColor.BLACK);
+        Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 7, BaseColor.BLACK);
+        Font smallFont = FontFactory.getFont(FontFactory.HELVETICA, 6, BaseColor.BLACK);
+
+        // Hotel Header
+        Paragraph hotelName = new Paragraph("HOTEL LA SOUVERAIN", titleFont);
+        hotelName.setAlignment(Element.ALIGN_CENTER);
+        document.add(hotelName);
+        
+        Paragraph address = new Paragraph("Clark Freeport Zone\nMabalacat, Pampanga 2023\nTel: 0928-870-2278", smallFont);
+        address.setAlignment(Element.ALIGN_CENTER);
+        address.setSpacingAfter(10);
+        document.add(address);
+
+        // Add line separator
+        document.add(new Paragraph("===========================================", smallFont));
+
+        // Receipt Title
+        Paragraph receiptTitle = new Paragraph("CHECKOUT RECEIPT", headerFont);
+        receiptTitle.setAlignment(Element.ALIGN_CENTER);
+        receiptTitle.setSpacingAfter(5);
+        document.add(receiptTitle);
+
+        // Date and Time
+        SimpleDateFormat receiptDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Paragraph dateTime = new Paragraph("Date: " + receiptDateFormat.format(new Date()), normalFont);
+        dateTime.setAlignment(Element.ALIGN_CENTER);
+        dateTime.setSpacingAfter(10);
+        document.add(dateTime);
+
+        document.add(new Paragraph("===========================================", smallFont));
+
+        // Guest Information
+        document.add(new Paragraph("GUEST INFORMATION", headerFont));
+        document.add(new Paragraph("-------------------------------------------------", smallFont));
+        
+        document.add(new Paragraph(bookingLbl.getText(), normalFont));
+        document.add(new Paragraph(guestNameLbl.getText(), normalFont));
+        document.add(new Paragraph(roomLbl.getText(), normalFont));
+        document.add(new Paragraph(checkInLbl.getText(), normalFont));
+        document.add(new Paragraph(checkOutLbl.getText(), normalFont));
+        
+        document.add(new Paragraph("===========================================", smallFont));
+
+        // Billing Details
+        document.add(new Paragraph("BILLING DETAILS", headerFont));
+        document.add(new Paragraph("-------------------------------------------------", smallFont));
+
+        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+        double grandTotal = 0.0;
+
+        // Add each billing item
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String description = model.getValueAt(i, 0) != null ? model.getValueAt(i, 0).toString() : "";
+            String quantity = model.getValueAt(i, 1) != null ? model.getValueAt(i, 1).toString() : "";
+            String unitPrice = model.getValueAt(i, 2) != null ? model.getValueAt(i, 2).toString() : "";
+            String total = model.getValueAt(i, 3) != null ? model.getValueAt(i, 3).toString() : "";
+
+            if (!description.isEmpty()) {
+                // Item description
+                document.add(new Paragraph(description, normalFont));
+                
+                // Quantity and unit price on same line
+                String qtyPrice = quantity + " x " + unitPrice;
+                Paragraph qtyPricePara = new Paragraph(qtyPrice, smallFont);
+                document.add(qtyPricePara);
+                
+                // Total amount aligned right
+                Paragraph totalPara = new Paragraph(total, normalFont);
+                totalPara.setAlignment(Element.ALIGN_RIGHT);
+                totalPara.setSpacingAfter(3);
+                document.add(totalPara);
+
+                // Extract numeric value from total for grand total calculation
+                try {
+                    String numericTotal = total.replace("₱", "").replace(",", "");
+                    grandTotal += Double.parseDouble(numericTotal);
+                } catch (NumberFormatException e) {
+                    // Ignore if can't parse
+                }
+            }
+        }
+
+        document.add(new Paragraph("-------------------------------------------------", smallFont));
+
+        // Grand Total
+        Paragraph grandTotalPara = new Paragraph("TOTAL: ₱" + String.format("%.2f", grandTotal), headerFont);
+        grandTotalPara.setAlignment(Element.ALIGN_RIGHT);
+        grandTotalPara.setSpacingAfter(10);
+        document.add(grandTotalPara);
+
+        document.add(new Paragraph("===========================================", smallFont));
+
+        // Footer
+        document.add(new Paragraph("Thank you for staying with us!", normalFont));
+        document.add(new Paragraph("Have a pleasant day!", normalFont));
+        
+        Paragraph footer = new Paragraph("\nPowered by Hotel Management System", smallFont);
+        footer.setAlignment(Element.ALIGN_CENTER);
+        footer.setSpacingBefore(15);
+        document.add(footer);
+
+        document.close();
+
+            try {
+                java.awt.Desktop.getDesktop().open(new java.io.File(selectedPath));
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Could not open the file: " + ex.getMessage());
+            }
+
+    } catch (DocumentException | IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error generating receipt: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+    private String chooseSaveLocation(String defaultFileName) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Receipt As...");
+
+        // Set default save location to Documents/Hotel_Receipts folder
+        String documentsPath = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "Hotel_Receipts";
+        File documentsDir = new File(documentsPath);
+        if (!documentsDir.exists()) {
+            documentsDir.mkdirs();
+        }
+        fileChooser.setCurrentDirectory(documentsDir);
+
+        // Set the default filename
+        fileChooser.setSelectedFile(new File(defaultFileName));
+
+        // Set file filter for PDF files only
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Files", "pdf"));
+
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            String savePath = fileChooser.getSelectedFile().getAbsolutePath();
+            // Ensure the file has .pdf extension
+            if (!savePath.toLowerCase().endsWith(".pdf")) {
+                savePath += ".pdf";
+            }
+            return savePath;
+        }
+
+        return null; // User cancelled
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -125,15 +403,9 @@ public class CheckOut extends javax.swing.JPanel {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        receiptButton = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
-        jLabel15 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
-        jButton7 = new javax.swing.JButton();
 
         setMaximumSize(new java.awt.Dimension(1280, 639));
         setMinimumSize(new java.awt.Dimension(1280, 639));
@@ -239,31 +511,22 @@ public class CheckOut extends javax.swing.JPanel {
         jButton2.setText("Clear");
 
         jButton3.setText("Confirm Checkout");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
-        jButton4.setText("Print Receipt");
+        receiptButton.setText("Print Receipt");
+        receiptButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                receiptButtonActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Update Charge");
 
         jButton6.setText("Remove Charge");
-
-        jLabel15.setFont(new java.awt.Font("Cambria", 1, 18)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel15.setText("Payment:");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
-            }
-        });
-
-        jLabel16.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel16.setText("Payment Method");
-
-        jLabel18.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel18.setText("Dicount Code:");
-
-        jButton7.setText("Add");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -310,25 +573,14 @@ public class CheckOut extends javax.swing.JPanel {
                                                             .addGap(18, 18, 18)
                                                             .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                     .addGap(18, 18, 18)
-                                                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(jLabel18)))
+                                                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                                 .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
                                                 .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(receiptButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGap(18, 18, 18)
-                                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
@@ -363,7 +615,7 @@ public class CheckOut extends javax.swing.JPanel {
                                     .addComponent(roomLbl)
                                     .addComponent(checkInLbl)
                                     .addComponent(checkOutLbl))))
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -391,22 +643,11 @@ public class CheckOut extends javax.swing.JPanel {
                                     .addComponent(jButton1)
                                     .addComponent(jButton2)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton4)
+                                .addComponent(receiptButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jButton5)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton6)
-                            .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel16)
-                            .addComponent(jLabel18))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton7))))
+                        .addComponent(jButton6)))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
 
@@ -421,10 +662,6 @@ public class CheckOut extends javax.swing.JPanel {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void guestListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_guestListMouseClicked
                                       
@@ -462,7 +699,16 @@ public class CheckOut extends javax.swing.JPanel {
     } catch (Exception e) {
         e.printStackTrace();
     }
+        receiptTable(bookingId);
     }//GEN-LAST:event_guestListMouseClicked
+
+    private void receiptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_receiptButtonActionPerformed
+        generateReceiptPDF();
+    }//GEN-LAST:event_receiptButtonActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -474,19 +720,13 @@ public class CheckOut extends javax.swing.JPanel {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -497,7 +737,7 @@ public class CheckOut extends javax.swing.JPanel {
     private javax.swing.JTable jTable2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField5;
+    private javax.swing.JButton receiptButton;
     private javax.swing.JLabel roomLbl;
     private javax.swing.JLabel statusLbl;
     // End of variables declaration//GEN-END:variables
