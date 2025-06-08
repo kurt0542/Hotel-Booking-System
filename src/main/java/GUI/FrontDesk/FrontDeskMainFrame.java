@@ -50,10 +50,6 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
             checkOut1 = new GUI.FrontDesk.Management.GuestManagement.CheckOut();
             contentPanel.add(checkOut1, "checkOut");
             break;
-        case "guestRecords":
-            guestRecords1 = new GUI.FrontDesk.Management.GuestManagement.GuestRecords();
-            contentPanel.add(guestRecords1, "guestRecords");
-            break;
         case "Reservations":
             reservations2 = new GUI.FrontDesk.Management.Reservations();
             contentPanel.add(reservations2, "Reservations");

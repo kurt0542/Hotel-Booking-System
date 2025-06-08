@@ -43,7 +43,8 @@ public class DrawerLayout extends SimpleDrawerBuilder {
             {"~MAIN~"},
             {"Dashboard"},
             {"~MANAGEMENT~"},
-            {"Guest Management", "Check-In","Check-Out", "Guest Records"},
+            {"Check-In"},
+            {"Check-Out"},
            // {"Room Management"},
             {"Reservations"},
 //            {"~BILLING~"},
@@ -63,19 +64,16 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                     public void selected(MenuAction action, int index, int subIndex) {
                         if (index == 0 && subIndex == 0) {
                             mainFrame.showPanel("Dashboard");
-                        }else if (index == 1 && subIndex == 1) {
+                        }else if (index == 1 && subIndex == 0) {
                             mainFrame.showPanel("checkIn");
                         }
-                        else if (index == 1 && subIndex == 2) {
+                        else if (index == 2 && subIndex == 0) {
                             mainFrame.showPanel("checkOut");
                         }
-                        else if (index == 1 && subIndex == 3) {
-                            mainFrame.showPanel("guestRecords");  
-                        }
-                        else if(index == 2 && subIndex == 0){
+                        else if(index == 3 && subIndex == 0){
                             mainFrame.showPanel("Reservations");
                         }
-                        else if (index == 3 && subIndex == 0) {    
+                        else if (index == 4 && subIndex == 0) {    
                           if(LoginPage.getRole().equals("Manager")){
                               new AccountCreation().setVisible(true);
                           }else{
@@ -85,19 +83,14 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                             JOptionPane.ERROR_MESSAGE);
                           }
                         }
-                        else if (index == 4 && subIndex == 0) {    
+                        else if (index == 5 && subIndex == 0) {    
                           new ChangePassword().setVisible(true);
                         }
-                        else if (index == 5 && subIndex == 0) {    
+                        else if (index == 6 && subIndex == 0) {    
                           new LoginPage().setVisible(true);
                             mainFrame.dispose();
                         }
-                        if(index == 1 && subIndex == 0){
-                            
-                        }
-                        else{
                             raven.drawer.Drawer.getInstance().closeDrawer();
-                        }
                         System.out.println("Menu selected " + index + " " + subIndex);
                     }
                 })

@@ -73,6 +73,8 @@ public class Dashboard extends javax.swing.JPanel {
     public void initLayout(){
         jPanel2.add(floor11, "Floor2");
         jPanel2.add(floor21,"Floor3");
+        jPanel2.add(floor41,"Floor4");
+        jPanel2.add(floor51,"Floor5");
     }
     
     public void initCounter() {
@@ -157,6 +159,8 @@ public class Dashboard extends javax.swing.JPanel {
         jPanel2 = new javax.swing.JPanel();
         floor11 = new GUI.FrontDesk.DashboardPanels.Floor2();
         floor21 = new GUI.FrontDesk.DashboardPanels.Floor3();
+        floor41 = new GUI.FrontDesk.DashboardPanels.Floor4();
+        floor51 = new GUI.FrontDesk.DashboardPanels.Floor5();
         pageCounter1 = new javax.swing.JLabel();
         leftBtn = new javax.swing.JLabel();
         rightBtn = new javax.swing.JLabel();
@@ -362,6 +366,8 @@ public class Dashboard extends javax.swing.JPanel {
         jPanel2.setLayout(new java.awt.CardLayout());
         jPanel2.add(floor11, "card2");
         jPanel2.add(floor21, "card3");
+        jPanel2.add(floor41, "card4");
+        jPanel2.add(floor51, "card5");
 
         pageCounter1.setBackground(new java.awt.Color(212, 175, 55));
         pageCounter1.setForeground(new java.awt.Color(212, 175, 55));
@@ -466,6 +472,8 @@ public class Dashboard extends javax.swing.JPanel {
     private CustomElements.CurvedPanel curvedPanel5;
     private GUI.FrontDesk.DashboardPanels.Floor2 floor11;
     private GUI.FrontDesk.DashboardPanels.Floor3 floor21;
+    private GUI.FrontDesk.DashboardPanels.Floor4 floor41;
+    private GUI.FrontDesk.DashboardPanels.Floor5 floor51;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
