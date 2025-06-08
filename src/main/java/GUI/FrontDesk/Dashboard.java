@@ -148,7 +148,6 @@ public class Dashboard extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        RoomFilter = new javax.swing.JComboBox<>();
         curvedPanel4 = new CustomElements.CurvedPanel();
         jLabel5 = new javax.swing.JLabel();
         vacantCount = new javax.swing.JLabel();
@@ -229,7 +228,7 @@ public class Dashboard extends javax.swing.JPanel {
         curvedPanel3.setRoundTopRight(20);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel2.setText("Available Rooms");
+        jLabel2.setText("Room List:");
 
         jTable1.setBackground(new java.awt.Color(45, 45, 45));
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -248,8 +247,6 @@ public class Dashboard extends javax.swing.JPanel {
         jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
 
-        RoomFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Room No.", "Available", "Occupied", "Status", "Rate" }));
-
         javax.swing.GroupLayout curvedPanel3Layout = new javax.swing.GroupLayout(curvedPanel3);
         curvedPanel3.setLayout(curvedPanel3Layout);
         curvedPanel3Layout.setHorizontalGroup(
@@ -257,9 +254,7 @@ public class Dashboard extends javax.swing.JPanel {
             .addGroup(curvedPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 124, Short.MAX_VALUE)
-                .addComponent(RoomFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(curvedPanel3Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 1, Short.MAX_VALUE))
@@ -267,12 +262,10 @@ public class Dashboard extends javax.swing.JPanel {
         curvedPanel3Layout.setVerticalGroup(
             curvedPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(curvedPanel3Layout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addGroup(curvedPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(RoomFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 14, 14)
+                .addComponent(jLabel2)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -456,7 +449,7 @@ public class Dashboard extends javax.swing.JPanel {
     }//GEN-LAST:event_leftBtnMousePressed
 
     private void rightBtnMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rightBtnMousePressed
-        if (currentFloor < 3) {
+        if (currentFloor < 5) {
         currentFloor++;
         cardLayout.show(jPanel2, "Floor" + currentFloor);
         pageCounter1.setText("Floor " + currentFloor);
@@ -465,7 +458,6 @@ public class Dashboard extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> RoomFilter;
     private javax.swing.JLabel arrivalCount;
     private CustomElements.CircularProgressBar circularProgressBar2;
     private CustomElements.CurvedPanel curvedPanel1;

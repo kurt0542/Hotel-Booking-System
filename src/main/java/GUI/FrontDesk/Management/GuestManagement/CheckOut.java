@@ -22,6 +22,7 @@ import java.util.Date;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -111,7 +112,7 @@ public class CheckOut extends javax.swing.JPanel {
             ResultSet rs = pst.executeQuery();
 
             if(rs.next()){             
-                DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+                DefaultTableModel model = (DefaultTableModel) billingTable.getModel();
                 model.setRowCount(0);
 
                 String roomType = rs.getString("Room_Type");
@@ -334,7 +335,7 @@ public class CheckOut extends javax.swing.JPanel {
         document.add(new Paragraph("BILLING DETAILS", headerFont));
         document.add(new Paragraph("-------------------------------------------------", smallFont));
 
-        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+        DefaultTableModel model = (DefaultTableModel) billingTable.getModel();
         double grandTotal = 0.0;
 
         for (int i = 0; i < model.getRowCount(); i++) {
@@ -444,14 +445,14 @@ public class CheckOut extends javax.swing.JPanel {
         checkOutLbl = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        billingTable = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        descriptionField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        priceField = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
+        quantitySpinner = new javax.swing.JSpinner();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         receiptButton = new javax.swing.JButton();
@@ -524,7 +525,7 @@ public class CheckOut extends javax.swing.JPanel {
         jLabel12.setForeground(new java.awt.Color(212, 171, 97));
         jLabel12.setText("Billing:");
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        billingTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -535,7 +536,12 @@ public class CheckOut extends javax.swing.JPanel {
                 "Description", "Quantity", "Unit Price", "Total"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
+        billingTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                billingTableMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(billingTable);
 
         jLabel8.setFont(new java.awt.Font("Cambria", 1, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(212, 171, 97));
@@ -564,6 +570,11 @@ public class CheckOut extends javax.swing.JPanel {
         jButton5.setText("Update Charge");
 
         jButton6.setText("Remove Charge");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -596,14 +607,14 @@ public class CheckOut extends javax.swing.JPanel {
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(descriptionField, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(26, 26, 26)
-                                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(priceField, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(jPanel1Layout.createSequentialGroup()
                                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                     .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addGap(18, 18, 18)
                                                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                 .addGap(18, 18, 18)
@@ -646,7 +657,6 @@ public class CheckOut extends javax.swing.JPanel {
                                     .addComponent(roomLbl)
                                     .addComponent(checkInLbl)
                                     .addComponent(checkOutLbl))))
-                        .addGap(18, 18, 18)
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -660,13 +670,13 @@ public class CheckOut extends javax.swing.JPanel {
                                     .addComponent(jLabel14))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(descriptionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(priceField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel13)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jButton1)
                                     .addComponent(jButton2)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -731,11 +741,93 @@ public class CheckOut extends javax.swing.JPanel {
         generateReceiptPDF();
     }//GEN-LAST:event_receiptButtonActionPerformed
 
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        int row = billingTable.getSelectedRow();
+    
+    // Check if a row is selected
+    if (row == -1) {
+        JOptionPane.showMessageDialog(this, 
+            "Please select a row to remove.", 
+            "No Selection", 
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    // Optional: Show confirmation dialog
+    int confirm = JOptionPane.showConfirmDialog(this,
+        "Are you sure you want to remove this item?",
+        "Confirm Removal",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE);
+    
+    if (confirm != JOptionPane.YES_OPTION) {
+        return;
+    }
+    
+    try {
+        DefaultTableModel model = (DefaultTableModel) billingTable.getModel();
+        
+        model.removeRow(row);
+
+        JOptionPane.showMessageDialog(this,
+            "Item removed successfully.",
+            "Success",
+            JOptionPane.INFORMATION_MESSAGE);
+            
+    } catch (Exception e) {
+        // Handle any errors
+        JOptionPane.showMessageDialog(this,
+            "Error removing item: " + e.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+        System.err.println("Error removing billing item: " + e.getMessage());
+    }
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void billingTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_billingTableMouseClicked
+
+    int row = billingTable.getSelectedRow();
+    if (row == -1) return;
+
+    TableModel model = billingTable.getModel();
+
+    try {
+        // Get values from selected row
+        String description = model.getValueAt(row, 0).toString();
+        String unitPrice = model.getValueAt(row, 2).toString(); // Unit Price is column 2
+        String quantity = model.getValueAt(row, 1).toString();  // Quantity is column 1
+
+        // Set the form fields
+        descriptionField.setText(description);
+        priceField.setText(unitPrice);
+
+        // Convert quantity string to integer for spinner
+        try {
+            int quantityValue = Integer.parseInt(quantity);
+            quantitySpinner.setValue(quantityValue);
+        } catch (NumberFormatException e) {
+            // Handle case where quantity is not a valid number
+            quantitySpinner.setValue(1); // Default value
+            System.err.println("Invalid quantity format: " + quantity);
+        }
+
+    } catch (Exception e) {
+        // Handle any other exceptions (null values, etc.)
+        System.err.println("Error setting billing form values: " + e.getMessage());
+        // Optionally clear the fields or set default values
+        descriptionField.setText("");
+        priceField.setText("");
+        quantitySpinner.setValue(1);
+    }
+    }//GEN-LAST:event_billingTableMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable billingTable;
     private javax.swing.JLabel bookingLbl;
     private javax.swing.JLabel checkInLbl;
     private javax.swing.JLabel checkOutLbl;
+    private javax.swing.JTextField descriptionField;
     private javax.swing.JTable guestList;
     private javax.swing.JLabel guestNameLbl;
     private javax.swing.JButton jButton1;
@@ -752,10 +844,8 @@ public class CheckOut extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField priceField;
+    private javax.swing.JSpinner quantitySpinner;
     private javax.swing.JButton receiptButton;
     private javax.swing.JLabel roomLbl;
     // End of variables declaration//GEN-END:variables
