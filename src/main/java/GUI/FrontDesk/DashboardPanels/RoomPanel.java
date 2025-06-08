@@ -115,6 +115,11 @@ public class RoomPanel extends javax.swing.JPanel {
         jButton2.setText("Check-In");
         jButton2.setBorderPainted(false);
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jButton2MousePressed(evt);
+            }
+        });
 
         jLabel4.setForeground(new java.awt.Color(212, 171, 97));
         jLabel4.setText("Check-Out:");
@@ -165,6 +170,10 @@ public class RoomPanel extends javax.swing.JPanel {
                 .addGap(173, 173, 173))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MousePressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2MousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

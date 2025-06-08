@@ -1,7 +1,7 @@
 package customElements.drawer;
 
+import GUI.FrontDesk.AccountCreation;
 import GUI.FrontDesk.ChangePassword;
-import GUI.FrontDesk.Dashboard;
 import GUI.FrontDesk.FrontDeskMainFrame;
 import GUI.LoginPage;
 import javax.swing.JOptionPane;
@@ -77,7 +77,7 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                         }
                         else if (index == 3 && subIndex == 0) {    
                           if(LoginPage.getRole().equals("Manager")){
-                              
+                              new AccountCreation().setVisible(true);
                           }else{
                               JOptionPane.showMessageDialog(mainFrame, 
                             "You do not have enough permission to access this feature.", 
@@ -102,16 +102,6 @@ public class DrawerLayout extends SimpleDrawerBuilder {
                     }
                 })
                 .setMenuValidation(new MenuValidation() {
-                    @Override
-                    public boolean menuValidation(int index, int subIndex) {
-//                        if(index==0){
-//                            return false;
-//                        }else if(index==3){
-//                            return false;
-//                        }
-                        return true;
-                    }
-
                 });
     }
 

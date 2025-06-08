@@ -235,7 +235,6 @@ public class CheckOut extends javax.swing.JPanel {
     }
     }
 
-
     public void calculateTotal() {
         double total = 0.0;
         int columnIndex = 3; 
@@ -442,7 +441,7 @@ public class CheckOut extends javax.swing.JPanel {
             return savePath;
         }
 
-        return null; // User cancelled
+        return null; 
     }
     
     private void clearFunction(){
@@ -451,6 +450,47 @@ public class CheckOut extends javax.swing.JPanel {
         quantitySpinner.setValue(1);
     }
     
+    private void clearLabels(){
+        bookingLbl.setText("");
+        guestNameLbl.setText("");
+        roomLbl.setText("");
+        checkInLbl.setText("");
+        checkOutLbl.setText("");
+        DefaultTableModel model = (DefaultTableModel) billingTable.getModel();
+        model.setRowCount(0);
+    }
+    
+    private String getRoomNumberFromSelectedGuest() {
+    int selectedRow = guestList.getSelectedRow();
+    if (selectedRow == -1) {
+        return null; 
+    }
+    
+    return guestList.getValueAt(selectedRow, 2).toString();
+    }
+    
+    private int getBookingID() {
+    int selectedRow = guestList.getSelectedRow();
+    if (selectedRow == -1) {
+        return 0; 
+    }
+    String selection = guestList.getValueAt(selectedRow, 0).toString();
+    
+    return Integer.parseInt(selection.substring(1));
+    }
+    
+    private void resetRoom(){
+    String sql = "UPDATE RoomList SET Status = 'Available', CheckOut = NULL, GuestID = NULL WHERE Status = 'Occupied' AND Room_Number = " + getRoomNumberFromSelectedGuest();
+    String sql2 = "DELETE * FROM Guest_Information WHERE BookingID = " + getBookingID();
+    try {
+        PreparedStatement pst = conn.prepareStatement(sql);
+        PreparedStatement pst2 = conn.prepareStatement(sql2);
+        pst.executeUpdate();    
+        pst2.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -770,6 +810,9 @@ public class CheckOut extends javax.swing.JPanel {
 
     private void receiptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_receiptButtonActionPerformed
         generateReceiptPDF();
+        resetRoom();
+        initTable();
+        clearLabels();
     }//GEN-LAST:event_receiptButtonActionPerformed
 
     private void removeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeBtnActionPerformed
@@ -802,6 +845,8 @@ public class CheckOut extends javax.swing.JPanel {
         JOptionPane.showMessageDialog(this,"Error removing item: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         System.err.println("Error removing billing item: " + e.getMessage());
     }
+    
+
     }//GEN-LAST:event_removeBtnActionPerformed
 
     private void billingTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_billingTableMouseClicked

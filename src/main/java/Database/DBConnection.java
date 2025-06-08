@@ -21,9 +21,7 @@ public class DBConnection {
                 System.err.println("Database file not found at: " + dbPath);
                 return null;
             }
-
             Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + dbPath);
-
             return conn;
         } catch (Exception e) {
             e.printStackTrace();

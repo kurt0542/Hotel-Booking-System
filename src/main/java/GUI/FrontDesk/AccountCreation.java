@@ -8,6 +8,7 @@ import Database.DBConnection;
 import com.formdev.flatlaf.FlatDarkLaf;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -22,30 +23,70 @@ public class AccountCreation extends javax.swing.JFrame {
     public AccountCreation() {
         conn = DBConnection.connectDB();
         initComponents();
+        setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
     }
     
-    private boolean createAccount() {
-    String employeeName = jTextField1.getText().trim();
-    String username = jTextField2.getText().trim();
-    String password = new String(jPasswordField1.getPassword());
-    String role = (String) jComboBox1.getSelectedItem();
+    private void createAccount() {
+        String employeeName = nameField.getText().trim();
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword());
+        String confirmPassword = new String(confirmPasswordField.getPassword());
+        String role = (String) roleCombo.getSelectedItem();
 
-    String sql = "INSERT INTO LoginInfo (Username, Password, EmployeeName, Role) VALUES (?, ?, ?, ?)";
+        if (employeeName.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Employee name cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    try (
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Username cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        pstmt.setString(1, username);
-        pstmt.setString(2, password);
-        pstmt.setString(3, employeeName);
-        pstmt.setString(4, role);
+        if (password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Password cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        int rowsAffected = pstmt.executeUpdate();
-        return rowsAffected > 0;
+        if (password.length() < 6) {
+            JOptionPane.showMessageDialog(this, "Password must be at least 6 characters!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    } catch (Exception e) {
-        return false;
-    }}
+        if (!password.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "Passwords do not match!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String checkSql = "SELECT COUNT(*) FROM LoginInfo WHERE Username = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            checkStmt.setString(1, username);
+            var rs = checkStmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                JOptionPane.showMessageDialog(this, "Username already exists!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error checking username: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String sql = "INSERT INTO LoginInfo (Username, Password, EmployeeName, Role) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            pstmt.setString(3, employeeName);
+            pstmt.setString(4, role);
+
+            int rowsAffected = pstmt.executeUpdate();
+
+                JOptionPane.showMessageDialog(this, "Account created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error creating account: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -59,14 +100,14 @@ public class AccountCreation extends javax.swing.JFrame {
         imagePanel1 = new CustomElements.ImagePanel();
         jLabel11 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        nameField = new javax.swing.JTextField();
+        usernameField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jPasswordField2 = new javax.swing.JPasswordField();
+        passwordField = new javax.swing.JPasswordField();
+        confirmPasswordField = new javax.swing.JPasswordField();
         jLabel4 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        roleCombo = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         curvedPanel2 = new CustomElements.CurvedPanel();
         createAccountBtn = new javax.swing.JLabel();
@@ -89,7 +130,7 @@ public class AccountCreation extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(212, 171, 97));
         jLabel4.setText("Confirm Password:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Frontdesk", "Manager" }));
+        roleCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Frontdesk", "Manager" }));
 
         jLabel5.setForeground(new java.awt.Color(212, 171, 97));
         jLabel5.setText("Role:");
@@ -141,13 +182,13 @@ public class AccountCreation extends javax.swing.JFrame {
                             .addGroup(imagePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jLabel4)
                                 .addComponent(jLabel1)
-                                .addComponent(jTextField1)
-                                .addComponent(jTextField2)
+                                .addComponent(nameField)
+                                .addComponent(usernameField)
                                 .addComponent(jLabel3)
                                 .addComponent(jLabel2)
-                                .addComponent(jPasswordField1)
-                                .addComponent(jPasswordField2)
-                                .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(passwordField)
+                                .addComponent(confirmPasswordField)
+                                .addComponent(roleCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(curvedPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addContainerGap(63, Short.MAX_VALUE))
         );
@@ -159,23 +200,23 @@ public class AccountCreation extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(confirmPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(13, 13, 13)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(roleCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(curvedPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(60, Short.MAX_VALUE))
@@ -236,19 +277,19 @@ public class AccountCreation extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPasswordField confirmPasswordField;
     private javax.swing.JLabel createAccountBtn;
     private CustomElements.CurvedPanel curvedPanel2;
     private CustomElements.ImagePanel imagePanel1;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JPasswordField jPasswordField2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField nameField;
+    private javax.swing.JPasswordField passwordField;
+    private javax.swing.JComboBox<String> roleCombo;
+    private javax.swing.JTextField usernameField;
     // End of variables declaration//GEN-END:variables
 }

@@ -8,12 +8,17 @@ import Database.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import raven.datetime.DatePicker;
+import raven.toast.Notifications;
 
 /**
  *
@@ -95,27 +100,26 @@ public class CheckIn extends javax.swing.JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }  
     
-    
-private void checkInFunction() {
-    String fullname = guestField.getText();
-    String contact = contactField.getText();
-    String email = emailField.getText();
-    String birthDate = birthField.getText();
-    String nationality = nationalityField.getText();
+    private void checkInFunction() {
+    String fullname = guestField.getText().trim();
+    String contact = contactField.getText().trim();
+    String email = emailField.getText().trim();
+    String birthDate = birthField.getText().trim();
+    String nationality = nationalityField.getText().trim();
     String gender = "";
     if (maleRadio.isSelected()) {
         gender = "Male";
     } else if (femaleRadio.isSelected()) {
         gender = "Female";
     }
-    String idNumber = idNumberField.getText();
+    String idNumber = idNumberField.getText().trim();
     String idType = (String) idTypeCombo.getSelectedItem();
     String roomType = (String) roomTypeCombo.getSelectedItem();
     String roomNumber = (String) roomNumberCombo.getSelectedItem();
-    String checkIn = checkInField.getText();
-    String checkOut = checkOutField.getText();
+    String checkIn = checkInField.getText().trim();
+    String checkOut = checkOutField.getText().trim();
     int numberOfGuest = (int) guestSpinner.getValue();
     int extraLinen = (int) linenSpinner.getValue();
     int extraBed = (int) bedSpinner.getValue();
@@ -124,19 +128,82 @@ private void checkInFunction() {
     boolean isEarly = earlyCheck.isSelected();
     boolean isParking = parkingCheck.isSelected();
 
-    if (fullname.trim().isEmpty() || contact.trim().isEmpty() ||
-        email.trim().isEmpty() || birthDate.trim().isEmpty() ||
-        nationality.trim().isEmpty() || gender.isEmpty() ||
-        idNumber.trim().isEmpty() || roomNumber == null ||
-        checkIn.trim().isEmpty() || checkOut.trim().isEmpty()) {
+    if (fullname.isEmpty() || contact.isEmpty() ||
+        email.isEmpty() || birthDate.isEmpty() ||
+        nationality.isEmpty() || gender.isEmpty() ||
+        idNumber.isEmpty() || roomNumber == null ||
+        checkIn.isEmpty() || checkOut.isEmpty()) {
 
-        JOptionPane.showMessageDialog(this, "Please fill in all required fields!",
-                "Missing Information", JOptionPane.WARNING_MESSAGE);
+        notifError("Please fill in all required fields!");
+        return;
+    }
+
+    if (!fullname.matches("^[a-zA-Z\\s]+$")) {
+        notifError("Full name should contain only letters and spaces!");
+        return;
+    }
+
+    if (!contact.matches("{7,15}")) {
+        notifError("Please enter a valid contact number (7-15 digits)!");
+        return;
+    }
+
+    if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+        notifError("Please enter a valid email address!");
+        return;
+    }
+
+    if (!birthDate.matches("^\\d{1,2}[/-]\\d{1,2}[/-]\\d{4}$")) {
+        notifError("Please enter birth date in valid format (DD/MM/YYYY)!");
+        return;
+    }
+
+    if (!nationality.matches("^[a-zA-Z\\s]+$")) {
+        notifError("Nationality should contain only letters!");
+        return;
+    }
+
+    if (idNumber.length() < 5 || idNumber.length() > 20) {
+        notifError("ID Number should be between 5-20 characters!");
         return;
     }
 
     try {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date checkInDate = sdf.parse(checkIn);
+        Date checkOutDate = sdf.parse(checkOut);
+        Date today = new Date();
+        
+        if (checkInDate.after(checkOutDate)) {
+            notifError("Check-out date must be after check-in date!");
+            return;
+        }
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal1.setTime(checkInDate);
+        cal2.setTime(today);
+        boolean isSameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                           cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+        if (checkInDate.before(today) && !isSameDay) {
+            notifError("Check-in date cannot be in the past!");
+            return;
+        }
+    } catch (ParseException e) {
+        notifError("Please enter valid dates in DD/MM/YYYY format!");
+        return;
+    }
 
+    if (extraLinen < 0 || extraLinen > 5) {
+        notifError("Extra linen should be between 0 and 5!");
+        return;
+    }
+
+    if (extraBed < 0 || extraBed > 3) {
+        notifError("Extra beds should be between 0 and 3!");
+        return;
+    }
+
+    try {
         String checkRoomSql = "SELECT Status FROM RoomList WHERE Room_Number = ? AND Room_Type = ?";
         PreparedStatement checkPst = conn.prepareStatement(checkRoomSql);
         checkPst.setString(1, roomNumber);
@@ -146,21 +213,18 @@ private void checkInFunction() {
         if (rs.next()) {
             String currentStatus = rs.getString("Status");
             if (!"Available".equals(currentStatus)) {
-                JOptionPane.showMessageDialog(this, "Room " + roomNumber + " is currently " + currentStatus + "!",
-                        "Room Not Available", JOptionPane.WARNING_MESSAGE);
+                notifError("Room " + roomNumber + " is currently " + currentStatus + "!");
                 conn.rollback();
                 conn.setAutoCommit(true);
                 return;
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Room not found in the system!",
-                    "Room Error", JOptionPane.ERROR_MESSAGE);
+            notifError("Room not found in the system!");
             conn.rollback();
             conn.setAutoCommit(true);
             return;
         }
 
-        // Insert guest info and get generated BookingID
         String insertGuestSql = "INSERT INTO Guest_Information (FullName, ContactNumber, Email, BirthDate, " +
                 "Gender, Nationality, IDType, IDNumber, RoomNumber, RoomType, CheckIn, CheckOut, " +
                 "NumberOfGuest, ExtraLinen, ExtraBed, Laundry, MiniBar, EarlyIn, Parking) " +
@@ -195,7 +259,6 @@ private void checkInFunction() {
                 guestID = generatedKeys.getInt(1);
             }
 
-            // Update RoomList with guest ID and dates
             String updateRoomSql = "UPDATE RoomList SET Status = 'Occupied', GuestID = ?, CheckIn = ?, CheckOut = ? WHERE Room_Number = ? AND Room_Type = ?";
             PreparedStatement updatePst = conn.prepareStatement(updateRoomSql);
             updatePst.setInt(1, guestID);
@@ -213,24 +276,22 @@ private void checkInFunction() {
                 clearForm();
             } else {
                 conn.rollback();
-                JOptionPane.showMessageDialog(this, "Failed to update room status!",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                notifError("Failed to update room status!");
             }
         } else {
             conn.rollback();
-            JOptionPane.showMessageDialog(this, "Failed to check in guest!",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            notifError("Failed to check in guest!");
         }
 
-        conn.setAutoCommit(true);
-
     } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage(),
-                "Database Error", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
+        
     }
-}
-
+    }
+    private void notifError(String message){
+        Notifications.getInstance().show(Notifications.Type.ERROR, Notifications.Location.BOTTOM_RIGHT, message);
+    }
+    
+    
     private void clearForm() {
         guestField.setText("");
         contactField.setText("");
@@ -252,6 +313,17 @@ private void checkInFunction() {
         barCheck.setSelected(false);
         earlyCheck.setSelected(false);
         parkingCheck.setSelected(false);
+    }
+    
+    private void removeReservation(){
+        int row = reservationTable.getSelectedRow();
+        String selection = reservationTable.getModel().getValueAt(row, 0).toString();
+        String sql = "DELETE * FROM Guest_Reservation WHERE ReservationId = " + Integer.parseInt(selection.substring(1));
+        try(PreparedStatement pst = conn.prepareStatement(sql)){
+          pst.executeUpdate();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -406,11 +478,6 @@ private void checkInFunction() {
 
         parkingCheck.setForeground(new java.awt.Color(212, 171, 97));
         parkingCheck.setText("Parking");
-        parkingCheck.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                parkingCheckActionPerformed(evt);
-            }
-        });
 
         barCheck.setForeground(new java.awt.Color(212, 171, 97));
         barCheck.setText("Mini Bar Access");
@@ -733,10 +800,6 @@ private void checkInFunction() {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void parkingCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_parkingCheckActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_parkingCheckActionPerformed
-
     private void roomTypeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roomTypeComboActionPerformed
         String type = (String) roomTypeCombo.getSelectedItem();
         String sql = "SELECT * FROM RoomList WHERE Room_Type = '" + type +"' AND Status = 'Available'";
@@ -758,6 +821,8 @@ private void checkInFunction() {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         checkInFunction();
+        removeReservation();
+        initTables();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void reservationCheckInBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reservationCheckInBtnActionPerformed

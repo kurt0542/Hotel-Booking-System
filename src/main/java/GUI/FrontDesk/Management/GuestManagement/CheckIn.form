@@ -554,9 +554,6 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Parking"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="parkingCheckActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JSpinner" name="guestSpinner">
         </Component>
