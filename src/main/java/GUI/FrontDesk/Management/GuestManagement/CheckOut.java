@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -85,104 +86,171 @@ public class CheckOut extends javax.swing.JPanel {
     }
     
     private void receiptTable(int bookingId){
-    String sql = """
-        SELECT gi.BookingID,
-               gi.FullName,
-               gi.NumberOfGuest,
-               gi.PaymentStatus,
-               gi.ExtraLinen,
-               gi.ExtraBed,
-               gi.Laundry,
-               gi.MiniBar,
-               gi.EarlyIn,
-               gi.Parking,
-               rl.Room_Number,
-               rl.Room_Type,
-               rl.CheckIn,
-               rl.CheckOut
-        FROM Guest_Information gi
-        JOIN RoomList rl ON gi.RoomNumber = rl.Room_Number
-        WHERE gi.BookingID = ?
-    """;
-    
-    try(PreparedStatement pst = conn.prepareStatement(sql)){
-        pst.setInt(1, bookingId);
-        ResultSet rs = pst.executeQuery();
-        
-        if(rs.next()){
-            // Clear existing table data
-            DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
-            model.setRowCount(0);
-            
-            // Get room type and base price
-            String roomType = rs.getString("Room_Type");
-            double basePrice = getRoomPrice(roomType);
-            
-            // Add base room charge
-            model.addRow(new Object[]{
-                "Room (" + roomType + ")",
-                rs.getInt("NumberOfGuest") + " guest(s)",
-                String.format("₱%.2f", basePrice),
-                String.format("₱%.2f", basePrice)
-            });
-            
-            double totalAmount = basePrice;
-            
-            // Add extra services if selected
-            if (rs.getInt("ExtraLinen") >= 1) {
-                double extraLinenPrice = 500.0;
-                model.addRow(new Object[]{"Extra Linen", "", String.format("₱%.2f", extraLinenPrice), String.format("₱%.2f", extraLinenPrice)});
-                totalAmount += extraLinenPrice;
+        String sql = """
+            SELECT gi.BookingID,
+                   gi.FullName,
+                   gi.NumberOfGuest,
+                   gi.PaymentStatus,
+                   gi.ExtraLinen,
+                   gi.ExtraBed,
+                   gi.Laundry,
+                   gi.MiniBar,
+                   gi.EarlyIn,
+                   gi.Parking,
+                   rl.Room_Number,
+                   rl.Room_Type,
+                   rl.CheckIn,
+                   rl.CheckOut
+            FROM Guest_Information gi
+            JOIN RoomList rl ON gi.RoomNumber = rl.Room_Number
+            WHERE gi.BookingID = ?
+        """;
+
+        try(PreparedStatement pst = conn.prepareStatement(sql)){
+            pst.setInt(1, bookingId);
+            ResultSet rs = pst.executeQuery();
+
+            if(rs.next()){             
+                DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+                model.setRowCount(0);
+
+                String roomType = rs.getString("Room_Type");
+                double basePricePerNight = getRoomPrice(roomType);
+
+                String checkInStr = rs.getString("CheckIn");
+                String checkOutStr = rs.getString("CheckOut");
+
+                int numberOfNights = 1; 
+                try {
+                    // Parse dates in dd/MM/yyyy format
+                    String[] checkInParts = checkInStr.split("/");
+                    String[] checkOutParts = checkOutStr.split("/");
+
+                    int checkInDay = Integer.parseInt(checkInParts[0]);
+                    int checkInMonth = Integer.parseInt(checkInParts[1]);
+                    int checkInYear = Integer.parseInt(checkInParts[2]);
+
+                    int checkOutDay = Integer.parseInt(checkOutParts[0]);
+                    int checkOutMonth = Integer.parseInt(checkOutParts[1]);
+                    int checkOutYear = Integer.parseInt(checkOutParts[2]);
+
+                    Calendar checkInCal = Calendar.getInstance();
+                    checkInCal.set(checkInYear, checkInMonth - 1, checkInDay); // Month is 0-based
+
+                    Calendar checkOutCal = Calendar.getInstance();
+                    checkOutCal.set(checkOutYear, checkOutMonth - 1, checkOutDay);
+
+                    long diffInMillis = checkOutCal.getTimeInMillis() - checkInCal.getTimeInMillis();
+                    numberOfNights = (int) (diffInMillis / (1000 * 60 * 60 * 24));
+
+                    if (numberOfNights <= 0) {
+                        numberOfNights = 1;
+                    }
+
+                } catch (Exception e) {
+                    numberOfNights = 1; 
+                }
+
+                if (numberOfNights <= 0) {
+                    numberOfNights = 1;
+                }
+
+                double totalRoomCharge = basePricePerNight * numberOfNights;
+
+                model.addRow(new Object[]{
+                    "Room (" + roomType + ")",
+                    numberOfNights + " night(s)",
+                    String.format("₱%.2f", basePricePerNight),
+                    String.format("₱%.2f", totalRoomCharge)
+                });
+
+                double totalAmount = totalRoomCharge;
+
+                int extraLinenQty = rs.getInt("ExtraLinen");
+                if (extraLinenQty > 0) {
+                    double extraLinenPrice = 500.0;
+                    double extraLinenTotal = extraLinenPrice * extraLinenQty;
+                    model.addRow(new Object[]{
+                        "Extra Linen", 
+                        String.valueOf(extraLinenQty), 
+                        String.format("₱%.2f", extraLinenPrice), 
+                        String.format("₱%.2f", extraLinenTotal)
+                    });
+                    totalAmount += extraLinenTotal;
+                }
+
+                int extraBedQty = rs.getInt("ExtraBed");
+                if (extraBedQty > 0) {
+                    double extraBedPrice = 1000.0;
+                    double extraBedTotal = extraBedPrice * extraBedQty;
+                    model.addRow(new Object[]{
+                        "Extra Bed", 
+                        String.valueOf(extraBedQty), 
+                        String.format("₱%.2f", extraBedPrice), 
+                        String.format("₱%.2f", extraBedTotal)
+                    });
+                    totalAmount += extraBedTotal;
+                }
+
+                if (rs.getBoolean("Laundry")) {
+                    double laundryPrice = 300.0;
+                    model.addRow(new Object[]{
+                        "Laundry Service", 
+                        "", 
+                        String.format("₱%.2f", laundryPrice), 
+                        String.format("₱%.2f", laundryPrice)
+                    });
+                    totalAmount += laundryPrice;
+                }
+
+                if (rs.getBoolean("MiniBar")) {
+                    double miniBarPrice = 800.0;
+                    model.addRow(new Object[]{
+                        "Mini Bar", 
+                        "", 
+                        String.format("₱%.2f", miniBarPrice), 
+                        String.format("₱%.2f", miniBarPrice)
+                    });
+                    totalAmount += miniBarPrice;
+                }
+
+                if (rs.getBoolean("EarlyIn")) {
+                    double earlyInPrice = 200.0;
+                    model.addRow(new Object[]{
+                        "Early Check-in", 
+                        "", 
+                        String.format("₱%.2f", earlyInPrice), 
+                        String.format("₱%.2f", earlyInPrice)
+                    });
+                    totalAmount += earlyInPrice;
+                }
+
+                if (rs.getBoolean("Parking")) {
+                    double parkingPrice = 150.0;
+                    model.addRow(new Object[]{
+                        "Parking", 
+                        "", 
+                        String.format("₱%.2f", parkingPrice), 
+                        String.format("₱%.2f", parkingPrice)
+                    });
+                    totalAmount += parkingPrice;
+                }
+
+                // Optional: Add total row at the end
+                model.addRow(new Object[]{"", "", "", ""});
+                model.addRow(new Object[]{
+                    "TOTAL", 
+                    "", 
+                    "", 
+                    String.format("₱%.2f", totalAmount)
+                });
             }
 
-            if (rs.getBoolean("ExtraBed")) {
-                double extraBedPrice = 1000.0;
-                model.addRow(new Object[]{"Extra Bed", "1", String.format("₱%.2f", extraBedPrice), String.format("₱%.2f", extraBedPrice)});
-                totalAmount += extraBedPrice;
-            }
-
-            if (rs.getBoolean("Laundry")) {
-                double laundryPrice = 300.0;
-                model.addRow(new Object[]{"Laundry Service", "1", String.format("₱%.2f", laundryPrice), String.format("₱%.2f", laundryPrice)});
-                totalAmount += laundryPrice;
-            }
-
-            if (rs.getBoolean("MiniBar")) {
-                double miniBarPrice = 800.0;
-                model.addRow(new Object[]{"Mini Bar", "1", String.format("₱%.2f", miniBarPrice), String.format("₱%.2f", miniBarPrice)});
-                totalAmount += miniBarPrice;
-            }
-
-            if (rs.getBoolean("EarlyIn")) {
-                double earlyInPrice = 200.0;
-                model.addRow(new Object[]{"Early Check-in", "1", String.format("₱%.2f", earlyInPrice), String.format("₱%.2f", earlyInPrice)});
-                totalAmount += earlyInPrice;
-            }
-
-            if (rs.getBoolean("Parking")) {
-                double parkingPrice = 150.0;
-                model.addRow(new Object[]{"Parking", "1", String.format("₱%.2f", parkingPrice), String.format("₱%.2f", parkingPrice)});
-                totalAmount += parkingPrice;
-            }
-
-            
-            // Update total label (assuming you have a label for total)
-            // jLabelTotal.setText(String.format("Total: ₱%.2f", totalAmount));
-            
-            // Update guest information fields
-            // jLabelBookingID.setText(rs.getString("BookingID"));
-            // jLabelGuestName.setText(rs.getString("FullName"));
-            // jLabelRoomNo.setText(rs.getString("Room_Number"));
-            // jLabelCheckIn.setText(rs.getString("CheckIn"));
-            // jLabelCheckOut.setText(rs.getString("CheckOut"));
-            // jLabelPaymentStatus.setText(rs.getString("PaymentStatus"));
+        } catch(SQLException e){
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading receipt data: " + e.getMessage());
         }
-        
-    } catch(SQLException e){
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error loading receipt data: " + e.getMessage());
     }
-}
 
     private double getRoomPrice(String roomType){
         switch(roomType.toLowerCase()){
@@ -197,7 +265,7 @@ public class CheckOut extends javax.swing.JPanel {
         }
     }
     
-    private void generateReceiptPDF() {
+   private void generateReceiptPDF() {
     
     int selectedRow = guestList.getSelectedRow();
     if (selectedRow == -1) {
@@ -212,26 +280,22 @@ public class CheckOut extends javax.swing.JPanel {
         String bookingNumber = bookingLbl.getText().replace("Booking ID: ", "").replace(" ", "");
         String baseFileName = "Receipt_" + bookingNumber + "_" + timestamp + ".pdf";
         
-        // Choose save location
         String selectedPath = chooseSaveLocation(baseFileName);
         if (selectedPath == null) {
-            return; // User cancelled
+            return;
         }
         
-        // Create document with custom page size for thermal printer (58mm width)
-        Rectangle pageSize = new Rectangle(164f, 842f); // Width: 58mm, Height: variable
-        Document document = new Document(pageSize, 5, 5, 10, 10); // Small margins
+        Rectangle pageSize = new Rectangle(164f, 842f);
+        Document document = new Document(pageSize, 5, 5, 10, 10);
         
         PdfWriter.getInstance(document, new FileOutputStream(selectedPath));
         document.open();
 
-        // Define fonts
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
         Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, BaseColor.BLACK);
         Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 7, BaseColor.BLACK);
         Font smallFont = FontFactory.getFont(FontFactory.HELVETICA, 6, BaseColor.BLACK);
 
-        // Hotel Header
         Paragraph hotelName = new Paragraph("HOTEL LA SOUVERAIN", titleFont);
         hotelName.setAlignment(Element.ALIGN_CENTER);
         document.add(hotelName);
@@ -241,16 +305,13 @@ public class CheckOut extends javax.swing.JPanel {
         address.setSpacingAfter(10);
         document.add(address);
 
-        // Add line separator
         document.add(new Paragraph("===========================================", smallFont));
 
-        // Receipt Title
         Paragraph receiptTitle = new Paragraph("CHECKOUT RECEIPT", headerFont);
         receiptTitle.setAlignment(Element.ALIGN_CENTER);
         receiptTitle.setSpacingAfter(5);
         document.add(receiptTitle);
 
-        // Date and Time
         SimpleDateFormat receiptDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Paragraph dateTime = new Paragraph("Date: " + receiptDateFormat.format(new Date()), normalFont);
         dateTime.setAlignment(Element.ALIGN_CENTER);
@@ -259,7 +320,6 @@ public class CheckOut extends javax.swing.JPanel {
 
         document.add(new Paragraph("===========================================", smallFont));
 
-        // Guest Information
         document.add(new Paragraph("GUEST INFORMATION", headerFont));
         document.add(new Paragraph("-------------------------------------------------", smallFont));
         
@@ -271,14 +331,12 @@ public class CheckOut extends javax.swing.JPanel {
         
         document.add(new Paragraph("===========================================", smallFont));
 
-        // Billing Details
         document.add(new Paragraph("BILLING DETAILS", headerFont));
         document.add(new Paragraph("-------------------------------------------------", smallFont));
 
         DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
         double grandTotal = 0.0;
 
-        // Add each billing item
         for (int i = 0; i < model.getRowCount(); i++) {
             String description = model.getValueAt(i, 0) != null ? model.getValueAt(i, 0).toString() : "";
             String quantity = model.getValueAt(i, 1) != null ? model.getValueAt(i, 1).toString() : "";
@@ -286,33 +344,33 @@ public class CheckOut extends javax.swing.JPanel {
             String total = model.getValueAt(i, 3) != null ? model.getValueAt(i, 3).toString() : "";
 
             if (!description.isEmpty()) {
-                // Item description
                 document.add(new Paragraph(description, normalFont));
                 
-                // Quantity and unit price on same line
-                String qtyPrice = quantity + " x " + unitPrice;
-                Paragraph qtyPricePara = new Paragraph(qtyPrice, smallFont);
-                document.add(qtyPricePara);
+                if (!quantity.isEmpty() && !unitPrice.isEmpty()) {
+                    String qtyPrice = quantity + " x " + unitPrice;
+                    Paragraph qtyPricePara = new Paragraph(qtyPrice, smallFont);
+                    document.add(qtyPricePara);
+                } else if (!unitPrice.isEmpty()) {
+                    Paragraph pricePara = new Paragraph(unitPrice, smallFont);
+                    document.add(pricePara);
+                }
                 
-                // Total amount aligned right
                 Paragraph totalPara = new Paragraph(total, normalFont);
                 totalPara.setAlignment(Element.ALIGN_RIGHT);
                 totalPara.setSpacingAfter(3);
                 document.add(totalPara);
 
-                // Extract numeric value from total for grand total calculation
                 try {
                     String numericTotal = total.replace("₱", "").replace(",", "");
                     grandTotal += Double.parseDouble(numericTotal);
                 } catch (NumberFormatException e) {
-                    // Ignore if can't parse
+                    
                 }
             }
         }
 
         document.add(new Paragraph("-------------------------------------------------", smallFont));
 
-        // Grand Total
         Paragraph grandTotalPara = new Paragraph("TOTAL: ₱" + String.format("%.2f", grandTotal), headerFont);
         grandTotalPara.setAlignment(Element.ALIGN_RIGHT);
         grandTotalPara.setSpacingAfter(10);
@@ -320,7 +378,6 @@ public class CheckOut extends javax.swing.JPanel {
 
         document.add(new Paragraph("===========================================", smallFont));
 
-        // Footer
         document.add(new Paragraph("Thank you for staying with us!", normalFont));
         document.add(new Paragraph("Have a pleasant day!", normalFont));
         
@@ -347,7 +404,6 @@ public class CheckOut extends javax.swing.JPanel {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Receipt As...");
 
-        // Set default save location to Documents/Hotel_Receipts folder
         String documentsPath = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "Hotel_Receipts";
         File documentsDir = new File(documentsPath);
         if (!documentsDir.exists()) {
@@ -355,10 +411,8 @@ public class CheckOut extends javax.swing.JPanel {
         }
         fileChooser.setCurrentDirectory(documentsDir);
 
-        // Set the default filename
         fileChooser.setSelectedFile(new File(defaultFileName));
 
-        // Set file filter for PDF files only
         fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Files", "pdf"));
 
         int result = fileChooser.showSaveDialog(this);
@@ -385,14 +439,12 @@ public class CheckOut extends javax.swing.JPanel {
         jLabel11 = new javax.swing.JLabel();
         bookingLbl = new javax.swing.JLabel();
         roomLbl = new javax.swing.JLabel();
-        statusLbl = new javax.swing.JLabel();
         guestNameLbl = new javax.swing.JLabel();
         checkInLbl = new javax.swing.JLabel();
         checkOutLbl = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
-        jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
@@ -402,7 +454,6 @@ public class CheckOut extends javax.swing.JPanel {
         jSpinner1 = new javax.swing.JSpinner();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
         receiptButton = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
@@ -460,9 +511,6 @@ public class CheckOut extends javax.swing.JPanel {
         roomLbl.setForeground(new java.awt.Color(212, 171, 97));
         roomLbl.setText("Room No:");
 
-        statusLbl.setForeground(new java.awt.Color(212, 171, 97));
-        statusLbl.setText("Payment Status:");
-
         guestNameLbl.setForeground(new java.awt.Color(212, 171, 97));
         guestNameLbl.setText("Guest Name:");
 
@@ -489,10 +537,6 @@ public class CheckOut extends javax.swing.JPanel {
         ));
         jScrollPane2.setViewportView(jTable2);
 
-        jLabel7.setFont(new java.awt.Font("Cambria", 3, 18)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(212, 171, 97));
-        jLabel7.setText("Total:");
-
         jLabel8.setFont(new java.awt.Font("Cambria", 1, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(212, 171, 97));
         jLabel8.setText("Manual Charge:");
@@ -510,14 +554,7 @@ public class CheckOut extends javax.swing.JPanel {
 
         jButton2.setText("Clear");
 
-        jButton3.setText("Confirm Checkout");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
-        receiptButton.setText("Print Receipt");
+        receiptButton.setText("Checkout/Print Receipt");
         receiptButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 receiptButtonActionPerformed(evt);
@@ -548,43 +585,39 @@ public class CheckOut extends javax.swing.JPanel {
                                     .addComponent(checkInLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(guestNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(48, 48, 48)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(statusLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(checkOutLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(checkOutLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(36, 36, 36)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 625, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addGap(26, 26, 26)
-                                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                            .addGap(18, 18, 18)
-                                                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                                    .addGap(18, 18, 18)
-                                                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
-                                                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(receiptButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 625, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(26, 26, 26)
+                                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGap(18, 18, 18)
+                                                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGap(18, 18, 18)
+                                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(receiptButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(8, 8, 8))))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(447, 447, 447)
@@ -607,35 +640,29 @@ public class CheckOut extends javax.swing.JPanel {
                                 .addComponent(guestNameLbl)
                                 .addGap(28, 28, 28))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(bookingLbl)
-                                    .addComponent(statusLbl))
+                                .addComponent(bookingLbl)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(roomLbl)
                                     .addComponent(checkInLbl)
                                     .addComponent(checkOutLbl))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel8))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(jLabel14))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButton3)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel9)
+                                    .addComponent(jLabel14))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel13)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -645,9 +672,9 @@ public class CheckOut extends javax.swing.JPanel {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(receiptButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton5)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton6)))
+                                .addComponent(jButton5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton6)))))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
 
@@ -677,8 +704,7 @@ public class CheckOut extends javax.swing.JPanel {
                gi.FullName,
                rl.Room_Number,
                rl.CheckIn,
-               rl.CheckOut,
-               gi.PaymentStatus
+               rl.CheckOut
         FROM Guest_Information gi
         JOIN RoomList rl ON gi.RoomNumber = rl.Room_Number
         WHERE gi.BookingID = ?
@@ -691,7 +717,6 @@ public class CheckOut extends javax.swing.JPanel {
         if (rs.next()) {
             bookingLbl.setText("Booking ID: " + String.format("R%05d", rs.getInt("BookingID")));
             guestNameLbl.setText("Guest Name: " + rs.getString("FullName"));
-            statusLbl.setText("Payment Status: " + rs.getString("PaymentStatus"));
             roomLbl.setText("Room No: " + rs.getString("Room_Number"));
             checkInLbl.setText("Check-In Date: " + rs.getString("CheckIn"));
             checkOutLbl.setText("Check-Out Date: " + rs.getString("CheckOut"));
@@ -706,10 +731,6 @@ public class CheckOut extends javax.swing.JPanel {
         generateReceiptPDF();
     }//GEN-LAST:event_receiptButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel bookingLbl;
@@ -719,7 +740,6 @@ public class CheckOut extends javax.swing.JPanel {
     private javax.swing.JLabel guestNameLbl;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel10;
@@ -727,7 +747,6 @@ public class CheckOut extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -739,6 +758,5 @@ public class CheckOut extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JButton receiptButton;
     private javax.swing.JLabel roomLbl;
-    private javax.swing.JLabel statusLbl;
     // End of variables declaration//GEN-END:variables
 }

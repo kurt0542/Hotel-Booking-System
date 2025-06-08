@@ -36,10 +36,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
     }
     
     public void showPanel(String name) {
-    
     contentPanel.remove(getPanelByName(name));
-
-   
     switch (name) {
         case "Dashboard":
             dashboard1 = new Dashboard();
@@ -62,12 +59,11 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
             contentPanel.add(reservations2, "Reservations");
             break;
     }
-
-    
     cardLayout.show(contentPanel, name);
     contentPanel.revalidate();
     contentPanel.repaint();
 }
+    
     private Component getPanelByName(String name) {
     for (java.awt.Component comp : contentPanel.getComponents()) {
         if (contentPanel.getLayout() instanceof CardLayout) {
@@ -76,7 +72,6 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
             }
         }
     }
-    
     switch (name) {
         case "Dashboard":
             return dashboard1;
@@ -90,8 +85,8 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
             return reservations2;
         default:
             return null;
+        }
     }
-}
 
     public void initLayout(){
         contentPanel.add(checkIn1, "checkIn");
