@@ -79,7 +79,6 @@ public class Reservations extends javax.swing.JPanel {
                          deluxeCheck.isSelected() || suiteCheck.isSelected() || 
                          presidentialCheck.isSelected();
 
-    // Validation (same as before)
     if (fullName.isEmpty() || contact.isEmpty() || email.isEmpty()) {
         errorNotif("Please fill all of the fields");
         return;

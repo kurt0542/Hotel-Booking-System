@@ -85,11 +85,11 @@
                                                       <Group type="102" alignment="0" attributes="0">
                                                           <Component id="quantitySpinner" min="-2" max="-2" attributes="0"/>
                                                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                                                          <Component id="jButton1" min="-2" pref="100" max="-2" attributes="0"/>
+                                                          <Component id="addBtn" min="-2" pref="100" max="-2" attributes="0"/>
                                                       </Group>
                                                   </Group>
                                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                                  <Component id="jButton2" min="-2" pref="100" max="-2" attributes="0"/>
+                                                  <Component id="clearBtn" min="-2" pref="100" max="-2" attributes="0"/>
                                               </Group>
                                               <Group type="102" alignment="0" attributes="0">
                                                   <Component id="jLabel9" min="-2" pref="170" max="-2" attributes="0"/>
@@ -101,7 +101,7 @@
                                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                               <Component id="receiptButton" alignment="0" max="32767" attributes="0"/>
                                               <Component id="jButton5" max="32767" attributes="0"/>
-                                              <Component id="jButton6" alignment="0" min="-2" pref="153" max="-2" attributes="0"/>
+                                              <Component id="removeBtn" alignment="0" min="-2" pref="153" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                                       </Group>
@@ -168,8 +168,8 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="quantitySpinner" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="addBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="clearBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <Group type="102" alignment="1" attributes="0">
@@ -177,7 +177,7 @@
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="jButton5" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="jButton6" min="-2" max="-2" attributes="0"/>
+                                  <Component id="removeBtn" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -410,12 +410,15 @@
         </Component>
         <Component class="javax.swing.JSpinner" name="quantitySpinner">
         </Component>
-        <Component class="javax.swing.JButton" name="jButton1">
+        <Component class="javax.swing.JButton" name="addBtn">
           <Properties>
             <Property name="text" type="java.lang.String" value="Add"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addBtnActionPerformed"/>
+          </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton2">
+        <Component class="javax.swing.JButton" name="clearBtn">
           <Properties>
             <Property name="text" type="java.lang.String" value="Clear"/>
           </Properties>
@@ -432,13 +435,16 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Update Charge"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton5ActionPerformed"/>
+          </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton6">
+        <Component class="javax.swing.JButton" name="removeBtn">
           <Properties>
             <Property name="text" type="java.lang.String" value="Remove Charge"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton6ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeBtnActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

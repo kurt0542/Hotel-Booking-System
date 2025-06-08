@@ -21,8 +21,10 @@ import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import raven.toast.Notifications;
 
 /**
  *
@@ -87,172 +89,186 @@ public class CheckOut extends javax.swing.JPanel {
     }
     
     private void receiptTable(int bookingId){
-        String sql = """
-            SELECT gi.BookingID,
-                   gi.FullName,
-                   gi.NumberOfGuest,
-                   gi.PaymentStatus,
-                   gi.ExtraLinen,
-                   gi.ExtraBed,
-                   gi.Laundry,
-                   gi.MiniBar,
-                   gi.EarlyIn,
-                   gi.Parking,
-                   rl.Room_Number,
-                   rl.Room_Type,
-                   rl.CheckIn,
-                   rl.CheckOut
-            FROM Guest_Information gi
-            JOIN RoomList rl ON gi.RoomNumber = rl.Room_Number
-            WHERE gi.BookingID = ?
-        """;
+    String sql = """
+        SELECT gi.BookingID,
+               gi.FullName,
+               gi.NumberOfGuest,
+               gi.PaymentStatus,
+               gi.ExtraLinen,
+               gi.ExtraBed,
+               gi.Laundry,
+               gi.MiniBar,
+               gi.EarlyIn,
+               gi.Parking,
+               rl.Room_Number,
+               rl.Room_Type,
+               rl.CheckIn,
+               rl.CheckOut
+        FROM Guest_Information gi
+        JOIN RoomList rl ON gi.RoomNumber = rl.Room_Number
+        WHERE gi.BookingID = ?
+    """;
 
-        try(PreparedStatement pst = conn.prepareStatement(sql)){
-            pst.setInt(1, bookingId);
-            ResultSet rs = pst.executeQuery();
+    try(PreparedStatement pst = conn.prepareStatement(sql)){
+        pst.setInt(1, bookingId);
+        ResultSet rs = pst.executeQuery();
 
-            if(rs.next()){             
-                DefaultTableModel model = (DefaultTableModel) billingTable.getModel();
-                model.setRowCount(0);
+        if(rs.next()){             
+            DefaultTableModel model = (DefaultTableModel) billingTable.getModel();
+            model.setRowCount(0);
 
-                String roomType = rs.getString("Room_Type");
-                double basePricePerNight = getRoomPrice(roomType);
+            String roomType = rs.getString("Room_Type");
+            double basePricePerNight = getRoomPrice(roomType);
 
-                String checkInStr = rs.getString("CheckIn");
-                String checkOutStr = rs.getString("CheckOut");
+            String checkInStr = rs.getString("CheckIn");
+            String checkOutStr = rs.getString("CheckOut");
 
-                int numberOfNights = 1; 
-                try {
-                    // Parse dates in dd/MM/yyyy format
-                    String[] checkInParts = checkInStr.split("/");
-                    String[] checkOutParts = checkOutStr.split("/");
+            int numberOfNights = 1; 
+            try {
+                // Parse dates in dd/MM/yyyy format
+                String[] checkInParts = checkInStr.split("/");
+                String[] checkOutParts = checkOutStr.split("/");
 
-                    int checkInDay = Integer.parseInt(checkInParts[0]);
-                    int checkInMonth = Integer.parseInt(checkInParts[1]);
-                    int checkInYear = Integer.parseInt(checkInParts[2]);
+                int checkInDay = Integer.parseInt(checkInParts[0]);
+                int checkInMonth = Integer.parseInt(checkInParts[1]);
+                int checkInYear = Integer.parseInt(checkInParts[2]);
 
-                    int checkOutDay = Integer.parseInt(checkOutParts[0]);
-                    int checkOutMonth = Integer.parseInt(checkOutParts[1]);
-                    int checkOutYear = Integer.parseInt(checkOutParts[2]);
+                int checkOutDay = Integer.parseInt(checkOutParts[0]);
+                int checkOutMonth = Integer.parseInt(checkOutParts[1]);
+                int checkOutYear = Integer.parseInt(checkOutParts[2]);
 
-                    Calendar checkInCal = Calendar.getInstance();
-                    checkInCal.set(checkInYear, checkInMonth - 1, checkInDay); // Month is 0-based
+                Calendar checkInCal = Calendar.getInstance();
+                checkInCal.set(checkInYear, checkInMonth - 1, checkInDay); // Month is 0-based
 
-                    Calendar checkOutCal = Calendar.getInstance();
-                    checkOutCal.set(checkOutYear, checkOutMonth - 1, checkOutDay);
+                Calendar checkOutCal = Calendar.getInstance();
+                checkOutCal.set(checkOutYear, checkOutMonth - 1, checkOutDay);
 
-                    long diffInMillis = checkOutCal.getTimeInMillis() - checkInCal.getTimeInMillis();
-                    numberOfNights = (int) (diffInMillis / (1000 * 60 * 60 * 24));
-
-                    if (numberOfNights <= 0) {
-                        numberOfNights = 1;
-                    }
-
-                } catch (Exception e) {
-                    numberOfNights = 1; 
-                }
+                long diffInMillis = checkOutCal.getTimeInMillis() - checkInCal.getTimeInMillis();
+                numberOfNights = (int) (diffInMillis / (1000 * 60 * 60 * 24));
 
                 if (numberOfNights <= 0) {
                     numberOfNights = 1;
                 }
 
-                double totalRoomCharge = basePricePerNight * numberOfNights;
+            } catch (Exception e) {
+                numberOfNights = 1; 
+            }
 
+            if (numberOfNights <= 0) {
+                numberOfNights = 1;
+            }
+
+            double totalRoomCharge = basePricePerNight * numberOfNights;
+
+            model.addRow(new Object[]{
+                "Room (" + roomType + ")",
+                numberOfNights + " night(s)",
+                String.format("₱%.2f", basePricePerNight),
+                String.format("₱%.2f", totalRoomCharge)
+            });
+
+            int extraLinenQty = rs.getInt("ExtraLinen");
+            if (extraLinenQty > 0) {
+                double extraLinenPrice = 500.0;
+                double extraLinenTotal = extraLinenPrice * extraLinenQty;
+                model.addRow(new Object[]{"Extra Linen", String.valueOf(extraLinenQty), String.format("₱%.2f", extraLinenPrice), String.format("₱%.2f", extraLinenTotal)});
+            }
+
+            int extraBedQty = rs.getInt("ExtraBed");
+            if (extraBedQty > 0) {
+                double extraBedPrice = 1000.0;
+                double extraBedTotal = extraBedPrice * extraBedQty;
                 model.addRow(new Object[]{
-                    "Room (" + roomType + ")",
-                    numberOfNights + " night(s)",
-                    String.format("₱%.2f", basePricePerNight),
-                    String.format("₱%.2f", totalRoomCharge)
-                });
-
-                double totalAmount = totalRoomCharge;
-
-                int extraLinenQty = rs.getInt("ExtraLinen");
-                if (extraLinenQty > 0) {
-                    double extraLinenPrice = 500.0;
-                    double extraLinenTotal = extraLinenPrice * extraLinenQty;
-                    model.addRow(new Object[]{
-                        "Extra Linen", 
-                        String.valueOf(extraLinenQty), 
-                        String.format("₱%.2f", extraLinenPrice), 
-                        String.format("₱%.2f", extraLinenTotal)
-                    });
-                    totalAmount += extraLinenTotal;
-                }
-
-                int extraBedQty = rs.getInt("ExtraBed");
-                if (extraBedQty > 0) {
-                    double extraBedPrice = 1000.0;
-                    double extraBedTotal = extraBedPrice * extraBedQty;
-                    model.addRow(new Object[]{
-                        "Extra Bed", 
-                        String.valueOf(extraBedQty), 
-                        String.format("₱%.2f", extraBedPrice), 
-                        String.format("₱%.2f", extraBedTotal)
-                    });
-                    totalAmount += extraBedTotal;
-                }
-
-                if (rs.getBoolean("Laundry")) {
-                    double laundryPrice = 300.0;
-                    model.addRow(new Object[]{
-                        "Laundry Service", 
-                        "", 
-                        String.format("₱%.2f", laundryPrice), 
-                        String.format("₱%.2f", laundryPrice)
-                    });
-                    totalAmount += laundryPrice;
-                }
-
-                if (rs.getBoolean("MiniBar")) {
-                    double miniBarPrice = 800.0;
-                    model.addRow(new Object[]{
-                        "Mini Bar", 
-                        "", 
-                        String.format("₱%.2f", miniBarPrice), 
-                        String.format("₱%.2f", miniBarPrice)
-                    });
-                    totalAmount += miniBarPrice;
-                }
-
-                if (rs.getBoolean("EarlyIn")) {
-                    double earlyInPrice = 200.0;
-                    model.addRow(new Object[]{
-                        "Early Check-in", 
-                        "", 
-                        String.format("₱%.2f", earlyInPrice), 
-                        String.format("₱%.2f", earlyInPrice)
-                    });
-                    totalAmount += earlyInPrice;
-                }
-
-                if (rs.getBoolean("Parking")) {
-                    double parkingPrice = 150.0;
-                    model.addRow(new Object[]{
-                        "Parking", 
-                        "", 
-                        String.format("₱%.2f", parkingPrice), 
-                        String.format("₱%.2f", parkingPrice)
-                    });
-                    totalAmount += parkingPrice;
-                }
-
-                // Optional: Add total row at the end
-                model.addRow(new Object[]{"", "", "", ""});
-                model.addRow(new Object[]{
-                    "TOTAL", 
-                    "", 
-                    "", 
-                    String.format("₱%.2f", totalAmount)
+                    "Extra Bed", 
+                    String.valueOf(extraBedQty), 
+                    String.format("₱%.2f", extraBedPrice), 
+                    String.format("₱%.2f", extraBedTotal)
                 });
             }
 
-        } catch(SQLException e){
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading receipt data: " + e.getMessage());
+            if (rs.getBoolean("Laundry")) {
+                double laundryPrice = 300.0;
+                model.addRow(new Object[]{
+                    "Laundry Service", 
+                    "", 
+                    String.format("₱%.2f", laundryPrice), 
+                    String.format("₱%.2f", laundryPrice)
+                });
+            }
+
+            if (rs.getBoolean("MiniBar")) {
+                double miniBarPrice = 800.0;
+                model.addRow(new Object[]{
+                    "Mini Bar", 
+                    "", 
+                    String.format("₱%.2f", miniBarPrice), 
+                    String.format("₱%.2f", miniBarPrice)
+                });
+            }
+
+            if (rs.getBoolean("EarlyIn")) {
+                double earlyInPrice = 200.0;
+                model.addRow(new Object[]{
+                    "Early Check-in", 
+                    "", 
+                    String.format("₱%.2f", earlyInPrice), 
+                    String.format("₱%.2f", earlyInPrice)
+                });
+            }
+
+            if (rs.getBoolean("Parking")) {
+                double parkingPrice = 150.0;
+                model.addRow(new Object[]{
+                    "Parking", 
+                    "", 
+                    String.format("₱%.2f", parkingPrice), 
+                    String.format("₱%.2f", parkingPrice)
+                });
+            }
+            
+            calculateTotal();
         }
+        
+    } catch(SQLException e){
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error loading receipt data: " + e.getMessage());
+    }
     }
 
+
+    public void calculateTotal() {
+        double total = 0.0;
+        int columnIndex = 3; 
+        DefaultTableModel model = (DefaultTableModel) billingTable.getModel();
+        int rowCount = billingTable.getRowCount();
+
+        for (int row = 0; row < rowCount; row++) {
+            Object value = billingTable.getValueAt(row, columnIndex);
+                try {
+                    if (value instanceof Number) {
+                        total += ((Number) value).doubleValue();
+                    } else if (value instanceof String) {
+                        String stringValue = ((String) value).trim();
+                        stringValue = stringValue.replace("₱", "").replace(",", "").trim();
+                        if (!stringValue.isEmpty()) {
+                            total += Double.parseDouble(stringValue);
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Skipping non-numeric value: " + value);
+                }
+            }
+
+        model.addRow(new Object[]{"", "", "", ""});
+        model.addRow(new Object[]{
+            "", 
+            "", 
+            "TOTAL", 
+            String.format("₱%.2f", total)
+        });
+
+    }
+    
     private double getRoomPrice(String roomType){
         switch(roomType.toLowerCase()){
             case "deluxe": return 9219.0;
@@ -429,6 +445,12 @@ public class CheckOut extends javax.swing.JPanel {
         return null; // User cancelled
     }
     
+    private void clearFunction(){
+        descriptionField.setText("");
+        priceField.setText("");
+        quantitySpinner.setValue(1);
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -453,11 +475,11 @@ public class CheckOut extends javax.swing.JPanel {
         priceField = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         quantitySpinner = new javax.swing.JSpinner();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        addBtn = new javax.swing.JButton();
+        clearBtn = new javax.swing.JButton();
         receiptButton = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        removeBtn = new javax.swing.JButton();
 
         setMaximumSize(new java.awt.Dimension(1280, 639));
         setMinimumSize(new java.awt.Dimension(1280, 639));
@@ -556,9 +578,14 @@ public class CheckOut extends javax.swing.JPanel {
         jLabel14.setForeground(new java.awt.Color(212, 171, 97));
         jLabel14.setText("Unit Price:");
 
-        jButton1.setText("Add");
+        addBtn.setText("Add");
+        addBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addBtnActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Clear");
+        clearBtn.setText("Clear");
 
         receiptButton.setText("Checkout/Print Receipt");
         receiptButton.addActionListener(new java.awt.event.ActionListener() {
@@ -568,11 +595,16 @@ public class CheckOut extends javax.swing.JPanel {
         });
 
         jButton5.setText("Update Charge");
-
-        jButton6.setText("Remove Charge");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        removeBtn.setText("Remove Charge");
+        removeBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeBtnActionPerformed(evt);
             }
         });
 
@@ -616,9 +648,9 @@ public class CheckOut extends javax.swing.JPanel {
                                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                                         .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addGap(18, 18, 18)
-                                                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                        .addComponent(addBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                 .addGap(18, 18, 18)
-                                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(clearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(jPanel1Layout.createSequentialGroup()
                                                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(18, 18, 18)
@@ -627,7 +659,7 @@ public class CheckOut extends javax.swing.JPanel {
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addComponent(receiptButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(removeBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGap(8, 8, 8))))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -677,14 +709,14 @@ public class CheckOut extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jButton1)
-                                    .addComponent(jButton2)))
+                                    .addComponent(addBtn)
+                                    .addComponent(clearBtn)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(receiptButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jButton5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton6)))))
+                                .addComponent(removeBtn)))))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
 
@@ -701,7 +733,6 @@ public class CheckOut extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void guestListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_guestListMouseClicked
-                                      
     int row = guestList.getSelectedRow();
 
     if (row == -1) return;
@@ -741,10 +772,9 @@ public class CheckOut extends javax.swing.JPanel {
         generateReceiptPDF();
     }//GEN-LAST:event_receiptButtonActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void removeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeBtnActionPerformed
         int row = billingTable.getSelectedRow();
     
-    // Check if a row is selected
     if (row == -1) {
         JOptionPane.showMessageDialog(this, 
             "Please select a row to remove.", 
@@ -753,7 +783,6 @@ public class CheckOut extends javax.swing.JPanel {
         return;
     }
     
-    // Optional: Show confirmation dialog
     int confirm = JOptionPane.showConfirmDialog(this,
         "Are you sure you want to remove this item?",
         "Confirm Removal",
@@ -768,72 +797,195 @@ public class CheckOut extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel) billingTable.getModel();
         
         model.removeRow(row);
-
-        JOptionPane.showMessageDialog(this,
-            "Item removed successfully.",
-            "Success",
-            JOptionPane.INFORMATION_MESSAGE);
-            
+        Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.BOTTOM_RIGHT, "Item removed successfully!");
     } catch (Exception e) {
-        // Handle any errors
-        JOptionPane.showMessageDialog(this,
-            "Error removing item: " + e.getMessage(),
-            "Error",
-            JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this,"Error removing item: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         System.err.println("Error removing billing item: " + e.getMessage());
     }
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_removeBtnActionPerformed
 
     private void billingTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_billingTableMouseClicked
+        int row = billingTable.getSelectedRow();
+        if (row == -1) return;
 
-    int row = billingTable.getSelectedRow();
-    if (row == -1) return;
-
-    TableModel model = billingTable.getModel();
-
-    try {
-        // Get values from selected row
-        String description = model.getValueAt(row, 0).toString();
-        String unitPrice = model.getValueAt(row, 2).toString(); // Unit Price is column 2
-        String quantity = model.getValueAt(row, 1).toString();  // Quantity is column 1
-
-        // Set the form fields
-        descriptionField.setText(description);
-        priceField.setText(unitPrice);
-
-        // Convert quantity string to integer for spinner
+        TableModel model = billingTable.getModel();
         try {
-            int quantityValue = Integer.parseInt(quantity);
-            quantitySpinner.setValue(quantityValue);
-        } catch (NumberFormatException e) {
-            // Handle case where quantity is not a valid number
-            quantitySpinner.setValue(1); // Default value
-            System.err.println("Invalid quantity format: " + quantity);
+            String description = model.getValueAt(row, 0).toString();
+            String unitPrice = model.getValueAt(row, 2).toString(); 
+            String quantity = model.getValueAt(row, 1).toString();  
+
+            descriptionField.setText(description);
+
+            if (unitPrice.startsWith("₱")) {
+                unitPrice = unitPrice.substring(1);
+            }
+            priceField.setText(unitPrice);
+
+            try {
+                if (quantity == null || quantity.trim().isEmpty()) {
+                    quantitySpinner.setValue(0);
+                } else {
+                    int quantityValue = Integer.parseInt(quantity);
+                    quantitySpinner.setValue(quantityValue);
+                }
+            } catch (NumberFormatException e) {
+                quantitySpinner.setValue(0); 
+                System.err.println("Invalid quantity format: " + quantity);
+            }
+
+        } catch (Exception e) {
+            descriptionField.setText("");
+            priceField.setText("");
+            quantitySpinner.setValue(1);
+            System.err.println("Error populating fields: " + e.getMessage());
+        }
+    }//GEN-LAST:event_billingTableMouseClicked
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        int row = billingTable.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select a row to update.",
+                "No Selection",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+            String description = descriptionField.getText().trim();
+            String priceText = priceField.getText().trim();
+            int quantity = (Integer) quantitySpinner.getValue();
+
+            if (description.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Description cannot be empty.",
+                    "Invalid Input",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (priceText.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Price cannot be empty.",
+                    "Invalid Input",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (priceText.startsWith("₱")) {
+                priceText = priceText.substring(1);
+            }
+
+            double unitPrice = Double.parseDouble(priceText);
+
+            if (unitPrice < 0) {
+                JOptionPane.showMessageDialog(this,
+                    "Unit price cannot be negative.",
+                    "Invalid Price",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (quantity <= 0) {
+                JOptionPane.showMessageDialog(this,
+                    "Quantity must be greater than zero.",
+                    "Invalid Quantity",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double total = quantity * unitPrice;
+
+            DefaultTableModel model = (DefaultTableModel) billingTable.getModel();
+
+            model.setValueAt(description, row, 0);                    
+            model.setValueAt(quantity, row, 1);                       
+            model.setValueAt(String.format("₱%.2f", unitPrice), row, 2); 
+            model.setValueAt(String.format("₱%.2f", total), row, 3);     
+            model.fireTableRowsUpdated(row, row);
+
+            calculateTotal();
+
+            descriptionField.setText("");
+            priceField.setText("");
+            quantitySpinner.setValue(1);
+
+            JOptionPane.showMessageDialog(this,
+                "Item updated successfully.",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+
+
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        String description = descriptionField.getText().trim();
+        String priceText = priceField.getText().trim();
+        Object quantityValue = quantitySpinner.getValue();
+
+        if (description.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a description.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            descriptionField.requestFocus();
+            return;
+        }
+        if (priceText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a price.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            priceField.requestFocus();
+            return;
         }
 
-    } catch (Exception e) {
-        // Handle any other exceptions (null values, etc.)
-        System.err.println("Error setting billing form values: " + e.getMessage());
-        // Optionally clear the fields or set default values
-        descriptionField.setText("");
-        priceField.setText("");
-        quantitySpinner.setValue(1);
-    }
-    }//GEN-LAST:event_billingTableMouseClicked
+        double price;
+        try {
+            if (priceText.startsWith("₱")) {
+                priceText = priceText.substring(1);
+            }
+            price = Double.parseDouble(priceText);
+            if (price < 0) {
+                JOptionPane.showMessageDialog(this, "Price cannot be negative.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                priceField.requestFocus();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid price.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            priceField.requestFocus();
+            return;
+        }
+
+        int quantity;
+            quantity = Integer.parseInt(quantityValue.toString());
+
+        DefaultTableModel tableModel = (DefaultTableModel) billingTable.getModel();
+
+        if (tableModel.getRowCount() > 0) {
+            tableModel.removeRow(tableModel.getRowCount() - 1);
+        }
+
+        String formattedPrice = "₱" + String.format("%.2f", price);
+        Object[] newRow;
+        if (quantity <= 1) {
+            newRow = new Object[]{description, "", formattedPrice};
+        } else {
+            newRow = new Object[]{description, quantity, formattedPrice};
+        }
+        tableModel.addRow(newRow);
+
+        calculateTotal();
+
+        clearFunction();
+        JOptionPane.showMessageDialog(this, "Item added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_addBtnActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addBtn;
     private javax.swing.JTable billingTable;
     private javax.swing.JLabel bookingLbl;
     private javax.swing.JLabel checkInLbl;
     private javax.swing.JLabel checkOutLbl;
+    private javax.swing.JButton clearBtn;
     private javax.swing.JTextField descriptionField;
     private javax.swing.JTable guestList;
     private javax.swing.JLabel guestNameLbl;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -847,6 +999,7 @@ public class CheckOut extends javax.swing.JPanel {
     private javax.swing.JTextField priceField;
     private javax.swing.JSpinner quantitySpinner;
     private javax.swing.JButton receiptButton;
+    private javax.swing.JButton removeBtn;
     private javax.swing.JLabel roomLbl;
     // End of variables declaration//GEN-END:variables
 }

@@ -65,9 +65,9 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
 }
     
     private Component getPanelByName(String name) {
-    for (java.awt.Component comp : contentPanel.getComponents()) {
+    for (Component comp : contentPanel.getComponents()) {
         if (contentPanel.getLayout() instanceof CardLayout) {
-            if (((java.awt.CardLayout) contentPanel.getLayout()).toString().contains(name)) {
+            if (((CardLayout) contentPanel.getLayout()).toString().contains(name)) {
                 return comp;
             }
         }
@@ -75,7 +75,7 @@ public class FrontDeskMainFrame extends javax.swing.JFrame {
     switch (name) {
         case "Dashboard":
             return dashboard1;
-        case "checkIn":
+        case "checkIn": 
             return checkIn1;
         case "checkOut":
             return checkOut1;
