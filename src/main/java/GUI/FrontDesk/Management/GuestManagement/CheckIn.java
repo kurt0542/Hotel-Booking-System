@@ -143,11 +143,6 @@ public class CheckIn extends javax.swing.JPanel {
         return;
     }
 
-    if (!contact.matches("{7,15}")) {
-        notifError("Please enter a valid contact number (7-15 digits)!");
-        return;
-    }
-
     if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
         notifError("Please enter a valid email address!");
         return;
